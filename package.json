@@ -1,6 +1,6 @@
 {
   "name": "react-swiss",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "CSS-in-js with the best of the react and sass world together.",
   "main": "dist/swiss.cjs.js",
   "module": "dist/swiss.esm.js",
