@@ -7,8 +7,8 @@
   "scripts": {
     "prebuild": "rimraf dist/",
     "build": "node ./tools/build.js",
-    "start": "npm run prebuild; rollup -c -w",
-    "prepublishOnly": "npm run build:prod"
+    "start": "BABEL_ENV=es babel src -d dist/es --watch",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",

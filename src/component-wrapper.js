@@ -34,7 +34,7 @@ export default function componentWrapper(EL, styles, number) {
     }
     render() {
       let computedClassName = `${this.swissId}`;
-      
+
       const allHandledProps = new Set(['className', 'swiss', 'expand']);
 
       this.iterateHandlers((handler) => {
@@ -54,7 +54,6 @@ export default function componentWrapper(EL, styles, number) {
           }
         })
       })
-
 
       const newProps = {};
       Object.entries(this.props).forEach(([propName, propValue]) => {

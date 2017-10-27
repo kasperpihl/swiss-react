@@ -65,7 +65,6 @@ export default class StyleHandler {
         all.add(key);
       }
     });
-
     this.handledPropKeys.all = [...all];
   }
   _checkPropsAndUpdateDOM(swissId, props, oldProps) {

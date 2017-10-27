@@ -18,7 +18,6 @@ if (process.env.NODE_ENV === 'production') {
 module.exports = {
   presets: [
     [ 'es2015', {
-      loose: true,
       modules: building ? false : 'commonjs'
     } ],
     'react'
