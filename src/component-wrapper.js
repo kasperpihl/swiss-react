@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import StyleHandler from './style-handler';
 
 export default function componentWrapper(EL, styles, number) {
@@ -7,7 +7,7 @@ export default function componentWrapper(EL, styles, number) {
   const styleHandler = new StyleHandler(className, styles);
   let totalCounter = 0;
 
-  class StyledElement extends PureComponent {
+  class StyledElement extends React.PureComponent {
     componentWillMount() {
       this.swissId = `${className}-${++totalCounter}`;
       this.iterateHandlers(handler => handler.subscribe(this.swissId, this.props));
