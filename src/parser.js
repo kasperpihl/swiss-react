@@ -1,117 +1,106 @@
-const VARREGEX = /#{(.*?)}/gi;
-import Printer from './printer';
+const PROPS_REGEX = /#{(.*?)}/gi;
 
 export default class Parser {
-  constructor(className, styles) {
-    this.styles = styles;
-    this.className = className;
-
-    this.keyProps = new Set();
-    this.valueProps = new Set();
-    this.allProps = new Set();
+  constructor() {
+    this.styleArray = [];
+    this.keyframes = [];
   }
 
-  getPropsInfo() {
-    return {
-      keyProps: [...this.keyProps],
-      valueProps: [...this.valueProps],
-      allProps: [...this.allProps],
-    };
-  }
-
-  getAllKeysFromRoot(rootTarget, styleKey) {
-    const styleKeys = [];
-    
-    const keyVariables = styleKey.match(VARREGEX);
-    if(keyVariables && keyVariables.length) {
-      keyVariables.forEach(propKey => {
-        const actualKey = propKey.substr(2, propKey.length - 3);
-        this.valueProps.add(actualKey);
-        this.allProps.add(actualKey);
-      })
-      Object.entries(this.props).forEach(([refNum, props]) => {
-        let localStyleKey = styleKey.replace(/&/gi, `#${this.className}-${refNum}${rootTarget}`);
-        keyVariables.forEach((propKey) => {
-          const actualKey = propKey.substr(2, propKey.length - 3);
-          let value = this.props[refNum][actualKey];
-          if(this.props[refNum][actualKey]) {
-            if(!value.startsWith('.')){
-              value = `.${this.className}-${actualKey}-${value}`;
-            }
-            localStyleKey = localStyleKey.replace(new RegExp(propKey, 'g'), value);
-          }
-        })
-        if(!localStyleKey.match(VARREGEX)) {
-          styleKeys.push(localStyleKey);
-        }
-      })
-    } else {
-      styleKeys.push(styleKey.replace(/&/gi, rootTarget));
+  addProps(options, names) {
+    if(typeof names === 'string') {
+      names = [ names ];
     }
 
-    return styleKeys;
+    if(!Array.isArray(names) || typeof options !== 'object') {
+      return;
+    }
+
+    names.forEach((name) => {
+      if(typeof name !== 'string') {
+        return;
+      }
+      const valueProps = name.match(PROPS_REGEX) || [];
+      valueProps.forEach((pK) => {
+        if(options.valueProps) {
+          options.valueProps[pK.substr(2, pK.length - 3)] = true;
+        }
+      });
+    })
+    
+  }
+
+  getDefaultOptions(rootStyleKey, extra) {
+    return {
+      rootStyleKey,
+      valueProps: {},
+      ...extra
+    };
   }
 
   // ======================================================
   // Apply the styles
   // ======================================================
-  addStylesToTarget(index, styleKey, styleValue, target) {
-    if(!target) {
-      target = this.styleArray;
+  addStylesToTarget(index, styleKey, styleValue, options) {
+    let { attachToTarget, valueProps, rootStyleKey } = options;
+    if(!attachToTarget) {
+      attachToTarget = this.styleArray;
     }
-    if(Array.isArray(target)) {
+
+    if(Array.isArray(attachToTarget)) {
       const addObject = {
         styleKey,
         styleValue,
+        rootStyleKey,
+        valueProps,
       };
       if(typeof index !== 'number') {
-        target.push(addObject);
+        attachToTarget.push(addObject);
       } else {
-        target.splice(index, 0, addObject);
+        attachToTarget.splice(index, 0, addObject);
       }
-    } else if(typeof target === 'object') {
+    } else if(typeof attachToTarget === 'object') {
       if(index) {
-        target[index] = styleValue;
+        attachToTarget[index] = styleValue;
       } else {
-        target = Object.assign(target, styleValue);
+        attachToTarget = Object.assign(attachToTarget, styleValue);
       }
     }
-
   }
 
   traverseStyleObject(styleKey, iterateObject, options) {
-    options = options || {};
     const mutatedObject = Object.assign({}, iterateObject);
 
     Object.entries(iterateObject).forEach(([key]) => {
       const val = mutatedObject[key];
+      this.addProps(options, key);
+      this.addProps(options, val);
+      // ignore mixins.
       if(key.startsWith('_')) {
-        // Ignore mixins. We parse them in the printer.js
         return;
       }
 
-      if(typeof val === 'string' || typeof val === 'number') {
-      }
-
       if(typeof val === 'object') {
+        
         if(!options.keepDeep) {
           delete mutatedObject[key];
         }
+
         if(key.startsWith('@')) {
           if(key.startsWith('@keyframes') ) {
-            this.createStyleObject(key, val, { keepDeep: true, target: this.keyframes });
+            this.createStyleObject(key, val, { keepDeep: true, attachToTarget: this.keyframes });
           } else if(key.startsWith('@media')){
-            this.createStyleObject(key, val, Object.assign({}, options, { rootTarget: val, }));
+            this.createStyleObject(key, val, Object.assign({}, options, {
+              rootTarget: val
+            }));
+          } else {
+            console.warn(`unhandled @ selector: ${key}. Value: `, val);
           }
         } else {
-          const allKeys = this.getAllKeysFromRoot(options.rootStyleKey, key);
-          allKeys.forEach((parsedKey) => {
-            if(options.keepDeep || options.rootTarget) {
-              mutatedObject[parsedKey] = this.traverseStyleObject(parsedKey, val, options);
-            } else {
-              this.createStyleObject(parsedKey, val, options);
-            }
-          });
+          if(options.keepDeep || options.rootTarget) {
+            mutatedObject[key] = this.traverseStyleObject(key, val, options);
+          } else {
+            this.createStyleObject(key, val, options);
+          }
         }
       }
     });
@@ -120,58 +109,42 @@ export default class Parser {
 
   createStyleObject(styleKey, styleValue, options) {
     const indexToInsertFrom = this.styleArray.length;
-
     styleValue = this.traverseStyleObject(styleKey, styleValue, options);
 
     if(Object.keys(styleValue).length) {
-      this.addStylesToTarget(indexToInsertFrom, styleKey, styleValue, options && options.target);
+      this.addStylesToTarget(indexToInsertFrom, styleKey, styleValue, options);
     }
   }
 
-  _preRun(props) {
-    this.styleArray = [];
-    this.keyframes = [];
-    this.media = [];
-
-    this.props = props;
-  }
-
-  _returnRun() {
-    return {
-      styleArray: this.styleArray.concat(this.keyframes),
-      keyProps: this.keyProps,
-      valueProps: this.valueProps,
-    };
-  }
-
   runGlobals(globals) {
-    this._preRun();
-
     globals.forEach((gObj) => {
       Object.entries(gObj).forEach(([key, val]) => {
         this.createStyleObject(key, val, {
-          keepDeep: true,
+          keepDeep: true
         });
       });
     });
 
-    return this._returnRun();
+    return this.styleArray.concat(this.keyframes);
   }
 
-  run(props) {
-    this._preRun(props);
-
-    Object.entries(this.styles).forEach(([key, val]) => {
-      let root = `.${this.className}`;
+  run(styles, className) {
+    Object.entries(styles).forEach(([key, val]) => {
+      let rootStyleKey = `.${className}`;
+      let addProp;
       if(key !== 'default') {
-        root += `.${this.className}-${key}`;
-        this.keyProps.add(key);
-        this.allProps.add(key);
+        if(key.indexOf('=') > -1) {
+          addProp = key.slice(0, key.indexOf('='));
+          key = key.replace('=', '-');
+        }
+        rootStyleKey = `.${className}.${className}-${key}`;
       }
-      this.createStyleObject(root, val, {
-        rootStyleKey: root,
-      });
+      const options = this.getDefaultOptions(rootStyleKey);
+      if(addProp) {
+        options.valueProps[addProp] = true;
+      }
+      this.createStyleObject('&', val, options);
     });
-    return this._returnRun();
+    return this.styleArray.concat(this.keyframes);
   }
 }

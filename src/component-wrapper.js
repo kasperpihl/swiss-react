@@ -1,51 +1,82 @@
 import React, { PureComponent } from 'react';
-import DomHandler from './dom-handler';
+import StyleHandler from './style-handler';
 
 export default function componentWrapper(EL, styles, number) {
 
-  const className = `sw-${number}`;
-  const domHandler = new DomHandler(className, styles);
+  const className = `${EL}-${number}`;
+  const styleHandler = new StyleHandler(className, styles);
+  let totalCounter = 0;
 
   class StyledElement extends PureComponent {
     componentWillMount() {
-      this.refNum = domHandler.subscribe(this.props);
+      this.swissId = `${className}-${++totalCounter}`;
+      this.iterateHandlers(handler => handler.subscribe(this.swissId, this.props));
     }
     componentWillUnmount() {
-      domHandler.unsubscribe(this.refNum, this.props);
+      this.iterateHandlers(handler => handler.unsubscribe(this.swissId, this.props));
     }
     componentWillReceiveProps(nextProps) {
-      domHandler.update(this.refNum, nextProps, this.props);
+      this.iterateHandlers(handler => handler.update(this.swissId, nextProps, this.props));
+    }
+    iterateHandlers(iterator) {
+      let { expand } = this.props;
+      iterator(styleHandler);
+      if(expand) {
+        if(!Array.isArray(expand)) {
+          expand = [ expand ];
+        }
+        expand.forEach((exClass) => {
+          if(typeof exClass === 'function' && typeof exClass._getStyleHandler === 'function') {
+            iterator(exClass._getStyleHandler());
+          }
+        })
+      }
     }
     render() {
-      const { keyProps, valueProps, allProps } = domHandler.getVariables();
-      let computedClassName = className;
-      keyProps.forEach(vari => {
-        if(this.props[vari]) {
-          computedClassName += ` ${className}-${vari}`;
-        }
-      });
-      valueProps.forEach(vari => {
-        if(this.props[vari]) {
-          computedClassName += ` ${className}-${vari}-${this.props[vari]}`;
-        }
-      });
+      let computedClassName = `${this.swissId}`;
+      
+      const allHandledProps = new Set(['className', 'swiss', 'expand']);
 
-      const newProps = {};
-      Object.entries(this.props).forEach(([name, value]) => {
-        if(name !== 'className' && allProps.indexOf(name) === -1) {
-          newProps[name] = value;
-        }
+      this.iterateHandlers((handler) => {
+        const dClassName = handler.getClassName();
+        computedClassName += ` ${dClassName}`;
+
+        const handledProps = handler.getHandledProps();
+        Object.entries(this.props).forEach(([propName, propValue]) => {
+          if(handledProps.keys[propName]) {
+            computedClassName += ` ${dClassName}-${propName}`;
+          }
+          if(handledProps.values[propName]) {
+            computedClassName += ` ${dClassName}-${propName}-${propValue}`;
+          }
+          if(handledProps.all.indexOf(propName) > -1) {
+            allHandledProps.add(propName);
+          }
+        })
       })
 
-      return <EL id={`${className}-${this.refNum}`} className={computedClassName} {...newProps}>{this.props.children}</EL>;
+
+      const newProps = {};
+      Object.entries(this.props).forEach(([propName, propValue]) => {
+        if(!allHandledProps.has(propName)) {
+          newProps[propName] = propValue;
+        }
+      })
+      
+     
+
+      return <EL id={this.swissId} className={computedClassName} {...newProps}>{this.props.children}</EL>;
     }
   }
   
   StyledElement.ref = `.${className}`;
   
   StyledElement._swissServerReset = () => {
-    domHandler.reset();
+    totalCounter = 0;
+    styleHandler.reset();
   }
+
+  StyledElement._getStyleHandler = () => styleHandler;
 
   return StyledElement;
 }

@@ -1,35 +1,18 @@
 import Parser from './parser';
-import printer from './printer';
+import CSSPrinter from './css-printer';
+import DomHandler from './dom-handler';
 
 let globals = [];
-let _domEl;
-let _childEl;
+const _domEl = new DomHandler('globals');
+_domEl.add();
 let _timer;
-
-if(typeof document !== 'undefined') {
-  _domEl = document.createElement('style');
-  _domEl.type = 'text/css';
-  _domEl.className = 'swiss-style';
-  _domEl.id = `swiss-style-globals`;
-  document.head.appendChild(_domEl);
-}
 
 function renderGlobals() {
   const parser = new Parser();
-  const { styleArray } = parser.runGlobals(globals);
+  const styleArray = parser.runGlobals(globals);
+  const cssPrinter = new CSSPrinter(styleArray);
 
-  if(typeof document === 'undefined') {
-    return;
-  }
-  const printedCss = printer(styleArray);
-  const newChildEl = document.createTextNode(printedCss);
-
-  if(_childEl) {
-    _domEl.replaceChild(newChildEl, _childEl);
-  } else {
-    _domEl.appendChild(newChildEl);
-  }
-  _childEl = newChildEl;
+  _domEl.update(cssPrinter.print(false));
 }
 
 export function addGlobals(...globalsObj) {

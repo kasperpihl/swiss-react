@@ -1,9 +1,9 @@
 export { default as default } from './swiss';
 
-export { addVariables } from './variables';
+export { addVariables } from './utils/variables';
 
-export { addMixin } from './mixins';
+export { addMixin } from './utils/mixins';
 
 export { addGlobals } from './globals';
 
-export { addPlugin } from './plugins';
+export { addPlugin } from './utils/plugins';
