@@ -2,7 +2,7 @@ import { parseVariables } from './utils/variables';
 import { parseMixins } from './utils/mixins';
 import { runPlugin } from './utils/plugins';
 
-const VARREGEX = /#{(.*?)}/gi;
+const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
 
 export default class CSSPrinter {
   constructor(styleArray) {
@@ -10,11 +10,12 @@ export default class CSSPrinter {
     this.swissObjects = {};
   }
   parseProps(props, value) {
-    if(!props){ 
-      return value;
-    }
-    return value.replace(VARREGEX, (v1, propName) => props[propName] || '');
+    props = props || {};
+    return value.replace(PROPS_REGEX, (v1, propName, defaultValue) => {
+      return props[propName] || defaultValue || '';
+    })
   }
+
   parseKeyValue(styleKey, styleValue, props) {
     // Here we add support for camel case.
     styleKey = styleKey.replace(/([A-Z])/g, g => '-' + g[0].toLowerCase());
@@ -113,7 +114,7 @@ export default class CSSPrinter {
 
         if(dynamic) {
           propsEntries.forEach(([swissId, cProps]) => {
-            const hasMatchingProps = !!valueKeys.filter(vK => typeof cProps[vK] !== 'undefined').length;
+            const hasMatchingProps = true ;//!!valueKeys.filter(vK => typeof cProps[vK] !== 'undefined').length;
             if(!valueKeys.length || hasMatchingProps){
               let rawCss = this.recursiveParseStyleObject(styleKey, styleValue, 0, cProps, `.${swissId}${rootStyleKey}`);
               runPlugin('parseRawCss', (handler) => {

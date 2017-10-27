@@ -1,4 +1,4 @@
-const PROPS_REGEX = /#{(.*?)}/gi;
+const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
 
 export default class Parser {
   constructor() {
@@ -21,8 +21,12 @@ export default class Parser {
       }
       const valueProps = name.match(PROPS_REGEX) || [];
       valueProps.forEach((pK) => {
+        let value = pK.substr(2, pK.length - 3);
+        if(value.indexOf('=') > -1) {
+          value = value.slice(0, value.indexOf('='));
+        }
         if(options.valueProps) {
-          options.valueProps[pK.substr(2, pK.length - 3)] = true;
+          options.valueProps[value] = true;
         }
       });
     })
