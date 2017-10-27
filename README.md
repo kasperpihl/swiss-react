@@ -22,7 +22,7 @@ var addPlugin = require('react-swiss').addPlugin;
 The UMD build is also available on [unpkg](https://unpkg.com):
 
 ```html
-<script src="https://unpkg.com/react-swiss/dist/umd/react-swiss.min.js"></script>
+<script src="https://unpkg.com/react-swiss/dist/umd/swiss.min.js"></script>
 ```
 
 You can find the library on `window.Swiss`.
