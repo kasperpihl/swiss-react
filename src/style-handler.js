@@ -1,5 +1,6 @@
 import Parser from './parser';
-import CSSPrinter from './css-printer';
+import Parser2 from './parse-components';
+import CSSPrinter from './utils/css-printer';
 import DomHandler from './utils/dom-handler';
 
 export default class StyleHandler {
@@ -15,7 +16,7 @@ export default class StyleHandler {
     return this.className;
   }
   getHandledProps(){ 
-    return this.handledPropKeys;
+    return this.handledPropKeys || [];
   }
   subscribe(swissId, props) {
     this._incrementRef();
@@ -31,47 +32,24 @@ export default class StyleHandler {
   reset() {
     this._refCounter = 0;
     this.runningPropValues = {};
-    this.handledPropKeys = {
-      all: [],
-      keys: {},
-      values: {},
-    };
-
   }
   _generateStyleArrayAndPropsObject() {
     if (this.styleArray) {
       return;
     }
-    const parser = new Parser();
-    const all = new Set();
-    const styleArray = parser.run(this.styles, this.className);
-    this.cssPrinter = new CSSPrinter(styleArray);
 
-    styleArray.forEach(({ valueProps }) => {
-      if(valueProps) {
-        Object.keys(valueProps).forEach((vP) => { 
-          this.handledPropKeys.values[vP] = true; 
-          all.add(vP);
-        });
-      }
-    });
+    const parser2 = new Parser2()
+    const { allProps, styleArray } = parser2.run(this.styles.default, `.${this.className}`);
+    this.cssPrinter = new CSSPrinter(styleArray, allProps);
 
-    Object.entries(this.styles).forEach(([key, val]) => {
-      if (key !== 'default' && key.indexOf('=') > -1) {
-        this.handledPropKeys.values[key.slice(0, key.indexOf('='))] = true;
-        all.add(key.slice(0, key.indexOf('=')));
-      } else if (key !== 'default') {
-        this.handledPropKeys.keys[key] = true;
-        all.add(key);
-      }
-    });
-    this.handledPropKeys.all = [...all];
+    this.handledProps = allProps;
+    this.styleArray = styleArray;
   }
   _checkPropsAndUpdateDOM(swissId, props, oldProps) {
     oldProps = oldProps || {};
     let needUpdate = false;
 
-    this.handledPropKeys.all.concat('swiss').forEach((propKey) => {
+    this.handledProps.concat('swiss').forEach((propKey) => {
       if(oldProps[propKey] !== props[propKey]) {
         if(typeof props[propKey] === 'undefined') {
           delete this.runningPropValues[swissId][propKey];
@@ -95,8 +73,8 @@ export default class StyleHandler {
     }
   }
   _updateDomElement() {
-    const dynamic = this.handledPropKeys.all.length;
-    this._domEl.update(this.cssPrinter.print(dynamic, this.runningPropValues));
+    const dynamic = this.handledProps.length;
+    this._domEl.update(this.cssPrinter.print(this.runningPropValues));
   }
   _incrementRef() {
     this._refCounter++;

@@ -12,18 +12,59 @@ Format: {
 export default class Parser {
   constructor() {
     this.styleArray = [];
+    this.allProps = [];
+  }
+
+  checkAndAddProps(options, names) {
+    if(!Array.isArray(names)) {
+      names = [ names ];
+    }
+
+    names.forEach((name) => {
+      if(typeof name !== 'string') {
+        return;
+      }
+      const valueProps = name.match(PROPS_REGEX) || [];
+      valueProps.forEach((pK) => {
+        let propName = pK.substr(2, pK.length - 3);
+        if(propName.indexOf('=') > -1) {
+          propName = propName.slice(0, propName.indexOf('='));
+        }
+        this.addProp(options, propName);
+      });
+    })
+  }
+  addProp(options, name) {
+    if(!options.props) {
+      options.props = [];
+    }
+    if(options.props.indexOf(name) === -1) {
+      options.props.push(name);
+    }
+    if(this.allProps.indexOf(name) === -1) {
+      this.allProps.push(name);
+    }
   }
 
   newOptionsForKey(options, key) {
     const returnObj = {
       selectors: Array.from(options.selectors || []),
-      selector: key || '&',
+      selector: key,
+      globals: options.globals || false,
     };
-    if(key && (key.indexOf('&') > -1)) {
-      
-    } else if(key) {
+
+    if(key.startsWith('@')) {
+      if(key.startsWith('@keyframes')) {
+        return { globals: true };
+      }
       returnObj.selector = '&';
+    } else if(key.indexOf('&') > -1) {
+      this.checkAndAddProps(returnObj, key);
+    } else if(!options.globals) {
       // selector is a prop!
+      returnObj.selector = '&';
+
+      this.addProp(returnObj, key);
       const newSelector = `${this.className}-${key}`;
       if(returnObj.selectors.indexOf(newSelector) === -1){
         returnObj.selectors.push(newSelector);
@@ -35,12 +76,15 @@ export default class Parser {
   iterateStyleObject(styles, options, targetArray) {
     const mutatedStyles = Object.assign({}, styles);
     Object.keys(styles).forEach((key) => {
+      const val = mutatedStyles[key];
       // ignore mixins. we parse them later
+      this.checkAndAddProps(options, val);
+
       if(key.startsWith('_')) {
         return;
       }
 
-      const val = mutatedStyles[key];
+      
       if(typeof val === 'object') {
         delete mutatedStyles[key];
         if(key.startsWith('@')) {
@@ -75,7 +119,7 @@ export default class Parser {
       styles: [],
     };
 
-    this.addStyleObject(styles, this.newOptionsForKey(options), actualStyles.styles);
+    this.addStyleObject(styles, this.newOptionsForKey(options, key), actualStyles.styles);
     if(actualStyles.styles.length) {
       this.styleArray.push(actualStyles);
     }
@@ -86,8 +130,11 @@ export default class Parser {
     this.addStyleObject(styles, {
       selector: '&',
       selectors: className && [className] || [],
-    })
+    });
 
-    return this.styleArray;
+    return {
+      styleArray: this.styleArray,
+      allProps: this.allProps,
+    };
   }
 }
