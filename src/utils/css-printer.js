@@ -87,7 +87,7 @@ export default class CSSPrinter {
     if(selector.indexOf('&') > -1 && selectors) {
       selector = selector.replace(/&/gi, selectors.join(''));
     }
-    console.log(selector);
+
     selector = this.parseProps(props, selector);
     let rawCss = `${indentString(depth)}${selector} {\r\n`;
     rawCss += runPlugin(
@@ -108,9 +108,14 @@ export default class CSSPrinter {
       // Handle dynamic components
       if(this.allProps.length || conditions.length) {
         this.propsEntries.forEach(([swissId, cProps]) => {
-          const metConditions = !conditions.filter(([key, value]) => cProps[key] !== value).length;
+          const metConditions = !conditions.filter(([key, value]) => {
+            if(value === true) {
+              return !cProps[key];
+            } else {
+              return ( cProps[key] !== value );
+            }
+          }).length;
           if(!metConditions) {
-            console.log('no meet', swissId);
             return delete styleObj.rawCss.byId[swissId];
           }
           styleObj.rawCss.byId[swissId] = this.getRawCss(styleObj, depth, cProps, `.${swissId}`);
@@ -140,7 +145,6 @@ export default class CSSPrinter {
     this.changes = changes;
     this.printStyleArray(this.styleArray, 0);
     this.iterateSwissObjects(this.propsEntries);
-    console.log(this.styleArray);
     return this.getPrintedCSS(this.styleArray, 0);
   }
 }

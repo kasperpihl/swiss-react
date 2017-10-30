@@ -12,7 +12,7 @@ Format: {
 export default class Parser {
   constructor() {}
 
-  checkAndAddProps(options, names) {
+  checkAndAddProps(options, names, isKey) {
     if(!Array.isArray(names)) {
       names = [ names ];
     }
@@ -28,6 +28,9 @@ export default class Parser {
           propName = propName.slice(0, propName.indexOf('='));
         }
         this.addProp(options, propName);
+        if(isKey) {
+          options.conditions[propName] = true;
+        }
       });
     })
   }
@@ -57,7 +60,7 @@ export default class Parser {
       }
       returnObj.selector = '&';
     } else if(key.indexOf('&') > -1) {
-      this.checkAndAddProps(returnObj, key);
+      this.checkAndAddProps(returnObj, key, true);
     } else if(!options.globals) {
       // selector is a prop!
       returnObj.selector = '&';
