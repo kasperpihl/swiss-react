@@ -43,14 +43,11 @@ export default function componentWrapper(EL, styles, number) {
 
         const handledProps = handler.getHandledProps();
         Object.entries(this.props).forEach(([propName, propValue]) => {
-          if(handledProps.keys[propName] && this.props[propName]) {
-            computedClassName += ` ${dClassName}-${propName}`;
-          }
-          if(handledProps.values[propName]) {
-            computedClassName += ` ${dClassName}-${propName}-${propValue}`;
-          }
-          if(handledProps.all.indexOf(propName) > -1) {
+          if(handledProps.indexOf(propName) > -1) {
             allHandledProps.add(propName);
+            if(this.props[propName]) {
+              computedClassName += ` ${dClassName}-${propName}`;
+            }
           }
         })
       })

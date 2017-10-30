@@ -30,6 +30,14 @@ export function runPlugin(name, iterator) {
     return;
   }
   plugins[name].forEach((handler) => {
-    iterator(handler);
+    if(typeof iterator === 'function') {
+      iterator(handler);
+    } else {
+      iterator = handler(iterator);
+    }
   })
+
+  if(typeof iterator !== 'function') {
+    return iterator;
+  }
 }

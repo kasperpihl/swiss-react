@@ -1,6 +1,7 @@
 import { parseVariables } from './variables';
 import { parseMixins } from './mixins';
 import { runPlugin } from './plugins';
+import indentString from './indentString';
 
 const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
 
@@ -31,12 +32,9 @@ export default class CSSPrinter {
     styleValue = parseVariables('' + styleValue);
 
     
-    runPlugin('parseKey', (handler) => {
-      styleKey = handler(styleKey);
-    });
-    runPlugin('parseValue', (handler) => {
-      styleValue = handler(styleValue);
-    });
+    styleKey = runPlugin('parseKey', styleKey);
+
+    runPlugin('parseValue', styleValue);
     runPlugin('parseKeyValue', (handler) => {
       const { key, value } = handler({ key: styleKey, value: styleValue });
       styleKey = key;
@@ -146,24 +144,50 @@ export default class CSSPrinter {
     })
   }
 
+  printCSSKeyValues(styles, depth, props) {
+    let string = '';
+    styles = parseMixins(styles);
+    Object.entries(styles).forEach(([selector, styleValue]) => {
+
+      const { key, value } = this.parseKeyValue(selector, styleValue, props);
+      string += `${indentString(depth)}${key}: ${value};\r\n`;
+    });
+    return string;
+  }
   printStyleArray(styleArray, depth) {
     styleArray.forEach((styleObj) => {
-      if(Array.isArray(styles)) {
-        printStyleArray(styles, depth + 1);
-      } else {
-
+      if(Array.isArray(styleObj.styles)) {
+        if(!styleObj.beforeRawCss) {
+          styleObj.beforeRawCss = `${indentString(depth)}${styleObj.selector} {\r\n`;
+          styleObj.afterRawCss = `${indentString(depth)}}`;
+        }
+        return this.printStyleArray(styleObj.styles, depth + 1);
       }
-      console.log(selector, styles);
+      if(styleObj.props && styleObj.props.length) {
+        styleObj.rawCss = styleObj.rawCss || { byId: {} };
+        this.propsEntries.forEach(([swissId, cProps]) => {
+          const hasMatching = styleObj.props.filter(vK => typeof cProps[vK] !== 'undefined').length;
+          if (hasMatching) {
+            console.log(this.printCSSKeyValues(styleObj.styles, depth + 1, cProps));
+            styleObj.rawCss.byId[swissId] = runPlugin(
+              'parseRawCss', 
+              this.printCSSKeyValues(styleObj.styles, depth + 1, cProps)
+            );
+          }
+        });
+      }
+      
+      // styleObj.rawCss = this.printCSSKeyValues(styleObj, depth + 1);
     })
   }
 
 
   print(props, changes) {
-    this.props = props;
+    this.propsEntries = Object.entries(props || {});
     this.changes = changes;
     this.printStyleArray(this.styleArray, 0);
     return;
-    const propsEntries = Object.entries(props || {});
+    
 
     this.iterateStyleArray(dynamic, propsEntries, changes);
     this.iterateSwissObjects(propsEntries);

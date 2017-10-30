@@ -16,7 +16,7 @@ export default class StyleHandler {
     return this.className;
   }
   getHandledProps(){ 
-    return this.handledPropKeys || [];
+    return this.handledProps || [];
   }
   subscribe(swissId, props) {
     this._incrementRef();
