@@ -51,6 +51,7 @@ export default class Parser {
       selectors: Array.from(options.selectors || []),
       selector: key,
       globals: options.globals || false,
+      conditions: Object.assign({}, options.conditions),
     };
 
     if(key.startsWith('@')) {
@@ -63,7 +64,11 @@ export default class Parser {
     } else if(!options.globals) {
       // selector is a prop!
       returnObj.selector = '&';
-
+      if(key.indexOf('=') > -1) {
+        const realKey = key.slice(0, key.indexOf('='));
+        returnObj.conditions[realKey] = key.slice(key.indexOf('=') + 1);
+        key = realKey;
+      }
       this.addProp(returnObj, key);
       const newSelector = `${this.className}-${key}`;
       if(returnObj.selectors.indexOf(newSelector) === -1){
@@ -107,8 +112,6 @@ export default class Parser {
     
     if(Object.keys(styles).length) {
       options.styles = styles;
-      options.selector = options.selector.replace(/&/gi, options.selectors.join(''));
-      delete options.selectors;
       targetArray.splice(index, 0, options);
     }
   }

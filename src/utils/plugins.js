@@ -27,17 +27,16 @@ export function runPlugin(name, iterator) {
     console.warn(`swiss runPlugin: unknown plugin ${name}`)
   }
   if(!plugins[name]) {
-    return;
+    return iterator;
   }
   plugins[name].forEach((handler) => {
     if(typeof iterator === 'function') {
       iterator(handler);
     } else {
+      console.log(handler);
       iterator = handler(iterator);
     }
   })
 
-  if(typeof iterator !== 'function') {
-    return iterator;
-  }
+  return iterator;
 }
