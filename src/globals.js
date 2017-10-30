@@ -1,5 +1,5 @@
-import Parser from './parser';
-import CSSPrinter from './css-printer';
+import Parser from './parse-components';
+import CSSPrinter from './utils/css-printer';
 import DomHandler from './utils/dom-handler';
 
 let globals = [];
@@ -9,8 +9,12 @@ let _timer;
 
 function renderGlobals() {
   const parser = new Parser();
-  const styleArray = parser.runGlobals(globals);
-  const cssPrinter = new CSSPrinter(styleArray);
+  let styleArray = [];
+  globals.forEach((styles) => {
+    styleArray = styleArray.concat(parser.run(styles).styleArray);
+  });
+
+  const cssPrinter = new CSSPrinter(styleArray, []);
 
   _domEl.update(cssPrinter.print(false));
 }

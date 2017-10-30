@@ -10,10 +10,7 @@ Format: {
 }
 */
 export default class Parser {
-  constructor() {
-    this.styleArray = [];
-    this.allProps = [];
-  }
+  constructor() {}
 
   checkAndAddProps(options, names) {
     if(!Array.isArray(names)) {
@@ -129,10 +126,13 @@ export default class Parser {
   }
 
   run(styles, className) {
+    this.styleArray = [];
+    this.allProps = [];
     this.className = className;
     this.addStyleObject(styles, {
       selector: '&',
       selectors: className && [className] || [],
+      globals: !className
     });
 
     return {

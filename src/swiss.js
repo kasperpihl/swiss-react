@@ -43,12 +43,10 @@ const swiss = (EL, styles) => {
 
 }
 
-swiss.serverReset = () => {
+export default swiss;
+
+export function serverReset() {
   components.forEach((component) => {
     component._swissServerReset();
   });
-};
-
-export default swiss;
-
-
+}

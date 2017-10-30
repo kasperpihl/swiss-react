@@ -1,6 +1,6 @@
 import './polyfills';
 
-export { default as element } from './swiss';
+export { default as element, serverReset } from './swiss';
 
 export { addVariables } from './utils/variables';
 
