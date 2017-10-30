@@ -1,7 +1,6 @@
 import Parser from './parser';
-import Parser2 from './parse-components';
-import CSSPrinter from './utils/css-printer';
-import DomHandler from './utils/dom-handler';
+import CSSPrinter from './css-printer';
+import DomHandler from './utils/DomHandler';
 
 export default class StyleHandler {
   constructor(className, styles) {
@@ -38,8 +37,8 @@ export default class StyleHandler {
       return;
     }
 
-    const parser2 = new Parser2()
-    const { allProps, styleArray } = parser2.run(this.styles.default, `.${this.className}`);
+    const parser = new Parser()
+    const { allProps, styleArray } = parser.run(this.styles, `.${this.className}`);
     this.cssPrinter = new CSSPrinter(styleArray, allProps);
 
     this.handledProps = allProps;

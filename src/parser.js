@@ -1,18 +1,9 @@
 const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
 
 export default class Parser {
-  constructor() {
-    this.styleArray = [];
-    this.keyframes = [];
-  }
-
-  addProps(options, names) {
-    if(typeof names === 'string') {
+  checkAndAddProps(options, names, isKey) {
+    if(!Array.isArray(names)) {
       names = [ names ];
-    }
-
-    if(!Array.isArray(names) || typeof options !== 'object') {
-      return;
     }
 
     names.forEach((name) => {
@@ -21,134 +12,124 @@ export default class Parser {
       }
       const valueProps = name.match(PROPS_REGEX) || [];
       valueProps.forEach((pK) => {
-        let value = pK.substr(2, pK.length - 3);
-        if(value.indexOf('=') > -1) {
-          value = value.slice(0, value.indexOf('='));
+        let propName = pK.substr(2, pK.length - 3);
+        if(propName.indexOf('=') > -1) {
+          propName = propName.slice(0, propName.indexOf('='));
         }
-        if(options.valueProps) {
-          options.valueProps[value] = true;
+        this.addProp(options, propName);
+        if(isKey) {
+          options.conditions[propName] = true;
         }
       });
     })
-    
+  }
+  addProp(options, name) {
+    if(!options.props) {
+      options.props = [];
+    }
+    if(options.props.indexOf(name) === -1) {
+      options.props.push(name);
+    }
+    if(this.allProps.indexOf(name) === -1) {
+      this.allProps.push(name);
+    }
   }
 
-  getDefaultOptions(rootStyleKey, extra) {
-    return {
-      rootStyleKey,
-      valueProps: {},
-      ...extra
+  newOptionsForKey(options, key) {
+    const returnObj = {
+      selectors: Array.from(options.selectors || []),
+      selector: key,
+      globals: options.globals || false,
+      conditions: Object.assign({}, options.conditions),
     };
-  }
 
-  // ======================================================
-  // Apply the styles
-  // ======================================================
-  addStylesToTarget(index, styleKey, styleValue, options) {
-    let { attachToTarget, valueProps, rootStyleKey } = options;
-    if(!attachToTarget) {
-      attachToTarget = this.styleArray;
-    }
-
-    if(Array.isArray(attachToTarget)) {
-      const addObject = {
-        styleKey,
-        styleValue,
-        rootStyleKey,
-        valueProps,
-      };
-      if(typeof index !== 'number') {
-        attachToTarget.push(addObject);
-      } else {
-        attachToTarget.splice(index, 0, addObject);
+    if(key.startsWith('@')) {
+      if(key.startsWith('@keyframes')) {
+        return { globals: true };
       }
-    } else if(typeof attachToTarget === 'object') {
-      if(index) {
-        attachToTarget[index] = styleValue;
-      } else {
-        attachToTarget = Object.assign(attachToTarget, styleValue);
+      returnObj.selector = '&';
+    } else if(key.indexOf('&') > -1) {
+      this.checkAndAddProps(returnObj, key, true);
+    } else if(!options.globals) {
+      // selector is a prop!
+      returnObj.selector = '&';
+      if(key.indexOf('=') > -1) {
+        const realKey = key.slice(0, key.indexOf('='));
+        returnObj.conditions[realKey] = key.slice(key.indexOf('=') + 1);
+        key = realKey;
+      }
+      this.addProp(returnObj, key);
+      const newSelector = `${this.className}-${key}`;
+      if(returnObj.selectors.indexOf(newSelector) === -1){
+        returnObj.selectors.push(newSelector);
       }
     }
+
+    return returnObj;
   }
 
-  traverseStyleObject(styleKey, iterateObject, options) {
-    const mutatedObject = Object.assign({}, iterateObject);
+  iterateStyleObject(styles, options, targetArray) {
+    const mutatedStyles = Object.assign({}, styles);
+    Object.keys(styles).forEach((key) => {
+      const val = mutatedStyles[key];
+      // ignore mixins. we parse them later
+      this.checkAndAddProps(options, val);
 
-    Object.entries(iterateObject).forEach(([key]) => {
-      const val = mutatedObject[key];
-      this.addProps(options, key);
-      this.addProps(options, val);
-      // ignore mixins.
       if(key.startsWith('_')) {
         return;
       }
-
+      
       if(typeof val === 'object') {
-        
-        if(!options.keepDeep) {
-          delete mutatedObject[key];
-        }
-
+        delete mutatedStyles[key];
         if(key.startsWith('@')) {
-          if(key.startsWith('@keyframes') ) {
-            this.createStyleObject(key, val, { keepDeep: true, attachToTarget: this.keyframes });
-          } else if(key.startsWith('@media')){
-            this.createStyleObject(key, val, Object.assign({}, options, {
-              rootTarget: val
-            }));
-          } else {
-            console.warn(`unhandled @ selector: ${key}. Value: `, val);
-          }
+          this.addAtSelectors(key, val, options);
         } else {
-          if(options.keepDeep || options.rootTarget) {
-            mutatedObject[key] = this.traverseStyleObject(key, val, options);
-          } else {
-            this.createStyleObject(key, val, options);
-          }
+          this.addStyleObject(val, this.newOptionsForKey(options, key), targetArray);
         }
       }
     });
-    return mutatedObject;
+
+    return mutatedStyles;
   }
 
-  createStyleObject(styleKey, styleValue, options) {
-    const indexToInsertFrom = this.styleArray.length;
-    styleValue = this.traverseStyleObject(styleKey, styleValue, options);
+  addStyleObject(styles, options, targetArray) {
+    // using target array for deeper styles (like @media, @keyframes)
+    targetArray = targetArray || this.styleArray;
+    const index = targetArray.length;
 
-    if(Object.keys(styleValue).length) {
-      this.addStylesToTarget(indexToInsertFrom, styleKey, styleValue, options);
+    styles = this.iterateStyleObject(styles, options, targetArray);
+    
+    if(Object.keys(styles).length) {
+      options.styles = styles;
+      targetArray.splice(index, 0, options);
     }
   }
 
-  runGlobals(globals) {
-    globals.forEach((gObj) => {
-      Object.entries(gObj).forEach(([key, val]) => {
-        this.createStyleObject(key, val, {
-          keepDeep: true
-        });
-      });
-    });
+  addAtSelectors(key, styles, options) {
+    const actualStyles = {
+      selector: key,
+      styles: [],
+    };
 
-    return this.styleArray.concat(this.keyframes);
+    this.addStyleObject(styles, this.newOptionsForKey(options, key), actualStyles.styles);
+    if(actualStyles.styles.length) {
+      this.styleArray.push(actualStyles);
+    }
   }
 
   run(styles, className) {
-    Object.entries(styles).forEach(([key, val]) => {
-      let rootStyleKey = `.${className}`;
-      let addProp;
-      if(key !== 'default') {
-        if(key.indexOf('=') > -1) {
-          addProp = key.slice(0, key.indexOf('='));
-          key = key.replace('=', '-');
-        }
-        rootStyleKey = `.${className}.${className}-${key}`;
-      }
-      const options = this.getDefaultOptions(rootStyleKey);
-      if(addProp) {
-        options.valueProps[addProp] = true;
-      }
-      this.createStyleObject('&', val, options);
+    this.styleArray = [];
+    this.allProps = [];
+    this.className = className;
+    this.addStyleObject(styles, {
+      selector: '&',
+      selectors: className && [className] || [],
+      globals: !className
     });
-    return this.styleArray.concat(this.keyframes);
+
+    return {
+      styleArray: this.styleArray,
+      allProps: this.allProps,
+    };
   }
 }
