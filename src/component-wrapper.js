@@ -1,33 +1,42 @@
 import React from 'react';
-import StyleHandler from './style-handler';
+import isSwissElement from './utils/isSwissElement';
+import { object } from 'prop-types';
+import randomString from './utils/randomString';
+import arrayAddUnique from './utils/arrayAddUnique';
+import { addStylesForUniqueId } from './style-tracker';
 
-export default function componentWrapper(EL, styles, number) {
-
-  const className = `${EL}-${number}`;
-  const styleHandler = new StyleHandler(className, styles);
-  let totalCounter = 0;
+export default function componentWrapper(EL, styles, defaultSwissController) {
+  const uniqueString = randomString(8);
+  addStylesForUniqueId(uniqueString, EL, styles);
 
   class StyledElement extends React.PureComponent {
     componentWillMount() {
-      this.swissId = `${className}-${++totalCounter}`;
-      this.iterateHandlers(handler => handler.subscribe(this.swissId, this.props));
+      const swissController = this.getSwissController();
+      this.swissId = swissController.getSwissId(uniqueString);
+      this.iterateHandlers(h => h.subscribe(this.swissId, this.props));
     }
     componentWillUnmount() {
-      this.iterateHandlers(handler => handler.unsubscribe(this.swissId, this.props));
+      this.iterateHandlers(h => h.unsubscribe(this.swissId, this.props));
     }
     componentWillReceiveProps(nextProps) {
-      this.iterateHandlers(handler => handler.update(this.swissId, nextProps, this.props));
+      this.iterateHandlers(h => h.update(this.swissId, nextProps, this.props));
+    }
+    getSwissController() {
+      const { swissController } = this.context;
+      return swissController || defaultSwissController;
     }
     iterateHandlers(iterator) {
+      const swissController = this.getSwissController();
       let { expand } = this.props;
-      iterator(styleHandler);
+      iterator(swissController.getStyleHandler(uniqueString));
+
       if(expand) {
         if(!Array.isArray(expand)) {
           expand = [ expand ];
         }
         expand.forEach((exClass) => {
-          if(typeof exClass === 'function' && typeof exClass._getStyleHandler === 'function') {
-            iterator(exClass._getStyleHandler());
+          if(isSwissElement(exClass)) {
+            iterator(swissController.getStyleHandler(exClass.swissUniqueString));
           }
         })
       }
@@ -35,7 +44,7 @@ export default function componentWrapper(EL, styles, number) {
     render() {
       let computedClassName = `${this.swissId}`;
 
-      const allHandledProps = new Set(['className', 'swiss', 'expand']);
+      const allHandledProps = ['className', 'swiss', 'expand'];
 
       this.iterateHandlers((handler) => {
         const dClassName = handler.getClassName();
@@ -43,18 +52,16 @@ export default function componentWrapper(EL, styles, number) {
 
         const handledProps = handler.getHandledProps();
         Object.entries(this.props).forEach(([propName, propValue]) => {
-          if(handledProps.indexOf(propName) > -1) {
-            allHandledProps.add(propName);
-            if(this.props[propName]) {
-              computedClassName += ` ${dClassName}-${propName}`;
-            }
+          arrayAddUnique(allHandledProps, propName);
+          if(handledProps.indexOf(propName) > -1 && this.props[propName]) {
+            computedClassName += ` ${dClassName}-${propName}`;
           }
         })
       })
 
       const newProps = {};
       Object.entries(this.props).forEach(([propName, propValue]) => {
-        if(!allHandledProps.has(propName)) {
+        if(allHandledProps.indexOf(propName) === -1) {
           newProps[propName] = propValue;
         }
       })
@@ -64,15 +71,11 @@ export default function componentWrapper(EL, styles, number) {
       return <EL id={this.swissId} className={computedClassName} {...newProps}>{this.props.children}</EL>;
     }
   }
-  
-  StyledElement.ref = `.${className}`;
-  
-  StyledElement._swissServerReset = () => {
-    totalCounter = 0;
-    styleHandler.reset();
-  }
-
-  StyledElement._getStyleHandler = () => styleHandler;
+  StyledElement.contextTypes = {
+    swissController: object,
+  };
+  StyledElement.swissUniqueString = uniqueString;
+  StyledElement.ref = `__swiss-${uniqueString}`;
 
   return StyledElement;
 }

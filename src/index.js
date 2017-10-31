@@ -1,6 +1,5 @@
 import './polyfills';
-
-export { default as element, serverReset } from './swiss';
+export { default as element } from './element';
 
 export { addVariables } from './utils/variables';
 
@@ -9,3 +8,7 @@ export { addMixin } from './utils/mixins';
 export { addGlobals } from './globals';
 
 export { addPlugin } from './utils/plugins';
+
+export { default as SwissProvider } from './components/SwissProvider';
+
+export { default as SwissController } from './swiss-controller';

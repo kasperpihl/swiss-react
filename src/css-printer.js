@@ -6,15 +6,22 @@ import indentString from './utils/indentString';
 const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
 
 export default class CSSPrinter {
-  constructor(styleArray, allProps) {
+  constructor(styleArray, allProps, swissController) {
     this.styleArray = styleArray;
+    this.swissController = swissController;
     this.allProps = allProps;
     this.swissObjects = {};
   }
   parseProps(props, value) {
     props = props || {};
     return value.replace(PROPS_REGEX, (v1, propName, defaultValue) => {
-      return props[propName] || defaultValue || '';
+      const pVal = props[propName]
+      if(typeof pVal === 'string' && pVal.startsWith('__swiss-')) {
+        const uniqueId = pVal.slice(8);
+        const styleHandler = this.swissController.getStyleHandler(uniqueId);
+        return `.${styleHandler.getClassName()}`;
+      }
+      return pVal || defaultValue || '';
     })
   }
 

@@ -3,8 +3,9 @@ import CSSPrinter from './css-printer';
 import DomHandler from './utils/DomHandler';
 
 export default class StyleHandler {
-  constructor(className, styles) {
+  constructor(className, styles, swissController) {
     this.className = className;
+    this.swissController = swissController;
     this.styles = styles;
 
     this.reset();
@@ -13,6 +14,9 @@ export default class StyleHandler {
   }
   getClassName() {
     return this.className;
+  }
+  getStyles() {
+    return this.styles;
   }
   getHandledProps(){ 
     return this.handledProps || [];
@@ -39,7 +43,7 @@ export default class StyleHandler {
 
     const parser = new Parser()
     const { allProps, styleArray } = parser.run(this.styles, `.${this.className}`);
-    this.cssPrinter = new CSSPrinter(styleArray, allProps);
+    this.cssPrinter = new CSSPrinter(styleArray, allProps, this.swissController);
 
     this.handledProps = allProps;
     this.styleArray = styleArray;

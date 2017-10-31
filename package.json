@@ -15,11 +15,6 @@
     "url": "https://github.com/swipesapp/react-swiss.git"
   },
   "author": "Kasper Pihl Tornoe",
-  "contributors": [
-    {
-      "name": "Krisjan Vool"
-    }
-  ],
   "license": "MIT",
   "keywords": [
     "react",
@@ -51,5 +46,8 @@
   },
   "peerDependencies": {
     "react": ">=15"
+  },
+  "dependencies": {
+    "prop-types": "^15.6.0"
   }
 }
