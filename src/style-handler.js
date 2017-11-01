@@ -27,7 +27,7 @@ export default class StyleHandler {
   subscribe(swissId, props) {
     this._incrementRef();
     this.runningPropValues[swissId] = {};
-    this._checkPropsAndUpdateDOM(swissId, props);
+    this._checkPropsAndUpdateDOM(swissId, props, null, !!this.handledProps.length);
   }
   update(swissId, props, oldProps) {
     this._checkPropsAndUpdateDOM(swissId, props, oldProps);
@@ -51,9 +51,9 @@ export default class StyleHandler {
     this.handledProps = allProps;
     this.styleArray = styleArray;
   }
-  _checkPropsAndUpdateDOM(swissId, props, oldProps) {
+  _checkPropsAndUpdateDOM(swissId, props, oldProps, force) {
     oldProps = oldProps || {};
-    let needUpdate = false;
+    let needUpdate = !!force;
 
     this.handledProps.concat('swiss').forEach((propKey) => {
       if(oldProps[propKey] !== props[propKey]) {
@@ -79,7 +79,6 @@ export default class StyleHandler {
     }
   }
   _updateDomElement() {
-    const dynamic = this.handledProps.length;
     this.domHandler.update(this.cssPrinter.print(this.runningPropValues));
   }
   _incrementRef() {

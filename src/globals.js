@@ -3,8 +3,8 @@ import CSSPrinter from './css-printer';
 import DomHandler from './utils/DomHandler';
 
 let globals = [];
-const _domEl = new DomHandler('globals');
-_domEl.add();
+const _domHandler = new DomHandler('globals');
+_domHandler.add();
 let _timer;
 
 function renderGlobals() {
@@ -16,7 +16,10 @@ function renderGlobals() {
 
   const cssPrinter = new CSSPrinter(styleArray, []);
 
-  _domEl.update(cssPrinter.print(false));
+  _domHandler.update(cssPrinter.print(false));
+}
+export function toString() {
+  return _domHandler.toString();
 }
 
 export function addGlobals(...globalsObj) {

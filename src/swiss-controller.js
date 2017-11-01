@@ -1,5 +1,6 @@
 import StyleHandler from './style-handler';
 import { getStylesForUniqueId } from './style-tracker';
+import { toString } from './globals';
 
 export default class SwissController {
   constructor() {
@@ -16,9 +17,14 @@ export default class SwissController {
     return this.styleHandlers[uniqueString];
   }
   toString() {
+    let string = toString();
     Object.values(this.styleHandlers).forEach((sH) => {
-      console.log(sH.toString());
+      const styleString = sH.toString();
+      if(styleString) {
+        string += `${styleString}\r\n`;
+      }
     })
+    return string;
   }
   _getTypeClassname(el, styles, uniqueString) {
     if(typeof this.typeCounters[el] !== 'number') {
