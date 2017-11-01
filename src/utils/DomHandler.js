@@ -3,9 +3,6 @@
     this.id = `swiss-style-${id}`;
     this.type = 'text/css';
     this.className = 'swiss-style';
-    if(typeof document !== 'undefined') {
-      return;
-    }
   }
   createElement() {
     this._domEl = document.createElement('style');
@@ -13,7 +10,16 @@
     this._domEl.className = this.className;
     this._domEl.id = this.id;
   }
+  toString() {
+    if(!this.isOn) {
+      return null;
+    }
+    let string = `<style type="#{this.type}" id="${this.id}" class="${this.classNami}">\r\n`;
+    string += this._childContent;
+    string += '</style>';
+  }
   update(newChildContent) {
+    this._childContent = newChildContent;
     if(typeof document === 'undefined') {
       return;
     }
@@ -28,6 +34,7 @@
     this._childEl = newChildEl;
   }
   add() {
+    this.isOn = true;
     if(typeof document === 'undefined' || this._domEl) {
       return;
     }
@@ -37,6 +44,7 @@
     document.head.appendChild(this._domEl);
   }
   remove() {
+    this.isOn = false;
     if(typeof document === 'undefined' || !this._domEl) {
       return;
     }

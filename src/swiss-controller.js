@@ -2,10 +2,7 @@ import StyleHandler from './style-handler';
 import { getStylesForUniqueId } from './style-tracker';
 
 export default class SwissController {
-  constructor(server) {
-    if(server) {
-      console.log('server controller');
-    }
+  constructor() {
     this.typeCounters = {};
     this.swissIds = {};
     this.styleHandlers = {};
@@ -17,6 +14,11 @@ export default class SwissController {
       this.styleHandlers[uniqueString] = new StyleHandler(typeClassname, styles, this);
     }
     return this.styleHandlers[uniqueString];
+  }
+  toString() {
+    Object.values(this.styleHandlers).forEach((sH) => {
+      console.log(sH.toString());
+    })
   }
   _getTypeClassname(el, styles, uniqueString) {
     if(typeof this.typeCounters[el] !== 'number') {

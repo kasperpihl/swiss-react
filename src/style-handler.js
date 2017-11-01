@@ -10,7 +10,10 @@ export default class StyleHandler {
 
     this.reset();
     this._updateDomElement = this._updateDomElement.bind(this);
-    this._domEl = new DomHandler(className);
+    this.domHandler = new DomHandler(className);
+  }
+  toString() {
+    return this.domHandler.toString();
   }
   getClassName() {
     return this.className;
@@ -77,20 +80,20 @@ export default class StyleHandler {
   }
   _updateDomElement() {
     const dynamic = this.handledProps.length;
-    this._domEl.update(this.cssPrinter.print(this.runningPropValues));
+    this.domHandler.update(this.cssPrinter.print(this.runningPropValues));
   }
   _incrementRef() {
     this._refCounter++;
     if(this._refCounter === 1) {
       this._generateStyleArrayAndPropsObject();
-      this._domEl.add();
+      this.domHandler.add();
       this._scheduleDOMUpdate();
     }
   }
   _decrementRef() {
     this._refCounter--;
     if(this._refCounter === 0) {
-      this._domEl.remove();
+      this.domHandler.remove();
     }
   }
 }
