@@ -57,7 +57,12 @@ export default class CSSPrinter {
   iterateSwissObjects(propsEntries) {
     propsEntries.forEach(([swissId, cProps]) => {
       if(cProps.swiss) {
-        this.swissObjects[swissId] = this.getRawCss(`#${swissId}`, cProps.swiss, 0, cProps);
+        let rawCss = '';
+        cProps.swiss.forEach((styleObj) => {
+          rawCss += this.getRawCss(styleObj, 0, cProps) + '\r\n';
+        })
+        this.swissObjects[swissId] = rawCss;
+        
       } else if(!cProps.swiss && this.swissObjects[swissId]) {
         delete this.swissObjects[swissId];
       }
@@ -88,7 +93,7 @@ export default class CSSPrinter {
   }
   getRawCss(styleObj, depth, props, extraSelector) {
     let { selector, selectors, styles } = styleObj;
-    if(extraSelector) {
+    if(extraSelector && selectors) {
       selectors = selectors.concat(extraSelector);
     }
     if(selector.indexOf('&') > -1 && selectors) {
@@ -134,6 +139,7 @@ export default class CSSPrinter {
   }
 
   getPrintedCSS(styleArray, depth) {
+    const swissObjects = Object.values(this.swissObjects);
     return styleArray.map(({ selector, styles, rawCss }) => {
 
       let string = '';
@@ -145,7 +151,7 @@ export default class CSSPrinter {
         string += Object.values(rawCss.byId).join('\r\n');
       }
       return string;
-    }).join('\r\n');
+    }).concat(swissObjects).join('\r\n');
   }
   print(props, changes) {
     this.propsEntries = Object.entries(props || {});

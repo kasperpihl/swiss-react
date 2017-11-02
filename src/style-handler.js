@@ -8,7 +8,8 @@ export default class StyleHandler {
     this.swissController = swissController;
     this.styles = styles;
 
-    this.reset();
+    this._refCounter = 0;
+    this.runningPropValues = {};
     this._updateDomElement = this._updateDomElement.bind(this);
     this.domHandler = new DomHandler(className);
   }
@@ -26,7 +27,6 @@ export default class StyleHandler {
   }
   subscribe(swissId, props) {
     this._incrementRef();
-    this.runningPropValues[swissId] = {};
     this._checkPropsAndUpdateDOM(swissId, props, null, !!this.handledProps.length);
   }
   update(swissId, props, oldProps) {
@@ -34,10 +34,7 @@ export default class StyleHandler {
   }
   unsubscribe(swissId) {
     this._decrementRef();
-  }
-  reset() {
-    this._refCounter = 0;
-    this.runningPropValues = {};
+    delete this.runningPropValues[swissId];
   }
   _generateStyleArrayAndPropsObject() {
     if (this.styleArray) {
@@ -54,13 +51,12 @@ export default class StyleHandler {
   _checkPropsAndUpdateDOM(swissId, props, oldProps, force) {
     oldProps = oldProps || {};
     let needUpdate = !!force;
-
+    this.runningPropValues[swissId] = Object.assign({}, props);
     this.handledProps.concat('swiss').forEach((propKey) => {
       if(oldProps[propKey] !== props[propKey]) {
-        if(typeof props[propKey] === 'undefined') {
-          delete this.runningPropValues[swissId][propKey];
-        } else {
-          this.runningPropValues[swissId][propKey] = props[propKey];
+        if(propKey === 'swiss') {
+          const parser = new Parser()
+          this.runningPropValues[swissId].swiss = parser.run(props[propKey], `#${swissId}`).styleArray;
         }
         needUpdate = true;
       }
