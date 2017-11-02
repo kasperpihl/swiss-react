@@ -14,7 +14,7 @@ export default class SwissProvider extends PureComponent {
 }
 
 SwissProvider.childContextTypes = {
-  swissController: object,
+  swissController: PropTypes.object,
 };
 SwissProvider.propTypes = {
   swiss: PropTypes.object,
