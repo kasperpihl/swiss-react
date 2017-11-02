@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { object, element } from 'prop-types';
+import PropTypes from 'prop-types';
 
 export default class SwissProvider extends PureComponent {
   getChildContext() {
@@ -17,6 +17,6 @@ SwissProvider.childContextTypes = {
   swissController: object,
 };
 SwissProvider.propTypes = {
-  swiss: object,
-  children: element,
+  swiss: PropTypes.object,
+  children: PropTypes.element,
 };

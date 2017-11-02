@@ -1,6 +1,6 @@
 import React from 'react';
 import isSwissElement from './utils/isSwissElement';
-import { object } from 'prop-types';
+import PropTypes from 'prop-types';
 import randomString from './utils/randomString';
 import arrayAddUnique from './utils/arrayAddUnique';
 import { addStylesForUniqueId } from './swiss-controller';
@@ -72,7 +72,7 @@ export default function componentWrapper(EL, styles, defaultSwissController) {
     }
   }
   StyledElement.contextTypes = {
-    swissController: object,
+    swissController: PropTypes.object,
   };
   StyledElement.swissUniqueString = uniqueString;
   StyledElement.ref = `__swiss-${uniqueString}`;
