@@ -74,7 +74,7 @@ export default class Parser {
   iterateStyleObject(styles, options, targetArray) {
     const mutatedStyles = Object.assign({}, styles);
     Object.keys(styles).forEach((key) => {
-      const val = mutatedStyles[key];
+      let val = mutatedStyles[key];
       // ignore mixins. we parse them later
       this.checkAndAddProps(options, val);
       if(key.startsWith('@import')) {
@@ -86,14 +86,22 @@ export default class Parser {
       if(key.startsWith('_')) {
         return;
       }
-
+      if(typeof val === 'object' && !Array.isArray(val)) {
+        val = [ val ];
+      }
       if(typeof val === 'object') {
         delete mutatedStyles[key];
-        if(key.startsWith('@') && !key.startsWith('@font-face')) {
-          this.addAtSelectors(key, val, options);
-        } else {
-          this.addStyleObject(val, this.newOptionsForKey(options, key), targetArray);
-        }
+        val.forEach((innerVal) => {
+          if(typeof innerVal !== 'object') {
+            return console.warn('swiss: unsupported value in array. only object is supported');
+          }
+          if(key.startsWith('@') && !key.startsWith('@font-face')) {
+            this.addAtSelectors(key, innerVal, options);
+          } else {
+            this.addStyleObject(innerVal, this.newOptionsForKey(options, key), targetArray);
+          }
+        })
+        
       }
     });
 
