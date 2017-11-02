@@ -3,14 +3,18 @@ import isSwissElement from './utils/isSwissElement';
 import PropTypes from 'prop-types';
 import randomString from './utils/randomString';
 import arrayAddUnique from './utils/arrayAddUnique';
-import { addStylesForUniqueId } from './swiss-controller';
 
 export default function componentWrapper(EL, styles, defaultSwissController) {
   const uniqueString = randomString(8);
-  addStylesForUniqueId(uniqueString, EL, styles);
+  defaultSwissController.addStylesForUniqueId(uniqueString, EL, styles);
 
   class StyledElement extends React.PureComponent {
     componentWillMount() {
+      this.expansions = this.props.expand || [];
+      if(!Array.isArray(this.expansions)) {
+        this.expansions = [ this.expansions ];
+      }
+
       const swissController = this.getSwissController();
       this.swissId = swissController.getSwissId(uniqueString);
       this.iterateHandlers(h => h.subscribe(this.swissId, this.props));
@@ -27,24 +31,21 @@ export default function componentWrapper(EL, styles, defaultSwissController) {
     }
     iterateHandlers(iterator) {
       const swissController = this.getSwissController();
-      let { expand } = this.props;
-      iterator(swissController.getStyleHandler(uniqueString));
 
-      if(expand) {
-        if(!Array.isArray(expand)) {
-          expand = [ expand ];
+      iterator(swissController.getStyleHandler(uniqueString));
+      this.expansions.forEach((exClass) => {
+        if(isSwissElement(exClass)) {
+          iterator(swissController.getStyleHandler(exClass.swissUniqueString));
         }
-        expand.forEach((exClass) => {
-          if(isSwissElement(exClass)) {
-            iterator(swissController.getStyleHandler(exClass.swissUniqueString));
-          }
-        })
-      }
+      })
     }
     render() {
-      let computedClassName = `${this.swissId}`;
+      let computedClassName = this.swissId;
+      if(this.props.className) {
+        computedClassName = `${this.props.className} ${computedClassName}`;
+      }
 
-      const allHandledProps = ['className', 'swiss', 'expand'];
+      const excludePropsToChild = ['className', 'swiss', 'expand'];
 
       this.iterateHandlers((handler) => {
         const dClassName = handler.getClassName();
@@ -52,7 +53,7 @@ export default function componentWrapper(EL, styles, defaultSwissController) {
 
         const handledProps = handler.getHandledProps();
         Object.entries(this.props).forEach(([propName, propValue]) => {
-          arrayAddUnique(allHandledProps, propName);
+          arrayAddUnique(excludePropsToChild, propName);
           if(handledProps.indexOf(propName) > -1 && this.props[propName]) {
             computedClassName += ` ${dClassName}-${propName}`;
           }
@@ -61,7 +62,7 @@ export default function componentWrapper(EL, styles, defaultSwissController) {
 
       const newProps = {};
       Object.entries(this.props).forEach(([propName, propValue]) => {
-        if(allHandledProps.indexOf(propName) === -1) {
+        if(excludePropsToChild.indexOf(propName) === -1) {
           newProps[propName] = propValue;
         }
       })

@@ -15,7 +15,7 @@ const element = (...args) => {
       EL = prop;
     }
     else if(isSwissElement(prop)) {
-      dStyles = prop._getStyleHandler().getStyles();
+      dStyles = swissController.getStylesByUniqueId(prop.swissUniqueString);
     } else if(typeof prop === 'object') {
       dStyles = prop;
     }

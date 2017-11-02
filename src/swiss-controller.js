@@ -3,18 +3,20 @@ import { toString } from './globals';
 
 const stylesById = {};
 
-export function addStylesForUniqueId(uniqueId, el, styles) {
-  stylesById[uniqueId] = {
-    el,
-    styles
-  };
-}
-
 export default class SwissController {
   constructor() {
     this.typeCounters = {};
     this.swissIds = {};
     this.styleHandlers = {};
+  }
+  addStylesForUniqueId(uniqueId, el, styles) {
+    stylesById[uniqueId] = {
+      el,
+      styles
+    };
+  }
+  getStylesByUniqueId(uniqueId) {
+    return stylesById[uniqueId] && stylesById[uniqueId].styles;
   }
   getStyleHandler(uniqueString) {
     if(!this.styleHandlers[uniqueString]) {

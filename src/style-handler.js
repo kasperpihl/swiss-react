@@ -12,6 +12,7 @@ export default class StyleHandler {
     this.runningPropValues = {};
     this._updateDomElement = this._updateDomElement.bind(this);
     this.domHandler = new DomHandler(className);
+    this.domHandler.add();
   }
   toString() {
     return this.domHandler.toString();
@@ -81,7 +82,6 @@ export default class StyleHandler {
     this._refCounter++;
     if(this._refCounter === 1) {
       this._generateStyleArrayAndPropsObject();
-      this.domHandler.add();
       this._scheduleDOMUpdate();
     }
   }

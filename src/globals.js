@@ -4,7 +4,6 @@ import DomHandler from './utils/DomHandler';
 
 let globals = [];
 const _domHandler = new DomHandler('globals');
-_domHandler.add();
 let _timer;
 
 function renderGlobals() {

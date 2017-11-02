@@ -18,6 +18,9 @@
     if(typeof document === 'undefined') {
       return;
     }
+    if(!this._domEl) {
+      this.add();
+    }
 
     const newChildEl = document.createTextNode(newChildContent);
 
@@ -33,6 +36,7 @@
       return;
     }
     this._domEl = document.getElementById(this.id);
+    this._childEl = this._domEl && this._domEl.childNodes.length && this._domEl.childNodes[0];
     if(!this._domEl) {
       this._domEl = document.createElement('style');
       this._domEl.type = this.type;
@@ -40,7 +44,7 @@
       this._domEl.id = this.id;
       document.head.appendChild(this._domEl);
     }
-    this._childEl = this._domEl.childNodes.length && this._domEl.childNodes[0];
+    
   }
   remove() {
     this._childContent = null;
