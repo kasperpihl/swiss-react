@@ -1,6 +1,14 @@
 import StyleHandler from './style-handler';
-import { getStylesForUniqueId } from './style-tracker';
 import { toString } from './globals';
+
+const stylesById = {};
+
+export function addStylesForUniqueId(uniqueId, el, styles) {
+  stylesById[uniqueId] = {
+    el,
+    styles
+  };
+}
 
 export default class SwissController {
   constructor() {
@@ -10,7 +18,7 @@ export default class SwissController {
   }
   getStyleHandler(uniqueString) {
     if(!this.styleHandlers[uniqueString]) {
-      const { el, styles } = getStylesForUniqueId(uniqueString);
+      const { el, styles } = stylesById[uniqueString] || {};
       const typeClassname = this._getTypeClassname(el, styles);
       this.styleHandlers[uniqueString] = new StyleHandler(typeClassname, styles, this);
     }

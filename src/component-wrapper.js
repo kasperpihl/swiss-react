@@ -3,7 +3,7 @@ import isSwissElement from './utils/isSwissElement';
 import { object } from 'prop-types';
 import randomString from './utils/randomString';
 import arrayAddUnique from './utils/arrayAddUnique';
-import { addStylesForUniqueId } from './style-tracker';
+import { addStylesForUniqueId } from './swiss-controller';
 
 export default function componentWrapper(EL, styles, defaultSwissController) {
   const uniqueString = randomString(8);

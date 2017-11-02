@@ -47,7 +47,10 @@ export default class Parser {
       if(key.startsWith('@keyframes')) {
         return { globals: true };
       }
-      returnObj.selector = '&';
+      if(key.startsWith('@media')) {
+        returnObj.selector = '&';
+      }
+     
     } else if(key.indexOf('&') > -1) {
       this.checkAndAddProps(returnObj, key, true);
     } else if(!options.globals) {
@@ -81,7 +84,7 @@ export default class Parser {
       
       if(typeof val === 'object') {
         delete mutatedStyles[key];
-        if(key.startsWith('@')) {
+        if(key.startsWith('@') && !key.startsWith('@font-face')) {
           this.addAtSelectors(key, val, options);
         } else {
           this.addStyleObject(val, this.newOptionsForKey(options, key), targetArray);
