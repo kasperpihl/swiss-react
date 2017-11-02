@@ -11,7 +11,7 @@ const config = {
   input: './src/index',
   external: [ 'react' ],
   globals: {
-    react: 'React'
+    react: 'React',
   },
   name: 'Swiss',
   plugins: [
