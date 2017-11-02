@@ -53,9 +53,11 @@ export default function componentWrapper(EL, styles, defaultSwissController) {
 
         const handledProps = handler.getHandledProps();
         Object.entries(this.props).forEach(([propName, propValue]) => {
-          arrayAddUnique(excludePropsToChild, propName);
-          if(handledProps.indexOf(propName) > -1 && this.props[propName]) {
-            computedClassName += ` ${dClassName}-${propName}`;
+          if(handledProps.indexOf(propName) > -1) {
+            arrayAddUnique(excludePropsToChild, propName);
+            if(this.props[propName]) {
+              computedClassName += ` ${dClassName}-${propName}`;
+            }
           }
         })
       })
@@ -66,8 +68,6 @@ export default function componentWrapper(EL, styles, defaultSwissController) {
           newProps[propName] = propValue;
         }
       })
-      
-     
 
       return <EL id={this.swissId} className={computedClassName} {...newProps}>{this.props.children}</EL>;
     }
