@@ -115,6 +115,11 @@ export default class CSSPrinter {
         return this.printStyleArray(styleObj.styles, depth + 1);
       }
       styleObj.rawCss = styleObj.rawCss || { byId: {} };
+      if(styleObj.pureCss){
+        styleObj.rawCss.byId['global'] = styleObj.pureCss;
+        return;
+      }
+
       const conditions = Object.entries(styleObj.conditions || {});
 
       // Handle dynamic components
@@ -140,8 +145,7 @@ export default class CSSPrinter {
 
   getPrintedCSS(styleArray, depth) {
     const swissObjects = Object.values(this.swissObjects);
-    return styleArray.map(({ selector, styles, rawCss }) => {
-
+    return styleArray.map(({ selector, styles, rawCss, pureCss }) => {
       let string = '';
       if(Array.isArray(styles)) {
         string += `${indentString(depth)}${selector} {\r\n`;

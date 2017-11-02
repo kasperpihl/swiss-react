@@ -77,11 +77,16 @@ export default class Parser {
       const val = mutatedStyles[key];
       // ignore mixins. we parse them later
       this.checkAndAddProps(options, val);
-
+      if(key.startsWith('@import')) {
+        delete mutatedStyles[key];
+        return this.styleArray.push({
+          pureCss: `${key} ${val};`,
+        })
+      }
       if(key.startsWith('_')) {
         return;
       }
-      
+
       if(typeof val === 'object') {
         delete mutatedStyles[key];
         if(key.startsWith('@') && !key.startsWith('@font-face')) {
