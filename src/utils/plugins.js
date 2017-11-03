@@ -33,7 +33,6 @@ export function runPlugin(name, iterator) {
     if(typeof iterator === 'function') {
       iterator(handler);
     } else {
-      console.log(handler);
       iterator = handler(iterator);
     }
   })

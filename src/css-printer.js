@@ -102,11 +102,12 @@ export default class CSSPrinter {
 
     selector = this.parseProps(props, selector);
     let rawCss = `${indentString(depth)}${selector} {\r\n`;
-    rawCss += runPlugin(
+    rawCss += this.printCSSKeyValues(styles, depth + 1, props);
+    rawCss += `${indentString(depth)}}`
+    rawCss = runPlugin(
       'parseRawCss', 
-      this.printCSSKeyValues(styles, depth + 1, props),
+      rawCss,
     );
-    rawCss += `${indentString(depth)}}`;
     return rawCss;
   }
   printStyleArray(styleArray, depth) {
