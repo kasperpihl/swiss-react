@@ -1,3 +1,4 @@
+import { parseVariables } from './utils/variables';
 const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
 
 export default class Parser {
@@ -74,15 +75,20 @@ export default class Parser {
   iterateStyleObject(styles, options, targetArray) {
     const mutatedStyles = Object.assign({}, styles);
     Object.keys(styles).forEach((key) => {
-      let val = mutatedStyles[key];
-      // ignore mixins. we parse them later
+      const indexKey = key;
+      key = parseVariables(key);
+
+      let val = mutatedStyles[indexKey];
       this.checkAndAddProps(options, val);
+
       if(key.startsWith('@import')) {
-        delete mutatedStyles[key];
+        delete mutatedStyles[indexKey];
         return this.styleArray.push({
           pureCss: `${key} ${val};`,
         })
       }
+
+      // ignore mixins. we parse them later
       if(key.startsWith('_')) {
         return;
       }
@@ -90,7 +96,7 @@ export default class Parser {
         val = [ val ];
       }
       if(typeof val === 'object') {
-        delete mutatedStyles[key];
+        delete mutatedStyles[indexKey];
         val.forEach((innerVal) => {
           if(typeof innerVal !== 'object') {
             return console.warn('swiss: unsupported value in array. only object is supported');
