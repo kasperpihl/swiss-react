@@ -70,7 +70,7 @@ export default function componentWrapper(options, defaultSwissController) {
         }
       })
 
-      return <EL id={this.swissId} className={computedClassName} {...newProps}>{this.props.children}</EL>;
+      return <EL ref="node" id={this.swissId} className={computedClassName} {...newProps}>{this.props.children}</EL>;
     }
   }
   StyledElement.contextTypes = {
