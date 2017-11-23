@@ -3,15 +3,16 @@ import CSSPrinter from './css-printer';
 import DomHandler from './utils/DomHandler';
 
 export default class StyleHandler {
-  constructor(className, styles, swissController) {
-    this.className = className;
+  constructor(uniqueId, options, swissController) {
+    
     this.swissController = swissController;
-    this.styles = styles;
+    this.className = options.className;
+    this.styles = options.styles;
 
     this._refCounter = 0;
     this.runningPropValues = {};
     this._updateDomElement = this._updateDomElement.bind(this);
-    this.domHandler = new DomHandler(className);
+    this.domHandler = new DomHandler(uniqueId, options.name);
     this.domHandler.add();
   }
   toString() {

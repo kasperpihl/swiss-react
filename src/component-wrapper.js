@@ -4,9 +4,10 @@ import PropTypes from 'prop-types';
 import randomString from './utils/randomString';
 import arrayAddUnique from './utils/arrayAddUnique';
 
-export default function componentWrapper(EL, styles, defaultSwissController) {
+export default function componentWrapper(options, defaultSwissController) {
   const uniqueString = randomString(8);
-  defaultSwissController.addStylesForUniqueId(uniqueString, EL, styles);
+  const EL = options.element;
+  defaultSwissController.addStylesForUniqueId(uniqueString, options);
 
   class StyledElement extends React.PureComponent {
     componentWillMount() {
