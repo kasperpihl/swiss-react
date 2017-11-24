@@ -1,6 +1,7 @@
 import { parseVariables } from './utils/variables';
 import { parseMixins } from './utils/mixins';
 import { runPlugin } from './utils/plugins';
+import testCondition from './utils/testCondition';
 import indentString from './utils/indentString';
 
 const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
@@ -121,19 +122,15 @@ export default class CSSPrinter {
         return;
       }
 
-      const conditions = Object.entries(styleObj.conditions || {});
+      const conditions = styleObj.conditions || [];
 
       // Handle dynamic components
+
       if(this.allProps.length || conditions.length) {
         this.propsEntries.forEach(([swissId, cProps]) => {
-          const metConditions = !conditions.filter(([key, value]) => {
-            if(value === true) {
-              return !cProps[key];
-            } else {
-              return ( cProps[key] !== value );
-            }
-          }).length;
-          if(!metConditions) {
+          const passed = conditions.filter((c) => testCondition(c, cProps));
+
+          if(passed.length !== conditions.length) {
             return delete styleObj.rawCss.byId[swissId];
           }
           styleObj.rawCss.byId[swissId] = this.getRawCss(styleObj, depth, cProps, `.${swissId}`);

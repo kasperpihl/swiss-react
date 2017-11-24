@@ -12,14 +12,17 @@ export default class Parser {
         return;
       }
       const valueProps = name.match(PROPS_REGEX) || [];
-      valueProps.forEach((pK) => {
+      valueProps.forEach((pK, test) => {
         let propName = pK.substr(2, pK.length - 3);
         if(propName.indexOf('=') > -1) {
           propName = propName.slice(0, propName.indexOf('='));
         }
         this.addProp(options, propName);
         if(isKey) {
-          options.conditions[propName] = true;
+          options.conditions = options.conditions.concat({
+            key: propName,
+            operator: 'hasValue'
+          });
         }
       });
     })
@@ -41,7 +44,7 @@ export default class Parser {
       selectors: Array.from(options.selectors || []),
       selector: key,
       globals: options.globals || false,
-      conditions: Object.assign({}, options.conditions),
+      conditions: options.conditions || [],
     };
 
     if(key.startsWith('@')) {
@@ -57,11 +60,21 @@ export default class Parser {
     } else if(!options.globals) {
       // selector is a prop!
       returnObj.selector = '&';
-      if(key.indexOf('=') > -1) {
-        const realKey = key.slice(0, key.indexOf('='));
-        returnObj.conditions[realKey] = key.slice(key.indexOf('=') + 1);
-        key = realKey;
-      }
+      const operators = ['>=', '<=', '!=', '=', '>', '<'];
+      let foundCondition = false;
+      operators.forEach((operator) => {
+        if(!foundCondition && key.indexOf(operator) > -1) {
+          const realKey = key.slice(0, key.indexOf(operator));
+          returnObj.conditions = returnObj.conditions.concat({
+            key: realKey,
+            value: key.slice(key.indexOf(operator) + operator.length),
+            operator,
+          });
+          foundCondition = true;
+          key = realKey;
+        }
+      })
+      
       this.addProp(returnObj, key);
       const newSelector = `${this.className}-${key}`;
       if(returnObj.selectors.indexOf(newSelector) === -1){

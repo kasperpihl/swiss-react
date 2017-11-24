@@ -61,9 +61,7 @@ export default function componentWrapper(options, defaultSwissController) {
         Object.entries(this.props).forEach(([propName, propValue]) => {
           if(handledProps.indexOf(propName) > -1) {
             arrayAddUnique(excludePropsToChild, propName);
-            if(this.props[propName]) {
-              computedClassName += ` ${dClassName}-${propName}`;
-            }
+            computedClassName += ` ${dClassName}-${propName}`;
           }
         })
       })
