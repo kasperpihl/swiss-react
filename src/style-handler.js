@@ -12,7 +12,7 @@ export default class StyleHandler {
     this._refCounter = 0;
     this.runningPropValues = {};
     this._updateDomElement = this._updateDomElement.bind(this);
-    this.domHandler = new DomHandler(uniqueId, options.name);
+    this.domHandler = new DomHandler(this.className, options.name);
     this.domHandler.add();
   }
   toString() {

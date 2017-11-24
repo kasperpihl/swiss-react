@@ -41,12 +41,17 @@ export default function componentWrapper(options, defaultSwissController) {
       })
     }
     render() {
+      const swissController = this.getSwissController();
+      const runOpts = swissController.getOptionsByUniqueId(uniqueString);
       let computedClassName = this.swissId;
       if(this.props.className) {
         computedClassName = `${this.props.className} ${computedClassName}`;
       }
 
-      const excludePropsToChild = ['className', 'swiss', 'expand'];
+      let excludePropsToChild = ['className', 'swiss', 'expand'];
+      if(Array.isArray(runOpts.excludeProps)) {
+        excludePropsToChild = excludePropsToChild.concat(runOpts.excludeProps);
+      }
 
       this.iterateHandlers((handler) => {
         const dClassName = handler.getClassName();
@@ -68,14 +73,26 @@ export default function componentWrapper(options, defaultSwissController) {
         if(excludePropsToChild.indexOf(propName) === -1) {
           newProps[propName] = propValue;
         }
-      })
+      });
 
-      return <EL ref="node" id={this.swissId} className={computedClassName} {...newProps}>{this.props.children}</EL>;
+      const element = (
+        <EL id={this.swissId} className={computedClassName} {...newProps}>
+          {this.props.children}
+        </EL>
+      );
+      if(typeof runOpts.render === 'function') {
+        return runOpts.render({ element, props: this.props });
+      }
+
+      return element;
     }
   }
   StyledElement.contextTypes = {
     swissController: PropTypes.object,
   };
+  StyledElement.addOptions = (opts) => {
+    defaultSwissController.addStylesForUniqueId(uniqueString, opts);
+  }
   StyledElement.swissUniqueString = uniqueString;
   StyledElement.ref = `__swiss-${uniqueString}`;
 

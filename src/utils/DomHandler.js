@@ -1,16 +1,13 @@
  export default class DomHandler {
-  constructor(id, prettyName) {
-    this.id = `sw${id}`;
+  constructor(id) {
+    this.id = `sw-${id}`;
     this.type = 'text/css';
-    this.prettyName = prettyName;
-    this.className = 'swiss-style';
   }
   toString() {
     if(!this._childContent) {
       return null;
     }
-    const prettyName = this.prettyName ? `data-name="${this.prettyName}" `: '';
-    let string = `<style type="${this.type}" ${prettyName}class="${this.className}" id="${this.id}">`;
+    let string = `<style id="${this.id}" type="${this.type}">`;
     string += this._childContent;
     string += '</style>';
     return string;
@@ -41,12 +38,8 @@
     this._childEl = this._domEl && this._domEl.childNodes.length && this._domEl.childNodes[0];
     if(!this._domEl) {
       this._domEl = document.createElement('style');
-      this._domEl.type = this.type;
-      this._domEl.className = this.className;
-      if(this.prettyName) {
-        this._domEl['data-name'] = this.prettyName;
-      }
       this._domEl.id = this.id;
+      this._domEl.type = this.type;
       document.head.appendChild(this._domEl);
     }
     

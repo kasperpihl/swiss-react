@@ -10,7 +10,14 @@ export default class SwissController {
     this.styleHandlers = {};
   }
   addStylesForUniqueId(uniqueId, options) {
-    globalOptionsById[uniqueId] = options;
+    if(globalOptionsById[uniqueId]) {
+      globalOptionsById[uniqueId] = Object.assign({}, globalOptionsById[uniqueId], options);
+    } else {
+     globalOptionsById[uniqueId] = options;
+    }
+  }
+  getOptionsByUniqueId(uniqueId) {
+    return globalOptionsById[uniqueId];
   }
   getStylesByUniqueId(uniqueId) {
     return globalOptionsById[uniqueId] && globalOptionsById[uniqueId].styles;
