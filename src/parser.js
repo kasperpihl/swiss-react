@@ -74,6 +74,12 @@ export default class Parser {
           key = realKey;
         }
       })
+      if(!foundCondition) {
+        returnObj.conditions = returnObj.conditions.concat({
+          key: key,
+          operator: 'hasValue'
+        });
+      }
       
       this.addProp(returnObj, key);
       const newSelector = `${this.className}-${key}`;
