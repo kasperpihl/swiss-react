@@ -48,7 +48,7 @@ export default function componentWrapper(options, defaultSwissController) {
         computedClassName = `${this.props.className} ${computedClassName}`;
       }
 
-      let excludePropsToChild = ['className', 'swiss', 'expand'];
+      let excludePropsToChild = ['className', 'swiss', 'expand', 'innerRef'];
       if(Array.isArray(runOpts.excludeProps)) {
         excludePropsToChild = excludePropsToChild.concat(runOpts.excludeProps);
       }
@@ -64,7 +64,7 @@ export default function componentWrapper(options, defaultSwissController) {
             computedClassName += ` ${dClassName}-${propName}`;
           }
         })
-      })
+      });
 
       const newProps = {};
       Object.entries(this.props).forEach(([propName, propValue]) => {
@@ -74,7 +74,7 @@ export default function componentWrapper(options, defaultSwissController) {
       });
 
       const element = (
-        <EL id={this.swissId} className={computedClassName} {...newProps}>
+        <EL id={this.swissId} ref={this.props.innerRef} className={computedClassName} {...newProps}>
           {this.props.children}
         </EL>
       );
