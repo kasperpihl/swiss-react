@@ -19,13 +19,13 @@ const element = (...args) => {
         options.className = prop;
       }
     }
-    if(typeof prop !== 'object') {
-      return;
-    }
     let dStyles = prop;
     if(isSwissElement(prop)) {
       dStyles = swissController.getStylesByUniqueId(prop.swissUniqueString);
+    } else if(typeof prop !== 'object') {
+      return;
     }
+    
     styles = mergeDeep(styles, dStyles);
   })
   
