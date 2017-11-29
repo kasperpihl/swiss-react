@@ -79,7 +79,7 @@ export default function componentWrapper(options, defaultSwissController) {
         </EL>
       );
       if(typeof runOpts.render === 'function') {
-        return runOpts.render({ element, props: this.props });
+        return runOpts.render(element, this.props);
       }
 
       return element;
