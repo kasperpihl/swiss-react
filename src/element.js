@@ -1,3 +1,4 @@
+import { isValidElement } from 'react';
 import componentWrapper from './component-wrapper';
 import mergeDeep from './utils/mergeDeep';
 import isSwissElement from './utils/isSwissElement';
@@ -22,6 +23,8 @@ const element = (...args) => {
     let dStyles = prop;
     if(isSwissElement(prop)) {
       dStyles = swissController.getStylesByUniqueId(prop.swissUniqueString);
+    } else if(isValidElement(prop)) {
+      options.element = prop; 
     } else if(typeof prop !== 'object') {
       return;
     }
