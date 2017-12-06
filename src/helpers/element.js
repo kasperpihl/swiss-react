@@ -1,8 +1,11 @@
 import { isValidElement } from 'react';
-import componentWrapper from './component-wrapper';
-import mergeDeep from './utils/mergeDeep';
-import isSwissElement from './utils/isSwissElement';
-import SwissController from './swiss-controller';
+
+import makeComponent from '../components/makeComponent';
+
+import SwissController from '../classes/SwissController';
+
+import mergeDeep from '../utils/mergeDeep';
+import isSwissElement from '../helpers/isSwissElement';
 
 const swissController = new SwissController();
 
@@ -33,7 +36,7 @@ const element = (...args) => {
   })
   
   options.styles = styles;
-  return componentWrapper(options, swissController);
+  return makeComponent(options, swissController);
 }
 
 export default element;

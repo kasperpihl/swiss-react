@@ -2,10 +2,11 @@ export default ({ key, value, operator }, cProps) => {
   let pVal = cProps[key];
   switch(operator) {
     case 'hasValue': return !!pVal;
-    case '>=': return parseInt(pVal, 10) >= parseInt(value, 10);
-    case '<=': return parseInt(pVal, 10) <= parseInt(value, 10);
-    case '<': return parseInt(pVal, 10) < parseInt(value, 10);
-    case '>': return parseInt(pVal, 10) > parseInt(value, 10);
+    case 'hasNoValue': return !pVal;
+    case '>=': return parseFloat(pVal, 10) >= parseFloat(value, 10);
+    case '<=': return parseFloat(pVal, 10) <= parseFloat(value, 10);
+    case '<': return parseFloat(pVal, 10) < parseFloat(value, 10);
+    case '>': return parseFloat(pVal, 10) > parseFloat(value, 10);
     case '!=':
     case '=':
     default: {

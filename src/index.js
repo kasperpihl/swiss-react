@@ -1,16 +1,16 @@
 import './polyfills';
-export { default as element } from './element';
+export { default as element } from './helpers/element';
 
-export { addVariables } from './utils/variables';
+export { addVariables } from './features/variables';
 
-export { addMixin } from './utils/mixins';
+export { addMixin } from './features/mixins';
 
-export { addGlobals } from './globals';
+export { addGlobals } from './features/globals';
 
-export { addPlugin } from './utils/plugins';
+export { addPlugin } from './features/plugins';
 
 // react-swiss
 
 export { default as SwissProvider } from './components/SwissProvider';
 
-export { default as SwissController } from './swiss-controller';
+export { default as SwissController } from './classes/SwissController';

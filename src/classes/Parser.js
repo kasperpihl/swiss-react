@@ -1,4 +1,5 @@
-import { parseVariables } from './utils/variables';
+import { parseVariables } from '../features/variables';
+
 const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
 
 export default class Parser {
@@ -17,13 +18,13 @@ export default class Parser {
         if(propName.indexOf('=') > -1) {
           propName = propName.slice(0, propName.indexOf('='));
         }
-        this.addProp(options, propName);
         if(isKey) {
           options.conditions = options.conditions.concat({
             key: propName,
-            operator: 'hasValue'
+            operator: 'hasValue',
           });
         }
+        this.addProp(options, propName);
       });
     })
   }
@@ -62,24 +63,24 @@ export default class Parser {
       returnObj.selector = '&';
       const operators = ['>=', '<=', '!=', '=', '>', '<'];
       let foundCondition = false;
+      const condition = {
+        key,
+        operator: 'hasValue'
+      };
+      if(key.startsWith('!')) {
+        key = key.slice(1);
+        condition.key = key;
+        condition.operator = 'hasNoValue';
+      }
       operators.forEach((operator) => {
         if(!foundCondition && key.indexOf(operator) > -1) {
-          const realKey = key.slice(0, key.indexOf(operator));
-          returnObj.conditions = returnObj.conditions.concat({
-            key: realKey,
-            value: key.slice(key.indexOf(operator) + operator.length),
-            operator,
-          });
-          foundCondition = true;
-          key = realKey;
+          condition.operator = operator;
+          condition.value = key.slice(key.indexOf(operator) + operator.length);
+          key = key.slice(0, key.indexOf(operator));
+          condition.key = key;
         }
       })
-      if(!foundCondition) {
-        returnObj.conditions = returnObj.conditions.concat({
-          key: key,
-          operator: 'hasValue'
-        });
-      }
+      returnObj.conditions = returnObj.conditions.concat(condition);
       
       this.addProp(returnObj, key);
       const newSelector = `${this.className}-${key}`;

@@ -1,10 +1,12 @@
-import StyleHandler from './style-handler';
-import { toString } from './globals';
+import StyleHandler from './StyleHandler';
+
+import { toString } from '../features/globals';
 
 const globalOptionsById = {};
 
 export default class SwissController {
-  constructor() {
+  constructor(isDefault) {
+    this.isDefault = isDefault;
     this.typeCounters = {};
     this.swissIds = {};
     this.styleHandlers = {};
@@ -13,7 +15,7 @@ export default class SwissController {
     if(globalOptionsById[uniqueId]) {
       globalOptionsById[uniqueId] = Object.assign({}, globalOptionsById[uniqueId], options);
     } else {
-     globalOptionsById[uniqueId] = options;
+      globalOptionsById[uniqueId] = options;
     }
   }
   getOptionsByUniqueId(uniqueId) {
@@ -24,9 +26,11 @@ export default class SwissController {
   }
   getStyleHandler(uniqueString) {
     if(!this.styleHandlers[uniqueString]) {
-      const options = globalOptionsById[uniqueString];
+
+      const options = Object.assign({}, globalOptionsById[uniqueString]);
       options.className = options.className || this._getTypeClassname(options);
       this.styleHandlers[uniqueString] = new StyleHandler(uniqueString, options, this);
+      
     }
     return this.styleHandlers[uniqueString];
   }
@@ -41,7 +45,10 @@ export default class SwissController {
     return string;
   }
   _getTypeClassname(options) {
-    const el = options.element;
+    let el = options.element;
+    if(typeof el !== 'string') {
+      el = 'div';
+    }
     if(typeof this.typeCounters[el] !== 'number') {
       this.typeCounters[el] = 0;
     }

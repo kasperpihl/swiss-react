@@ -10,10 +10,10 @@ Then with a module bundler like [webpack](https://webpack.github.io/), use as yo
 
 ```js
 // using ES6 modules
-import swiss, { addGlobals, addVariables, addPlugin } from 'react-swiss'
+import { element, addGlobals, addVariables, addPlugin } from 'react-swiss'
 
 // using CommonJS modules
-var swiss = require('react-swiss');
+var element = require('react-swiss').element;
 var addGlobals = require('react-swiss').addGlobals;
 var addVariables = require('react-swiss').addVariables;
 var addPlugin = require('react-swiss').addPlugin;

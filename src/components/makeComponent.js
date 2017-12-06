@@ -1,10 +1,12 @@
 import React from 'react';
-import isSwissElement from './utils/isSwissElement';
 import PropTypes from 'prop-types';
-import randomString from './utils/randomString';
-import arrayAddUnique from './utils/arrayAddUnique';
 
-export default function componentWrapper(options, defaultSwissController) {
+import isSwissElement from '../helpers/isSwissElement';
+
+import randomString from '../utils/randomString';
+import arrayAddUnique from '../utils/arrayAddUnique';
+
+export default function makeComponent(options, defaultSwissController) {
   const uniqueString = randomString(8);
   const EL = options.element;
   defaultSwissController.addStylesForUniqueId(uniqueString, options);

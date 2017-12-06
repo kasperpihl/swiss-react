@@ -1,6 +1,6 @@
-import Parser from './parser';
-import CSSPrinter from './css-printer';
-import DomHandler from './utils/DomHandler';
+import Parser from './Parser';
+import CSSPrinter from './CSSPrinter';
+import DomHandler from './DomHandler';
 
 export default class StyleHandler {
   constructor(uniqueId, options, swissController) {

@@ -1,6 +1,6 @@
-import Parser from './parser';
-import CSSPrinter from './css-printer';
-import DomHandler from './utils/DomHandler';
+import Parser from '../classes/Parser';
+import CSSPrinter from '../classes/CSSPrinter';
+import DomHandler from '../classes/DomHandler';
 
 let globals = [];
 const _domHandler = new DomHandler('globals');

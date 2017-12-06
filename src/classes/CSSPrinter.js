@@ -1,8 +1,10 @@
-import { parseVariables } from './utils/variables';
-import { parseMixins } from './utils/mixins';
-import { runPlugin } from './utils/plugins';
-import testCondition from './utils/testCondition';
-import indentString from './utils/indentString';
+import { parseVariables } from '../features/variables';
+import { parseMixins } from '../features/mixins';
+import { runPlugin } from '../features/plugins';
+
+import testCondition from '../helpers/testCondition';
+
+import indentString from '../utils/indentString';
 
 const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
 
