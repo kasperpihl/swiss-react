@@ -53,7 +53,8 @@ export default class StyleHandler {
   _checkPropsAndUpdateDOM(swissId, props, oldProps, force) {
     oldProps = oldProps || {};
     let needUpdate = !!force;
-    this.runningPropValues[swissId] = Object.assign({}, props);
+    const parsedSwiss = this.runningPropValues[swissId] && this.runningPropValues[swissId].swiss;
+    this.runningPropValues[swissId] = Object.assign({}, props, { swiss: parsedSwiss });
     this.handledProps.concat('swiss').forEach((propKey) => {
       if(oldProps[propKey] !== props[propKey]) {
         if(propKey === 'swiss') {
