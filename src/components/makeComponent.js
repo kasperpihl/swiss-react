@@ -8,7 +8,6 @@ import arrayAddUnique from '../utils/arrayAddUnique';
 
 export default function makeComponent(options, defaultSwissController) {
   const uniqueString = randomString(8);
-  const EL = options.element;
   defaultSwissController.addStylesForUniqueId(uniqueString, options);
 
   class StyledElement extends React.PureComponent {
@@ -45,6 +44,7 @@ export default function makeComponent(options, defaultSwissController) {
     render() {
       const swissController = this.getSwissController();
       const runOpts = swissController.getOptionsByUniqueId(uniqueString);
+      const EL = runOpts.element;
       let computedClassName = this.swissId;
       if(this.props.className) {
         computedClassName = `${this.props.className} ${computedClassName}`;
