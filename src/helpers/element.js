@@ -1,5 +1,3 @@
-import { isValidElement } from 'react';
-
 import makeComponent from '../components/makeComponent';
 
 import SwissController from '../classes/SwissController';
