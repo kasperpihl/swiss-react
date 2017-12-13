@@ -16,23 +16,19 @@ const element = (...args) => {
   let styles = {};
 
   args.forEach((prop, i) => {
-    if(typeof prop === 'string') {
-      if(i === 0) {
-        options.element = prop;
-      } else if(i === 1) {
-        options.className = prop;
-      }
+    
+    if(i === 0 && !isSwissElement(prop) && typeof prop !== 'object') {
+      options.element = prop;
     }
-    let dStyles = prop;
-    if(isSwissElement(prop)) {
-      dStyles = swissController.getStylesByUniqueId(prop.swissUniqueString);
-    } else if(isValidElement(prop)) {
-      options.element = prop; 
-    } else if(typeof prop !== 'object') {
-      return;
+
+    if(typeof prop === 'object' || isSwissElement(prop)) {
+      let dStyles = prop;
+      if(isSwissElement(prop)) {
+        dStyles = swissController.getStylesByUniqueId(prop.swissUniqueString);
+      }
+      styles = mergeDeep(styles, dStyles);
     }
     
-    styles = mergeDeep(styles, dStyles);
   })
   
   options.styles = styles;
