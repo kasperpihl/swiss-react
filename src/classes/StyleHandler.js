@@ -4,7 +4,8 @@ import DomHandler from './DomHandler';
 
 export default class StyleHandler {
   constructor(uniqueId, options, swissController) {
-    
+    this._updateDomElement = this._updateDomElement.bind(this);
+        
     this.swissController = swissController;
     this.className = options.className;
     this.styles = options.styles;
@@ -66,10 +67,18 @@ export default class StyleHandler {
     });
 
     if(needUpdate) {
+      this._scheduleDomUpdate();
+    }
+  }
+  _scheduleDomUpdate() {
+    if(!this.timer && typeof window === 'undefined') {
       this._updateDomElement();
+    } else if(!this.timer) {
+      this.timer = window.requestAnimationFrame(this._updateDomElement);
     }
   }
   _updateDomElement() {
+    this.timer = null;
     this.domHandler.update(this.cssPrinter.print(this.runningPropValues));
   }
   _incrementRef() {
