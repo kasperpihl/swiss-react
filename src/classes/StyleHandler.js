@@ -11,7 +11,7 @@ export default class StyleHandler {
 
     this._refCounter = 0;
     this.runningPropValues = {};
-    this._updateDomElement = this._updateDomElement.bind(this);
+    
     this.domHandler = new DomHandler(this.className, options.name);
     this.domHandler.add();
   }
@@ -66,14 +66,6 @@ export default class StyleHandler {
     });
 
     if(needUpdate) {
-      this._scheduleDOMUpdate();
-    }
-  }
-  _scheduleDOMUpdate() {
-    if(typeof window !== 'undefined') {
-      window.cancelAnimationFrame(this._updateFrame);
-      this._updateFrame = window.requestAnimationFrame(this._updateDomElement);
-    } else {
       this._updateDomElement();
     }
   }
@@ -84,7 +76,7 @@ export default class StyleHandler {
     this._refCounter++;
     if(this._refCounter === 1) {
       this._generateStyleArrayAndPropsObject();
-      this._scheduleDOMUpdate();
+      this._updateDomElement();
     }
   }
   _decrementRef() {
