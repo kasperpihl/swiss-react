@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import isSwissElement from '../helpers/isSwissElement';
+import ChangeUpdater from './ChangeUpdater';
 
 import randomString from '../utils/randomString';
 import arrayAddUnique from '../utils/arrayAddUnique';
@@ -12,6 +13,7 @@ export default function makeComponent(options, defaultSwissController) {
 
   class StyledElement extends React.PureComponent {
     componentWillMount() {
+      this.onRunUpdate = this.onRunUpdate.bind(this);
       this.expansions = this.props.expand || [];
       if(!Array.isArray(this.expansions)) {
         this.expansions = [ this.expansions ];
@@ -40,6 +42,9 @@ export default function makeComponent(options, defaultSwissController) {
           iterator(swissController.getStyleHandler(exClass.swissUniqueString));
         }
       })
+    }
+    onRunUpdate() {
+      this.iterateHandlers((h) => h._updateDomElement());
     }
     render() {
       const swissController = this.getSwissController();
@@ -75,11 +80,12 @@ export default function makeComponent(options, defaultSwissController) {
         }
       });
 
-      const element = (
-        <EL id={this.swissId} ref={this.props.innerRef} className={computedClassName} {...newProps}>
+      const element = [
+        <ChangeUpdater key="updater" runUpdate={this.onRunUpdate} />,
+        <EL key="element" id={this.swissId} ref={this.props.innerRef} className={computedClassName} {...newProps}>
           {this.props.children}
         </EL>
-      );
+      ];
       if(typeof runOpts.render === 'function') {
         return runOpts.render(element, this.props);
       }

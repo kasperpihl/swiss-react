@@ -5,7 +5,7 @@ import DomHandler from './DomHandler';
 export default class StyleHandler {
   constructor(uniqueId, options, swissController) {
     this._updateDomElement = this._updateDomElement.bind(this);
-        
+
     this.swissController = swissController;
     this.className = options.className;
     this.styles = options.styles;
@@ -67,24 +67,24 @@ export default class StyleHandler {
     });
 
     if(needUpdate) {
-      this._scheduleDomUpdate();
+      this.needUpdate = needUpdate;
+      if(typeof window === 'undefined') {
+        this._updateDomElement();
+      }
     }
   }
-  _scheduleDomUpdate() {
-    if(!this.timer && typeof window === 'undefined') {
-      this._updateDomElement();
-    } else if(!this.timer) {
-      this.timer = window.requestAnimationFrame(this._updateDomElement);
-    }
-  }
+
   _updateDomElement() {
-    this.timer = null;
-    this.domHandler.update(this.cssPrinter.print(this.runningPropValues));
+    if(this.needUpdate) {
+      this.domHandler.update(this.cssPrinter.print(this.runningPropValues));
+      this.needUpdate = false;
+    }
   }
   _incrementRef() {
     this._refCounter++;
     if(this._refCounter === 1) {
       this._generateStyleArrayAndPropsObject();
+      this.needUpdate = true;
       this._updateDomElement();
     }
   }
