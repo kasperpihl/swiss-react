@@ -1,0 +1,16 @@
+{
+  "presets": [
+    ["es2015", {"modules": false}],
+    "react"
+  ],
+  "plugins": [
+    ["module-resolver", {
+      "root": ["."],
+      "alias": {
+        "react-swiss": "../dist/es/index",
+      }
+    }],
+    "react-hot-loader/babel",
+    "transform-object-rest-spread",
+  ]
+}
