@@ -15,7 +15,7 @@ const element = (options, ...styles) => {
 
   options.defaultSwissController = swissController;
 
-  return (props) => {
+  const render = (props) => {
     const { 
       sw,
       ...rest
@@ -32,7 +32,16 @@ const element = (options, ...styles) => {
         {...rest} 
       />
     )
+  };
+
+  render.addStyles = (...newStyles) => {
+    styles = [].concat(newStyles).concat(styles);
   }
+  render.getStyles = () => {
+    return [].concat(styles);
+  }
+
+  return render;
 }
 
 export default element;

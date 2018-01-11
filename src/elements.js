@@ -17,14 +17,18 @@ const H5 = element('h5');
 const H6 = element('h6');
 const Header = element('header');
 const Img = element('img');
+const Input = element('input');
 const Main = element('main');
+const Label = element('label');
 const Li = element('li');
 const Nav = element('nav');
 const Ol = element('ol');
 const P = element('p');
 const Pre = element('pre');
 const Section = element('section');
+const Select = element('select');
 const Span = element('span');
+const Textarea = element('textarea');
 const Ul = element('ul');
 const Video = element('video');
 
@@ -46,6 +50,8 @@ export {
   H6,
   Header,
   Img,
+  Input,
+  Label,
   Li,
   Main,
   Nav,
@@ -53,7 +59,9 @@ export {
   P,
   Pre,
   Section,
+  Select,
   Span,
+  Textarea,
   Ul,
   Video,
 };
