@@ -26,7 +26,7 @@ class App extends PureComponent {
   render() {
     return (
       <Div
-        sw={[styles.container, 'flex']}
+        sw={[styles.container, "flex"]}
         className="spanHover"
       >
         <Span sw={styles.span}>Hello</Span>

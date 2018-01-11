@@ -1,6 +1,6 @@
 import React from 'react';
 
-import SwissController from '../classes/SwissController2';
+import SwissController from '../classes/SwissController';
 import SwissElement from '../components/SwissElement';
 
 const swissController = new SwissController();
@@ -20,15 +20,15 @@ const element = (options, ...styles) => {
       sw,
       ...rest
     } = props;
-
+    let injectStyles = styles;
     if(sw) {
-      styles = [].concat(sw).concat(styles);
+      injectStyles = [].concat(sw).concat(styles);
     }
 
     return (
       <SwissElement 
         __swissOptions={options}
-        sw={styles}
+        sw={injectStyles}
         {...rest} 
       />
     )

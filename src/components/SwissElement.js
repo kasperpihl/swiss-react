@@ -41,7 +41,7 @@ class SwissElement extends React.PureComponent {
     }
 
     
-    const excludePropsToChild = ['className', 'sw', 'innerRef', '__swissOptions'];
+    let excludePropsToChild = ['className', 'sw', 'innerRef', '__swissOptions'];
 
     if(Array.isArray(options.excludeProps)) {
       excludePropsToChild = excludePropsToChild.concat(options.excludeProps);

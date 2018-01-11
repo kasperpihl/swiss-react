@@ -49,10 +49,11 @@ export default class SwissController {
     }).filter(s => !!s).join('');
   }
   toString() {
+    this.updateDom(true);
     return toString() + '\r\n' + this.domHandler.toString();
   }
-  updateDom() {
-    if(this.shouldUpdate) {
+  updateDom(force) {
+    if(this.shouldUpdate || force) {
       // Update DOM!
       const css = this._getPrintedStyles();
       this.domHandler.update(css);
