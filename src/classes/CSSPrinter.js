@@ -9,9 +9,8 @@ import indentString from '../utils/indentString';
 const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
 
 export default class CSSPrinter {
-  constructor(styleArray, allProps, swissController) {
+  constructor(styleArray, allProps) {
     this.styleArray = styleArray;
-    this.swissController = swissController;
     this.allProps = allProps;
     this.swissObjects = {};
   }
@@ -19,11 +18,6 @@ export default class CSSPrinter {
     props = props || {};
     return value.replace(PROPS_REGEX, (v1, propName, defaultValue) => {
       const pVal = props[propName]
-      if(typeof pVal === 'string' && pVal.startsWith('__swiss-')) {
-        const uniqueId = pVal.slice(8);
-        const styleHandler = this.swissController.getStyleHandler(uniqueId);
-        return `.${styleHandler.getClassName()}`;
-      }
       return pVal || defaultValue || '';
     })
   }
@@ -55,21 +49,6 @@ export default class CSSPrinter {
       key: styleKey,
       value: styleValue,
     };
-  }
-
-  iterateSwissObjects(propsEntries) {
-    propsEntries.forEach(([swissId, cProps]) => {
-      if(cProps.swiss) {
-        let rawCss = '';
-        cProps.swiss.forEach((styleObj) => {
-          rawCss += this.getRawCss(styleObj, 0, cProps) + '\r\n';
-        })
-        this.swissObjects[swissId] = rawCss;
-        
-      } else if(!cProps.swiss && this.swissObjects[swissId]) {
-        delete this.swissObjects[swissId];
-      }
-    })
   }
 
   printCSSKeyValues(styles, depth, props) {
@@ -118,50 +97,40 @@ export default class CSSPrinter {
       if(Array.isArray(styleObj.styles)) {
         return this.printStyleArray(styleObj.styles, depth + 1);
       }
-      styleObj.rawCss = styleObj.rawCss || { byId: {} };
+
+      styleObj.rawCss = '';
       if(styleObj.pureCss){
-        styleObj.rawCss.byId['global'] = styleObj.pureCss;
+        styleObj.rawCss = styleObj.pureCss;
         return;
       }
-
+      
       const conditions = styleObj.conditions || [];
+      const passed = conditions.filter((c) => testCondition(c, this.props));
 
-      // Handle dynamic components
-
-      if(this.allProps.length || conditions.length) {
-        this.propsEntries.forEach(([swissId, cProps]) => {
-          const passed = conditions.filter((c) => testCondition(c, cProps));
-
-          if(passed.length !== conditions.length) {
-            return delete styleObj.rawCss.byId[swissId];
-          }
-          styleObj.rawCss.byId[swissId] = this.getRawCss(styleObj, depth, cProps, `.${swissId}`);
-        });
-      } else { // Handle static styles
-        styleObj.rawCss.byId['global'] = this.getRawCss(styleObj, depth);
+      if(passed.length !== conditions.length) {
+        return delete styleObj.rawCss;
       }
+      styleObj.rawCss = this.getRawCss(styleObj, depth, this.props);
+
     })
   }
 
   getPrintedCSS(styleArray, depth) {
-    const swissObjects = Object.values(this.swissObjects);
-    return styleArray.map(({ selector, styles, rawCss, pureCss }) => {
+    return styleArray.map(({ selector, styles, rawCss }) => {
       let string = '';
       if(Array.isArray(styles)) {
         string += `${indentString(depth)}${selector} {\r\n`;
         string += this.getPrintedCSS(styles, depth + 1);
         string += `${indentString(depth)}\r\n}`;
       } else if(rawCss) {
-        string += Object.values(rawCss.byId).join('\r\n');
+        string += rawCss + '\r\n';
       }
       return string;
-    }).concat(swissObjects).join('\r\n');
+    }).filter(s => !!s).join('');
   }
-  print(props, changes) {
-    this.propsEntries = Object.entries(props || {});
-    this.changes = changes;
+  print(props) {
+    this.props = props;
     this.printStyleArray(this.styleArray, 0);
-    this.iterateSwissObjects(this.propsEntries);
     return this.getPrintedCSS(this.styleArray, 0);
   }
 }

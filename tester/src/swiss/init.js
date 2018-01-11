@@ -1,4 +1,4 @@
-import { addVariables, addMixin, addGlobals, addPlugin } from 'react-swiss';
+import { addVariables, addMixin, addGlobals, addPlugin, addStyles } from 'react-swiss';
 
 import reset from './reset';
 import size from './mixins/_size';
@@ -26,6 +26,89 @@ addPlugin('parseKeyValue', keyValue => {
     value: hexToRGBA(keyValue.value),
   }
 });
+
+addStyles('green', {
+  background: 'green',
+  blue: {
+    background: 'blue',
+  }
+})
+
+addStyles('ml', {
+  marginLeft: '#{val=100px}'
+})
+
+addStyles('flex', {
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'initial',
+  'wrap': {
+    flexWrap: 'wrap',
+  },
+  'center': {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  'horizontal=left': {
+    justifyContent: 'flex-start',
+  },
+  'horizontal=center': {
+    justifyContent: 'center',
+  },
+  'horizontal=right': {
+    justifyContent: 'flex-end',
+  },
+  'horizontal=between': {
+    justifyContent: 'space-between',
+  },
+  'horizontal=around': {
+    justifyContent: 'space-around',
+  },
+  'vertical=top': {
+    alignItems: 'flex-start',
+  },
+  'vertical=center': {
+    alignItems: 'center',
+  },
+  'vertical=bottom': {
+    alignItems: 'flex-end',
+  },
+  'vertical=stretch': {
+    alignItems: 'stretch',
+  },
+  column: {
+    flexDirection: 'column',
+    justifyContent: 'initial',
+    'center': {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    'horizontal=left': {
+      alignItems: 'flex-start',
+    },
+    'horizontal=center': {
+      alignItems: 'center',
+    },
+    'horizontal=right': {
+      alignItems: 'flex-end',
+    },
+    'vertical=top': {
+      justifyContent: 'flex-start',
+    },
+    'vertical=center': {
+      justifyContent: 'center',
+    },
+    'vertical=bottom': {
+      justifyContent: 'flex-end',
+    },
+    'vertical=between': {
+      justifyContent: 'space-between',
+    },
+    'vertical=around': {
+      justifyContent: 'space-around',
+    },
+  }
+})
 
 addMixin('size', size);
 addMixin('widthSpecifications', widthSpecifications);

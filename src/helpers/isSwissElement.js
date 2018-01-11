@@ -1,1 +1,0 @@
-export default (testObj) => typeof testObj === 'function' && typeof testObj.swissUniqueString === 'string';

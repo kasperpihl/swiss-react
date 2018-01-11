@@ -1,69 +1,63 @@
-import StyleHandler from './StyleHandler';
-
+import createSubscription from '../helpers/createSubscription';
+import CSSPrinter from './CSSPrinter';
+import DomHandler from './DomHandler';
 import { toString } from '../features/globals';
-
-const globalOptionsById = {};
 
 export default class SwissController {
   constructor(isDefault) {
-    this.isDefault = isDefault;
-    this.typeCounters = {};
-    this.swissIds = {};
-    this.styleHandlers = {};
+    this.refCounter = 0;
+    this.subscriptions = [];
+    this.needUpdates = {};
+    this.shouldUpdate = false;
+    this.domHandler = new DomHandler('newglobal');
+    this.domHandler.add();
   }
-  addStylesForUniqueId(uniqueId, options) {
-    if(globalOptionsById[uniqueId]) {
-      globalOptionsById[uniqueId] = Object.assign({}, globalOptionsById[uniqueId], options);
-    } else {
-      globalOptionsById[uniqueId] = options;
+  subscribe(props) {
+    const ref = ++this.refCounter;
+    const subscription = createSubscription(ref, props);
+    const index = this.subscriptions.push(subscription) - 1;
+    this.needUpdates[ref] = true;
+    this.shouldUpdate = true;
+    return subscription;
+  }
+  update(ref, props, oldProps) {
+    const subscription = this.subscriptions.find(s => s.ref === ref);
+    if(subscription) {
+      subscription.parsedStyles.allProps.forEach((propKey) => {
+        if(oldProps[propKey] !== props[propKey]) {
+          this.needUpdates[ref] = true;
+          this.shouldUpdate = true;
+          subscription.props = props;
+        }
+      })
     }
   }
-  getOptionsByUniqueId(uniqueId) {
-    return globalOptionsById[uniqueId];
-  }
-  getStylesByUniqueId(uniqueId) {
-    return globalOptionsById[uniqueId] && globalOptionsById[uniqueId].styles;
-  }
-  getStyleHandler(uniqueString) {
-    if(!this.styleHandlers[uniqueString]) {
-
-      const options = Object.assign({}, globalOptionsById[uniqueString]);
-      options.className = options.className || this._getTypeClassname(options);
-      this.styleHandlers[uniqueString] = new StyleHandler(uniqueString, options, this);
-      
+  unsubscribe(ref) {
+    const index = this.subscriptions.findIndex(s => s.ref === ref);
+    if(index > -1) {
+      this.subscriptions.splice(index, 1);
+      this.shouldUpdate = true;
     }
-    return this.styleHandlers[uniqueString];
+  }
+  _getPrintedStyles() {
+    return this.subscriptions.map((s) => {
+      if(this.needUpdates[s.ref] || typeof s.rawStyles !== 'string') {
+        const printer = new CSSPrinter(s.parsedStyles.styleArray, s.parsedStyles.allProps);
+        s.rawStyles = printer.print(s.props);
+      }
+      return s.rawStyles;
+    }).filter(s => !!s).join('');
   }
   toString() {
-    let string = toString();
-    Object.values(this.styleHandlers).forEach((sH) => {
-      const styleString = sH.toString();
-      if(styleString) {
-        string += `${styleString}\r\n`;
-      }
-    })
-    return string;
+    return toString() + '\r\n' + this.domHandler.toString();
   }
-  _getTypeClassname(options) {
-    let el = options.element;
-    if(typeof el !== 'string') {
-      el = 'div';
+  updateDom() {
+    if(this.shouldUpdate) {
+      // Update DOM!
+      const css = this._getPrintedStyles();
+      this.domHandler.update(css);
+      this.needUpdates = {};
+      this.shouldUpdate = false;
     }
-    if(typeof this.typeCounters[el] !== 'number') {
-      this.typeCounters[el] = 0;
-    }
-    this.typeCounters[el]++;
-
-    return `${el}-${this.typeCounters[el]}`;
-  }
-  getSwissId(uniqueString) {
-    const styleHandler = this.getStyleHandler(uniqueString);
-    const typeClassname = styleHandler.getClassName();
-    if(typeof this.swissIds[typeClassname] !== 'number') {
-      this.swissIds[typeClassname] = 0;
-    }
-    this.swissIds[typeClassname]++;
-
-    return `${typeClassname}-${this.swissIds[typeClassname]}`;
   }
 }

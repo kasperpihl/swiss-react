@@ -1,36 +1,38 @@
-import makeComponent from '../components/makeComponent';
+import React from 'react';
 
-import SwissController from '../classes/SwissController';
-
-import mergeDeep from '../utils/mergeDeep';
-import isSwissElement from '../helpers/isSwissElement';
+import SwissController from '../classes/SwissController2';
+import SwissElement from '../components/SwissElement';
 
 const swissController = new SwissController();
 
-const element = (...args) => {
-  let options = {
-    element: 'div'
-  };
-  let styles = {};
+const element = (options, ...styles) => {
+  if(typeof options !== 'object') {
+    options = { element: options};
+  }
+  if(!options.element) {
+    console.warn('swiss element: options must include element');
+  }
 
-  args.forEach((prop, i) => {
-    
-    if(i === 0 && !isSwissElement(prop) && typeof prop !== 'object') {
-      options.element = prop;
+  options.defaultSwissController = swissController;
+
+  return (props) => {
+    const { 
+      sw,
+      ...rest
+    } = props;
+
+    if(sw) {
+      styles = [].concat(sw).concat(styles);
     }
 
-    if(typeof prop === 'object' || isSwissElement(prop)) {
-      let dStyles = prop;
-      if(isSwissElement(prop)) {
-        dStyles = swissController.getStylesByUniqueId(prop.swissUniqueString);
-      }
-      styles = mergeDeep(styles, dStyles);
-    }
-    
-  })
-  
-  options.styles = styles;
-  return makeComponent(options, swissController);
+    return (
+      <SwissElement 
+        __swissOptions={options}
+        sw={styles}
+        {...rest} 
+      />
+    )
+  }
 }
 
 export default element;

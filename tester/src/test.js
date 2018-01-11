@@ -1,7 +1,6 @@
 import { element } from 'react-swiss';
 
-const Test = element('div', {
-  background: 'red',
+const Test = element('div', 'flex', {
   _size: ['100px', '50px'],
 });
 
