@@ -73,7 +73,6 @@ class SwissElement extends React.PureComponent {
       
     }
 
-    const element = 
     if(typeof options.render === 'function') {
       return options.render(element, this.props);
     }
