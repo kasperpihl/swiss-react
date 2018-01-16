@@ -56,13 +56,24 @@ class SwissElement extends React.PureComponent {
         elementProps[propName] = propValue;
       }
     })
-
-    const element = [
+    let element = [ 
       <ChangeUpdater key="updater" runUpdate={this.onRunUpdate} />,
       <EL key="element" ref={this.props.innerRef} className={computedClassName} {...elementProps}>
         {this.props.children}
       </EL>
     ];
+
+    if(parseInt(React.version, 10) < 16) {
+      element = (
+        <EL ref={this.props.innerRef} className={computedClassName} {...elementProps}>
+          <ChangeUpdater runUpdate={this.onRunUpdate} />
+          {this.props.children}
+        </EL>
+      );
+      
+    }
+
+    const element = 
     if(typeof options.render === 'function') {
       return options.render(element, this.props);
     }

@@ -7,7 +7,7 @@ const swissController = new SwissController();
 
 const element = (options, ...styles) => {
   if(typeof options !== 'object') {
-    options = { element: options};
+    options = { element: options };
   }
   if(!options.element) {
     console.warn('swiss element: options must include element');
