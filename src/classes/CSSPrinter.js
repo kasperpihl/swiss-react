@@ -53,7 +53,7 @@ export default class CSSPrinter {
 
   printCSSKeyValues(styles, depth, props) {
     let string = '';
-    styles = parseMixins(styles);
+    styles = parseMixins(styles, props);
     Object.entries(styles).forEach(([selector, styleValue]) => {
 
       let { key, value } = this.parseKeyValue(selector, styleValue, props);
