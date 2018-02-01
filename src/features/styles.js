@@ -1,4 +1,4 @@
-
+const VAL_REGEX = /#{val\=?(.*?)}/gi;
 const styles = {};
 
 export function addStyles(options, style) {
@@ -12,6 +12,27 @@ export function addStyles(options, style) {
   styles[options.name] = style;
 }
 
-export function getStyles(name) {
-  return styles[name];
+
+const parseStyles = (style, valueFromObj) => {
+  const mutatedStyles = Object.assign({}, style);
+  Object.entries(style).forEach(([ key, value ]) => {
+    if(typeof value === 'string') {
+      mutatedStyles[key] = value.replace(VAL_REGEX, (v1, defaultValue) => {
+        return valueFromObj || defaultValue || '';
+      });
+    } else if(typeof value === 'object') {
+      delete mutatedStyles[key];
+      mutatedStyles[key] = parseStyles(value);
+    }
+  });
+  return mutatedStyles;
+}
+export function getStyles(name, valueFromObj) {
+  const style = styles[name] || {};
+
+  if(!valueFromObj) {
+    return style;
+  }
+
+  return parseStyles(style, valueFromObj);
 }

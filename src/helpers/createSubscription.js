@@ -23,7 +23,13 @@ export default (ref, props) => {
       if(typeof res === 'string') {
         res = res.split(' ');
         res.forEach((name) => {
-          const styles = getStyles(name);
+          const sepIndex = name.indexOf(':');
+          let value;
+          if(sepIndex > -1) {
+            value = name.substr(sepIndex + 1);
+            name = name.substr(0, sepIndex);
+          }
+          const styles = getStyles(name, value);
           if(styles) {
             subscription.styles = mergeDeep(styles, subscription.styles);
           } else {

@@ -1,7 +1,13 @@
 import React, { PureComponent } from 'react';
-import { H1, H2, Div, Span } from 'react-swiss';
+import { H1, H2, Div, Span, addStyles } from 'react-swiss';
 
-Span.addStyles('green');
+addStyles('bg', {
+  background: '#{val}',
+});
+
+addStyles('ml', {
+  marginLeft: '#{val=0px}',
+});
 
 const styles = {
   container: {
@@ -21,10 +27,7 @@ const styles = {
 class App extends PureComponent {
   render() {
     return (
-      <Div
-        sw={[styles.container, "flex"]}
-        className="spanHover"
-      >
+      <Div sw="bg">
         <Span sw={styles.span}>Hello</Span>
       </Div>
     );
