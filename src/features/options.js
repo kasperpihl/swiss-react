@@ -1,11 +1,9 @@
 const options = {};
 
-export function setGlobalOption(key, value) {
+export function setOption(key, value) {
   options[key] = value;
 }
-export function unsetGlobalOption(key) {
-  delete options[key]; 
-}
-export function getGlobalOption(key) {
+
+export function getOption(key) {
   return options[key];
 }

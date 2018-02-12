@@ -1,12 +1,11 @@
-import { parseVariables } from '../features/variables';
 import { parseMixins } from '../features/mixins';
 import { runPlugin } from '../features/plugins';
 
+import parseProps from '../helpers/parseProps';
+import parseKeyValue from '../helpers/parseKeyValue';
 import testCondition from '../helpers/testCondition';
 
 import indentString from '../utils/indentString';
-
-const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
 
 export default class CSSPrinter {
   constructor(styleArray, allProps) {
@@ -14,49 +13,13 @@ export default class CSSPrinter {
     this.allProps = allProps;
     this.swissObjects = {};
   }
-  parseProps(props, value) {
-    props = props || {};
-    return value.replace(PROPS_REGEX, (v1, propName, defaultValue) => {
-      const pVal = props[propName]
-      return pVal || defaultValue || '';
-    })
-  }
-
-  parseKeyValue(styleKey, styleValue, props) {
-    // Here we add support for camel case.
-    styleKey = styleKey.replace(/([A-Z])/g, g => '-' + g[0].toLowerCase());
-
-    if(styleKey === 'content') {
-      styleValue = `'${styleValue}'`;
-    }
-    
-    // Parse props
-    styleValue = this.parseProps(props, '' + styleValue);
-
-    // Parse variables
-    styleValue = parseVariables('' + styleValue);
-
-    styleKey = runPlugin('parseKey', styleKey);
-
-    runPlugin('parseValue', styleValue);
-    runPlugin('parseKeyValue', (handler) => {
-      const { key, value } = handler({ key: styleKey, value: styleValue });
-      styleKey = key;
-      styleValue = value;
-    })
-
-    return {
-      key: styleKey,
-      value: styleValue,
-    };
-  }
 
   printCSSKeyValues(styles, depth, props) {
     let string = '';
     styles = parseMixins(styles, props);
     Object.entries(styles).forEach(([selector, styleValue]) => {
 
-      let { key, value } = this.parseKeyValue(selector, styleValue, props);
+      let { key, value } = parseKeyValue(selector, styleValue, props);
       // Support prefix with [] keys/values;
       if(!Array.isArray(value)) {
         value = [ value ];
@@ -65,6 +28,8 @@ export default class CSSPrinter {
         key = [ key ];
       }
       key.forEach((pK) => {
+        // Here we add support for camel case.
+        pK = pK.replace(/([A-Z])/g, g => '-' + g[0].toLowerCase());
         value.forEach((pV) => {
           string += `${indentString(depth)}${pK}: ${pV};\r\n`;
         });
@@ -82,7 +47,7 @@ export default class CSSPrinter {
       selector = selector.replace(/&/gi, selectors.join(''));
     }
 
-    selector = this.parseProps(props, selector);
+    selector = parseProps(selector, props);
     let rawCss = `${indentString(depth)}${selector} {\r\n`;
     rawCss += this.printCSSKeyValues(styles, depth + 1, props);
     rawCss += `${indentString(depth)}}`

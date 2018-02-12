@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
-import { element, setGlobalOption } from 'react-swiss';
+import { element, setOption } from 'react-swiss';
 
 import sw from './app.swiss';
 
-setGlobalOption('inline', true);
+setOption('inline', true);
 
 const Wrapper = element('div', sw.wrapper, 'flex')
 const Label = element('span', sw.label, 'flex wrapper');
@@ -12,7 +12,7 @@ class App extends PureComponent {
   render() {
     return (
       <Wrapper>
-        <Label color="#ff4400" test test2 width={'102px'}>Hello</Label>
+        <Label color="rgba(#ff4400, 0.5)">Hello</Label>
       </Wrapper>
     );
   }

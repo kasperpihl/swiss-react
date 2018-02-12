@@ -1,8 +1,6 @@
 import { parseVariables } from '../features/variables';
-import { parseMixins } from '../features/mixins';
 import { runPlugin } from '../features/plugins';
-
-const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
+import parseProps from './parseProps';
 
 export default (styleKey, styleValue, props = {}) => {
   if(styleKey === 'content') {
@@ -10,10 +8,7 @@ export default (styleKey, styleValue, props = {}) => {
   }
   
   // Parse props
-  styleValue = ('' + styleValue).replace(PROPS_REGEX, (v1, propName, defaultValue) => {
-    const pVal = props[propName]
-    return pVal || defaultValue || '';
-  })
+  styleValue = parseProps('' + styleValue, props);
 
   // Parse variables
   styleValue = parseVariables('' + styleValue);

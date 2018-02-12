@@ -2,7 +2,7 @@ import React from 'react';
 
 import SwissController from '../classes/SwissController';
 import SwissElement from '../components/SwissElement';
-import { getGlobalOption } from '../features/options';
+import { getOption } from '../features/options';
 
 const swissController = new SwissController();
 
@@ -14,7 +14,7 @@ const element = (options, ...styles) => {
     return console.warn('swiss element: options must include element');
   }
   if(typeof options.inline === 'undefined') {
-    options.inline = !!getGlobalOption('inline');
+    options.inline = !!getOption('inline');
   }
 
   options.defaultSwissController = swissController;

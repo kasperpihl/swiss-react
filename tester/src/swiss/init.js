@@ -21,6 +21,10 @@ addVariables(colors, screenSize);
 
 // addPlugin('parseRawCss', rawCss => stylis('', rawCss));
 addPlugin('parseKeyValue', keyValue => {
+  
+  if(keyValue.key === 'color') {
+    console.log(hexToRGBA(keyValue.value));
+  }
   return {
     key: keyValue.key,
     value: hexToRGBA(keyValue.value),
