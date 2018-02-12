@@ -77,7 +77,7 @@ class SwissElement extends React.PureComponent {
 
     let element = [ 
       <ChangeUpdater key="updater" runUpdate={this.onRunUpdate} />,
-      <EL key="element" className={computedClassName} {...elementProps}>
+      <EL key="element" ref={this.props.innerRef} className={computedClassName} {...elementProps}>
         {this.props.children}
       </EL>
     ];

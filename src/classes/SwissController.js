@@ -28,9 +28,9 @@ export default class SwissController {
         if(oldProps[propKey] !== props[propKey]) {
           this.needUpdates[ref] = true;
           this.shouldUpdate = true;
-          subscription.props = props;
         }
-      })
+      });
+      subscription.props = props;
     }
   }
   unsubscribe(ref) {
@@ -42,7 +42,7 @@ export default class SwissController {
   }
   getInlineStyles(ref) {
     const s = this.subscriptions.find(s => s.ref === ref);
-    if(!this.needUpdates[ref] || !s.inlineStyles) {
+    if(this.needUpdates[ref] || !s.inlineStyles) {
       s.inlineStyles = inliner(s.parsedStyles.styleArray, s.props);
     }
     return s.inlineStyles;
