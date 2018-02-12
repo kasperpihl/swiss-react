@@ -11,7 +11,7 @@ export { addPlugin } from './features/plugins';
 
 export { addStyles } from './features/styles';
 
-export { setGlobalOption, clearGlobalOption, getGlobalOption } from './features/options';
+export { setGlobalOption, unsetGlobalOption, getGlobalOption } from './features/options';
 // react-swiss
 
 export { default as SwissProvider } from './components/SwissProvider';
