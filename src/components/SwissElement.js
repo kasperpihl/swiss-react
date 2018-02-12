@@ -69,7 +69,7 @@ class SwissElement extends React.PureComponent {
     if(options.inline) {
       const style = swissController.getInlineStyles(this.subscription.ref);
       return (
-        <EL style={style} {...elementProps}>
+        <EL style={style} ref={this.props.innerRef} {...elementProps}>
           {this.props.children}
         </EL>
       );
@@ -77,7 +77,7 @@ class SwissElement extends React.PureComponent {
 
     let element = [ 
       <ChangeUpdater key="updater" runUpdate={this.onRunUpdate} />,
-      <EL key="element" ref={this.props.innerRef} className={computedClassName} {...elementProps}>
+      <EL key="element" className={computedClassName} {...elementProps}>
         {this.props.children}
       </EL>
     ];
