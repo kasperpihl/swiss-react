@@ -30,11 +30,20 @@ class SwissElement extends React.PureComponent {
     const { swissController } = this.context;
     return swissController || this.props.__swissOptions.defaultSwissController;
   }
-
-  render() {
+  renderInline(EL, props) {
     
+    
+
+    
+  }
+  renderWithClassName() {
+
+  }
+  render() {
+    const swissController = this.getSwissController();
     const options = this.props.__swissOptions;
     const EL = options.element;
+    
     let computedClassName = `sw-${this.subscription.ref}`;
     if(this.props.className) {
       computedClassName = `${this.props.className} ${computedClassName}`;
@@ -56,6 +65,16 @@ class SwissElement extends React.PureComponent {
         elementProps[propName] = propValue;
       }
     })
+
+    if(options.inline) {
+      const style = swissController.getInlineStyles(this.subscription.ref);
+      return (
+        <EL style={style} {...elementProps}>
+          {this.props.children}
+        </EL>
+      );
+    }
+
     let element = [ 
       <ChangeUpdater key="updater" runUpdate={this.onRunUpdate} />,
       <EL key="element" ref={this.props.innerRef} className={computedClassName} {...elementProps}>

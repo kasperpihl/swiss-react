@@ -11,32 +11,9 @@ export { addPlugin } from './features/plugins';
 
 export { addStyles } from './features/styles';
 
+export { setGlobalOption, clearGlobalOption, getGlobalOption } from './features/options';
 // react-swiss
 
 export { default as SwissProvider } from './components/SwissProvider';
 
 export { default as SwissController } from './classes/SwissController';
-
-export * from './elements';
-
-/*
-<Div sw={[]}
-[] HTML elements
-[] addResetStyles
-[] addGlobalStyles
-[] addMixin
-[] addVariables
-[] addPlugin
-
-withSwiss(WrappedComponent, {
-  inlineStyles: true
-});
-
-react-swiss-core
-react-swiss-dom
-react-swiss-native
-
-The idea is to store all styles in one element
-As elements subscribe, their styles get added in the tree.
-1. 
-*/

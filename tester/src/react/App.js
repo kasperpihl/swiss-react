@@ -1,35 +1,19 @@
 import React, { PureComponent } from 'react';
-import { H1, H2, Div, Span, addStyles } from 'react-swiss';
+import { element, setGlobalOption } from 'react-swiss';
 
-addStyles('bg', {
-  background: '#{val}',
-});
+import sw from './app.swiss';
 
-addStyles('ml', {
-  marginLeft: '#{val=0px}',
-});
+setGlobalOption('inline', true);
 
-const styles = {
-  container: {
-    height: '100px',
-  },
-  span: {
-    color: 'black',
-    '.spanHover:hover &': {
-      color: 'red',
-    },
-    '&:hover': {
-      color: 'blue'
-    },
-  },
-}
+const Wrapper = element('div', sw.wrapper, 'flex')
+const Label = element('span', sw.label, 'flex wrapper');
 
 class App extends PureComponent {
   render() {
     return (
-      <Div sw="bg">
-        <Span sw={styles.span}>Hello</Span>
-      </Div>
+      <Wrapper>
+        <Label color="#ff4400" test test2 width={'102px'}>Hello</Label>
+      </Wrapper>
     );
   }
 }

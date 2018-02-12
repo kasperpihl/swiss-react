@@ -1,5 +1,6 @@
 import createSubscription from '../helpers/createSubscription';
 import CSSPrinter from './CSSPrinter';
+import Inliner from './Inliner';
 import DomHandler from './DomHandler';
 import { toString } from '../features/globals';
 
@@ -38,6 +39,14 @@ export default class SwissController {
       this.subscriptions.splice(index, 1);
       this.shouldUpdate = true;
     }
+  }
+  getInlineStyles(ref) {
+    const s = this.subscriptions.find(s => s.ref === ref);
+    if(!this.needUpdates[ref] || !s.inlineStyles) {
+      const inliner = new Inliner(s.parsedStyles.styleArray, s.parsedStyles.allProps);
+      s.inlineStyles = inliner.run(s.props);
+    }
+    return s.inlineStyles;
   }
   _getPrintedStyles() {
     return this.subscriptions.map((s) => {

@@ -8,10 +8,15 @@ export default (values, props) => {
     wasArray = false;
   }
 
-  const res = values.map(v => v.replace(PROPS_REGEX, (v1, propName, defaultValue) => {
-    const pVal = props[propName]
-    return pVal || defaultValue || '';
-  }));
+  const res = values.map((v) => {
+    if(typeof v !== 'string') {
+      return v;
+    }
+    return v.replace(PROPS_REGEX, (v1, propName, defaultValue) => {
+      const pVal = props[propName]
+      return pVal || defaultValue || '';
+    })
+  });
 
   return wasArray ? res : res[0];
 }
