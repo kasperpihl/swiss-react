@@ -13,13 +13,16 @@ export default (styleKey, styleValue, props = {}) => {
   // Parse variables
   styleValue = parseVariables('' + styleValue);
 
-  styleKey = runPlugin('parseKey', styleKey);
+  // styleKey = runPlugin('parseKey', styleKey);
 
-  runPlugin('parseValue', styleValue);
+  // runPlugin('parseValue', styleValue);
   runPlugin('parseKeyValue', (handler) => {
-    const { key, value } = handler({ key: styleKey, value: styleValue });
-    styleKey = key;
-    styleValue = value;
+    const res = handler(styleKey, styleValue);
+    if(typeof res !== 'object' || typeof res.key !== 'string') {
+      return console.warn('swiss plugin error for: parseKeyValue. Expected object with key and value.');
+    }
+    styleKey = res.key;
+    styleValue = res.value;
   })
 
   return {
