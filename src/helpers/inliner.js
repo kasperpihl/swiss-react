@@ -19,6 +19,5 @@ export default (styleArray, props) => {
       Object.assign(composedStyles, dStyles);
     }
   })
-  console.log(composedStyles);
   return composedStyles;
 }

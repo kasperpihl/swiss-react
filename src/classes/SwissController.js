@@ -44,6 +44,7 @@ export default class SwissController {
     const s = this.subscriptions.find(s => s.ref === ref);
     if(this.needUpdates[ref] || !s.inlineStyles) {
       s.inlineStyles = inliner(s.parsedStyles.styleArray, s.props);
+      delete this.needUpdates[ref];
     }
     return s.inlineStyles;
   }
