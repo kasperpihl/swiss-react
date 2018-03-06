@@ -32,9 +32,6 @@ class SwissElement extends React.PureComponent {
   }
   renderInline(EL, props) {
     
-    
-
-    
   }
   renderWithClassName() {
 
