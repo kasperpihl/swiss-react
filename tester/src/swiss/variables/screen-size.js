@@ -1,4 +1,6 @@
-export default {
+import { addVariables } from 'react-swiss';
+
+addVariables({
   min400: 'screen and (min-width: 400px)',
   min600: 'screen and (min-width: 600px)',
   min800: 'screen and (min-width: 800px)',
@@ -13,4 +15,4 @@ export default {
   max1200: 'screen and (max-width: 1200px)',
   max1400: 'screen and (max-width: 1400px)',
   max1600: 'screen and (max-width: 1600px)',
-}
+});

@@ -1,4 +1,6 @@
-export default (direction, horizontal, vertical) => {
+import { addMixin } from 'react-swiss';
+
+addMixin('flex', (direction, horizontal, vertical) => {
   let flex = {};
   flex.display = 'flex';
 
@@ -79,4 +81,4 @@ export default (direction, horizontal, vertical) => {
   }
 
   return {...flex}
-};
+});

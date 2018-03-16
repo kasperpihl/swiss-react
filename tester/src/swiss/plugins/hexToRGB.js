@@ -1,4 +1,11 @@
-export default (value) => {
+import { addPlugin } from 'react-swiss';
+
+addPlugin('parseKeyValue', (key, value) => ({
+  key,
+  value: hexToRGBA(value),
+}));
+
+const hexToRGBA = (value) => {
 
   const isHex = ((hex) => {
     return /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(hex)

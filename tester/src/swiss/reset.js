@@ -1,4 +1,6 @@
-export default {
+import { addGlobals } from 'react-swiss';
+
+addGlobals({
   '@import': 'url(\'https://fonts.googleapis.com/css?family=Anton|Overpass+Mono:700\')',
   '*,*:after,*:before,a,button,canvas,g,h1,h2,h3,h4,h5,h6,image,img,input,li,p,path,svg,ul,textarea,blockquote': {
     backgroundColor: 'transparent',
@@ -26,7 +28,7 @@ export default {
   'img': {
     display: 'block',
   },
-  'html, body, #root': {
+  'html, body, #content': {
     height: '100%',
   },
   '@font-face': [
@@ -61,4 +63,4 @@ export default {
       fontStyle: 'regular',
     },
   ]
-}
+});
