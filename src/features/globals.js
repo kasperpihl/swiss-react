@@ -20,6 +20,9 @@ function renderGlobals() {
 export function toString() {
   return _domHandler.toString();
 }
+export function toComponent() {
+  return _domHandler.toComponent();
+}
 
 export function addGlobals(...globalsObj) {
   globals = globals.concat(globalsObj);

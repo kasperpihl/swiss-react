@@ -13,6 +13,8 @@ export { setOption } from './features/options';
 
 // react-swiss
 
+export { renderStatic } from './helpers/renderStatic';
+
 export { default as SwissProvider } from './components/SwissProvider';
 
 export { default as SwissController } from './classes/SwissController';

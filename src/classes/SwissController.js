@@ -2,7 +2,7 @@ import createSubscription from '../helpers/createSubscription';
 import CSSPrinter from './CSSPrinter';
 import DomHandler from './DomHandler';
 import inliner from '../helpers/inliner';
-import { toString } from '../features/globals';
+import { toString, toComponent } from '../features/globals';
 
 export default class SwissController {
   constructor(isDefault) {
@@ -61,6 +61,9 @@ export default class SwissController {
   toString() {
     this.updateDom(true);
     return toString() + '\r\n' + this.domHandler.toString();
+  }
+  toComponents() {
+    return [toComponent(), this.domHandler.toComponent()].filter(v => !!v);
   }
   updateDom(force) {
     if(this.shouldUpdateDOM || force) {
