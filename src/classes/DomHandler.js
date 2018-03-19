@@ -1,4 +1,6 @@
- export default class DomHandler {
+import React from 'react';
+
+export default class DomHandler {
   constructor(id) {
     this.id = `sw-${id}`;
     this.type = 'text/css';
