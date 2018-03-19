@@ -12,6 +12,15 @@
     string += '</style>';
     return string;
   }
+  toComponent() {
+    if(!this._childContent) return null;
+
+    return (
+      <style id={this.id} type={this.type}>
+        {this._childContent}
+      </style>
+    )
+  }
   update(newChildContent) {
     this._childContent = newChildContent;
     if(typeof document === 'undefined') {

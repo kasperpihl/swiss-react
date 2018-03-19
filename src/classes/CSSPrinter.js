@@ -8,18 +8,17 @@ import testCondition from '../helpers/testCondition';
 import indentString from '../utils/indentString';
 
 export default class CSSPrinter {
-  constructor(styleArray, allProps) {
+  constructor(styleArray) {
     this.styleArray = styleArray;
-    this.allProps = allProps;
     this.swissObjects = {};
   }
 
   printCSSKeyValues(styles, depth, props) {
     let string = '';
-    styles = parseMixins(styles, props);
+    styles = parseMixins(styles, props, this.touchedProps);
     Object.entries(styles).forEach(([selector, styleValue]) => {
 
-      let { key, value } = parseKeyValue(selector, styleValue, props);
+      let { key, value } = parseKeyValue(selector, styleValue, props, this.touchedProps);
       // Support prefix with [] keys/values;
       if(!Array.isArray(value)) {
         value = [ value ];
@@ -47,7 +46,7 @@ export default class CSSPrinter {
       selector = selector.replace(/&/gi, selectors.join(''));
     }
 
-    selector = parseProps(selector, props);
+    selector = parseProps(selector, props, this.touchedProps);
     let rawCss = `${indentString(depth)}${selector} {\r\n`;
     rawCss += this.printCSSKeyValues(styles, depth + 1, props);
     rawCss += `${indentString(depth)}}`
@@ -70,8 +69,11 @@ export default class CSSPrinter {
       }
       
       const conditions = styleObj.conditions || [];
-      const passed = conditions.filter((c) => testCondition(c, this.props));
-
+      
+      const passed = conditions.filter((c) => {
+        this.touchedProps[c.key] = true; // track props to exclude in html
+        return testCondition(c, this.props);
+      });
       if(passed.length !== conditions.length) {
         return delete styleObj.rawCss;
       }
@@ -94,8 +96,12 @@ export default class CSSPrinter {
     }).filter(s => !!s).join('');
   }
   print(props) {
+    this.touchedProps = {};
     this.props = props;
     this.printStyleArray(this.styleArray, 0);
-    return this.getPrintedCSS(this.styleArray, 0);
+    return {
+      printedCss: this.getPrintedCSS(this.styleArray, 0),
+      touchedProps: this.touchedProps,
+    };
   }
 }

@@ -1,10 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import ChangeUpdater from './ChangeUpdater';
 import getDeep from '../utils/getDeep';
 import arrayAddUnique from '../utils/arrayAddUnique';
-
+import propValidate from '../utils/propValidate';
 
 class SwissElement extends React.PureComponent {
   componentWillMount() {
@@ -30,58 +29,81 @@ class SwissElement extends React.PureComponent {
     const { swissController } = this.context;
     return swissController || this.props.__swissOptions.defaultSwissController;
   }
-  renderInline(EL, props) {
-    
+  getOptions() {
+    return this.props.__swissOptions;
   }
-  renderWithClassName() {
-
+  getElement() {
+    return this.props.__swissOptions.element;
   }
-  render() {
-    const swissController = this.getSwissController();
-    const options = this.props.__swissOptions;
-    const EL = options.element;
-    
-    let computedClassName = `sw-${this.subscription.ref}`;
+  getGeneratedClassName() {
+    let className = `sw-${this.subscription.ref}`;
     if(this.props.className) {
-      computedClassName = `${this.props.className} ${computedClassName}`;
+      className = `${this.props.className} ${className}`;
     }
 
-    
-    let excludePropsToChild = ['className', 'sw', 'innerRef', '__swissOptions'];
-
-    if(Array.isArray(options.excludeProps)) {
-      excludePropsToChild = excludePropsToChild.concat(options.excludeProps);
-    }
-
-    const elementProps = {};
     const allProps = getDeep(this, 'subscription.parsedStyles.allProps') || [];
+    
+    allProps.forEach((propName) => {
+      if(propName.startsWith('!') && !this.props[propName.slice(1)]) {
+        className += ` sw-not-${propName.slice(1)}`;
+      } else if(!propName.startsWith('!') && this.props[propName]) {
+        className += ` sw-${propName}`;
+      }
+    });
+
+    return className;
+  }
+  getPropsForElement() {
+    const options = this.getOptions();
+
+    let excludeProps = ['className', 'innerRef', '__swissOptions'];
+    if(Array.isArray(options.excludeProps)) {
+      excludeProps = excludeProps.concat(options.excludeProps);
+    }
+
+    let includeProps = [];
+    if(Array.isArray(options.includeProps)) {
+      includeProps = includeProps.concat(options.includeProps);
+    }
+  
+    const elementProps = {};
+    const touchedProps = getDeep(this, 'subscription.touchedProps') || {};
+
     Object.entries(this.props).forEach(([propName, propValue]) => {
-      if(allProps.indexOf(propName) > -1) {
-        computedClassName += ` sw-${this.subscription.ref}-${propName}`;
-      } else if(excludePropsToChild.indexOf(propName) === -1) {
+      if(includeProps.indexOf(propName) > -1 || 
+        (!touchedProps[propName] && excludeProps.indexOf(propName) === -1)) {
         elementProps[propName] = propValue;
       }
-    })
+    });
 
-    if(options.inline) {
-      const style = swissController.getInlineStyles(this.subscription.ref);
-      return (
-        <EL style={style} ref={this.props.innerRef} {...elementProps}>
-          {this.props.children}
-        </EL>
-      );
-    }
+    return elementProps;
+  }
+
+  renderInline() {
+    const EL = this.getElement();
+    const props = this.getPropsForElement();
+
+    return (
+      <EL style={this.subscription.inlineStyles} ref={this.props.innerRef} {...props}>
+        {this.props.children}
+      </EL>
+    );
+  }
+  renderWithClassName() {
+    const EL = this.getElement();
+    const props = this.getPropsForElement();
+    const className = this.getGeneratedClassName();
 
     let element = [ 
       <ChangeUpdater key="updater" runUpdate={this.onRunUpdate} />,
-      <EL key="element" ref={this.props.innerRef} className={computedClassName} {...elementProps}>
+      <EL key="element" ref={this.props.innerRef} className={className} {...props}>
         {this.props.children}
       </EL>
     ];
 
     if(parseInt(React.version, 10) < 16) {
       element = (
-        <EL ref={this.props.innerRef} className={computedClassName} {...elementProps}>
+        <EL ref={this.props.innerRef} className={className} {...props}>
           <ChangeUpdater runUpdate={this.onRunUpdate} />
           {this.props.children}
         </EL>
@@ -89,15 +111,20 @@ class SwissElement extends React.PureComponent {
       
     }
 
-    if(typeof options.render === 'function') {
-      return options.render(element, this.props);
-    }
     return element;
+  }
+
+  render() {
+    const options = this.getOptions();
+    if(options.inline) {
+      return this.renderInline();
+    }
+    return this.renderWithClassName();    
   }
 }
 
 SwissElement.contextTypes = {
-  swissController: PropTypes.object,
+  swissController: propValidate,
 };
 
 export default SwissElement;

@@ -9,9 +9,8 @@ export { addGlobals } from './features/globals';
 
 export { addPlugin } from './features/plugins';
 
-export { addStyles } from './features/styles';
+export { setOption } from './features/options';
 
-export { setOption, getOption } from './features/options';
 // react-swiss
 
 export { default as SwissProvider } from './components/SwissProvider';

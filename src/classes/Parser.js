@@ -3,40 +3,12 @@ import { parseVariables } from '../features/variables';
 const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
 
 export default class Parser {
-  checkAndAddProps(options, names, isKey) {
-    if(!Array.isArray(names)) {
-      names = [ names ];
-    }
-
-    names.forEach((name) => {
-      if(typeof name !== 'string') {
-        return;
-      }
-      const valueProps = name.match(PROPS_REGEX) || [];
-      valueProps.forEach((pK, test) => {
-        let propName = pK.substr(2, pK.length - 3);
-        if(propName.indexOf('=') > -1) {
-          propName = propName.slice(0, propName.indexOf('='));
-        }
-        if(isKey) {
-          options.conditions = options.conditions.concat({
-            key: propName,
-            operator: 'hasValue',
-          });
-        }
-        this.addProp(options, propName);
-      });
-    })
+  checkAndAddProps(options, name) {
+    
   }
-  addProp(options, name) {
-    if(!options.props) {
-      options.props = [];
-    }
-    if(options.props.indexOf(name) === -1) {
-      options.props.push(name);
-    }
-    if(this.allProps.indexOf(name) === -1) {
-      this.allProps.push(name);
+  addProp(prop) {
+    if(this.allProps.indexOf(prop) === -1) {
+      this.allProps.push(prop);
     }
   }
 
@@ -57,7 +29,18 @@ export default class Parser {
       }
      
     } else if(key.indexOf('&') > -1) {
-      this.checkAndAddProps(returnObj, key, true);
+      // Check for things like '#{hoverClass=.sw-global}:hover &'
+      const valueProps = key.match(PROPS_REGEX) || [];
+      valueProps.forEach((pK, test) => {
+        let propName = pK.substr(2, pK.length - 3);
+        // '#{hoverClass}:hover &' should require hoverClass prop to be added
+        if(propName.indexOf('=') === -1) {
+          returnObj.conditions = returnObj.conditions.concat({
+            key: propName,
+            operator: 'hasValue',
+          });
+        }
+      });
     } else if(!options.globals) {
       // selector is a prop!
       returnObj.selector = '&';
@@ -81,9 +64,15 @@ export default class Parser {
         }
       })
       returnObj.conditions = returnObj.conditions.concat(condition);
-      
-      this.addProp(returnObj, key);
-      const newSelector = `${this.className}-${key}`;
+
+      let newSelector = `.sw-${key}`;
+      if(condition.operator === 'hasNoValue') {
+        newSelector = `.sw-not-${key}`;
+        this.addProp(`!${key}`);
+      } else {
+        this.addProp(key);
+      }
+
       if(returnObj.selectors.indexOf(newSelector) === -1){
         returnObj.selectors.push(newSelector);
       }
@@ -99,7 +88,6 @@ export default class Parser {
       key = parseVariables(key);
 
       let val = mutatedStyles[indexKey];
-      this.checkAndAddProps(options, val);
 
       if(key.startsWith('@import')) {
         delete mutatedStyles[indexKey];
@@ -108,7 +96,7 @@ export default class Parser {
         })
       }
 
-      // ignore mixins. we parse them later
+      // ignore mixins. we parse them runtime
       if(key.startsWith('_')) {
         return;
       }

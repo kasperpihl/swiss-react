@@ -5,7 +5,7 @@ let Provider;
 let GlobalConsumer;
 
 if(typeof React.createContext !== 'undefined') {
-  Context = React.createContext({});
+  Context = React.createContext("blue");
   Provider = Context.Provider;
   GlobalConsumer = Context.Consumer;
 }

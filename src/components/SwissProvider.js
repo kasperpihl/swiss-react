@@ -1,5 +1,5 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import React, { PureComponent, Children } from 'react';
+import propValidate from '../utils/propValidate';
 
 export default class SwissProvider extends PureComponent {
   getChildContext() {
@@ -9,14 +9,13 @@ export default class SwissProvider extends PureComponent {
   }
   render() {
     const { children } = this.props;
-    return children;
+    return Children.only(children);
   }
 }
 
 SwissProvider.childContextTypes = {
-  swissController: PropTypes.object,
+  swissController: propValidate,
 };
 SwissProvider.propTypes = {
-  swiss: PropTypes.object,
-  children: PropTypes.element,
+  swiss: propValidate,
 };

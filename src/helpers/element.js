@@ -1,10 +1,8 @@
 import React from 'react';
 
-import SwissController from '../classes/SwissController';
+import { defaultSwissController } from '../classes/SwissController';
 import SwissElement from '../components/SwissElement';
 import { getOption } from '../features/options';
-
-const swissController = new SwissController();
 
 const element = (options, ...styles) => {
   if(typeof options !== 'object') {
@@ -16,24 +14,21 @@ const element = (options, ...styles) => {
   if(typeof options.inline === 'undefined') {
     options.inline = !!getOption('inline');
   }
+  options.styles = styles;
+  options.defaultSwissController = defaultSwissController;
 
-  options.defaultSwissController = swissController;
-
-  const render = (props) => {
-    const { 
-      sw,
-      ...rest
+  const render = props => {
+    const {
+      __swissOptions,
+      ...rest,
     } = props;
-    let injectStyles = styles;
-    if(sw) {
-      injectStyles = [].concat(sw).concat(styles);
+    if(__swissOptions) {
+      console.warn('__swissOptions is a reserved prop name.')
     }
-
     return (
       <SwissElement 
+        {...rest}
         __swissOptions={options}
-        sw={injectStyles}
-        {...rest} 
       />
     )
   };

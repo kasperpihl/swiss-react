@@ -3,24 +3,26 @@ import { element, setOption, addMixin } from 'react-swiss';
 
 import sw from './App.swiss';
 
-setOption('inline', true);
-addMixin('test', () => {
-  return {
-    color: 'blue',
-    _size: '100%',
-  }
-})
+// setOption('inline', true);
 
 const Wrapper = element('div', sw.Wrapper);
 const Label = element('span', sw.Label, {
-  _test: '',
+  test: {
+    color: 'blue',
+  },
+  '#{hoverClass} &': {
+    color: 'green'
+  },
+  '@media $max600': {
+    color: 'blue',
+  },
 });
 
 class App extends PureComponent {
   render() {
     return (
       <Wrapper>
-        <Label color="rgba(#ff4400, 0.9)">Hello</Label>
+        <Label test color="rgba(#ff4400, 0.9)">Hello</Label>
       </Wrapper>
     );
   }

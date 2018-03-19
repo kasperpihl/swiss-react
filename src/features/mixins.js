@@ -33,13 +33,13 @@ export function runMixin(mixinName, mixinArgs) {
   return result;
 }
 
-export function parseMixins(styleObject, props) {
+export function parseMixins(styleObject, props, touchedProps) {
   const mutatedObject = Object.assign({}, styleObject);
   const newObject = {};
   Object.entries(styleObject).forEach(([styleKey, styleValue]) => {
     if(styleKey.startsWith('_')) {
       delete mutatedObject[styleKey];
-      Object.assign(newObject, runMixin(styleKey, parseProps(styleValue, props)));
+      Object.assign(newObject, runMixin(styleKey, parseProps(styleValue, props, touchedProps)));
     }
   })
   Object.assign(newObject, mutatedObject);

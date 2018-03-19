@@ -50,7 +50,5 @@
   "peerDependencies": {
     "react": ">=15"
   },
-  "dependencies": {
-    "prop-types": "^15.6.0"
-  }
+  "dependencies": {}
 }

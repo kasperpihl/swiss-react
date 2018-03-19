@@ -28,4 +28,4 @@ const LocalProvider = (props) => {
 export {
   LocalConsumer,
   LocalProvider,
-}
+};

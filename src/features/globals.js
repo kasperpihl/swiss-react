@@ -15,7 +15,7 @@ function renderGlobals() {
 
   const cssPrinter = new CSSPrinter(styleArray, []);
 
-  _domHandler.update(cssPrinter.print(false));
+  _domHandler.update(cssPrinter.print(false).printedCss);
 }
 export function toString() {
   return _domHandler.toString();
