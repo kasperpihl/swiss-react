@@ -63,6 +63,7 @@ export default class SwissController {
     return toString() + '\r\n' + this.domHandler.toString();
   }
   toComponents() {
+    this.updateDom(true);
     return [toComponent(), this.domHandler.toComponent()].filter(v => !!v);
   }
   updateDom(force) {
