@@ -18,7 +18,7 @@ export default class DomHandler {
     if(!this._childContent) return null;
 
     return (
-      <style id={this.id} type={this.type}>
+      <style id={this.id} type={this.type} key={this.id}>
         {this._childContent}
       </style>
     )

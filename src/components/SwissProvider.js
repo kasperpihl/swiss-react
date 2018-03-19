@@ -17,5 +17,5 @@ SwissProvider.childContextTypes = {
   swissController: propValidate,
 };
 SwissProvider.propTypes = {
-  swiss: propValidate,
+  controller: propValidate,
 };
