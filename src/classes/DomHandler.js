@@ -3,13 +3,13 @@ import React from 'react';
 export default class DomHandler {
   constructor(id) {
     this.id = `sw-${id}`;
-    this.type = 'text/css';
+    this.add();
   }
   toString() {
     if(!this._childContent) {
       return null;
     }
-    let string = `<style id="${this.id}" type="${this.type}">`;
+    let string = `<style id="${this.id}" type="text/css">`;
     string += this._childContent;
     string += '</style>';
     return string;
@@ -18,7 +18,7 @@ export default class DomHandler {
     if(!this._childContent) return null;
 
     return (
-      <style id={this.id} type={this.type} key={this.id}>
+      <style id={this.id} type="text/css">
         {this._childContent}
       </style>
     )
@@ -50,7 +50,7 @@ export default class DomHandler {
     if(!this._domEl) {
       this._domEl = document.createElement('style');
       this._domEl.id = this.id;
-      this._domEl.type = this.type;
+      this._domEl.type = 'text/css';
       document.head.appendChild(this._domEl);
     }
     

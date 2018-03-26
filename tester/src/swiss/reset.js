@@ -1,6 +1,6 @@
-import { addGlobals } from 'react-swiss';
+import { addGlobalStyles } from 'react-swiss';
 
-addGlobals({
+addGlobalStyles({
   '@import': 'url(\'https://fonts.googleapis.com/css?family=Anton|Overpass+Mono:700\')',
   '*,*:after,*:before,a,button,canvas,g,h1,h2,h3,h4,h5,h6,image,img,input,li,p,path,svg,ul,textarea,blockquote': {
     backgroundColor: 'transparent',
@@ -23,7 +23,7 @@ addGlobals({
     outlineOffset: 0,
   },
   'input, textarea': {
-    cursor: 'text'
+    cursor: ['text', 'pointer'],
   },
   'img': {
     display: 'block',

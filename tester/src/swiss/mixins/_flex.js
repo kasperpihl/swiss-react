@@ -1,6 +1,6 @@
 import { addMixin } from 'react-swiss';
 
-addMixin('flex', (direction, horizontal, vertical) => {
+addMixin('flex', (getProp, direction, horizontal, vertical) => {
   let flex = {};
   flex.display = 'flex';
 

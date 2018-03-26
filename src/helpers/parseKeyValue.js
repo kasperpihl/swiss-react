@@ -2,31 +2,28 @@ import { parseVariables } from '../features/variables';
 import { runPlugin } from '../features/plugins';
 import parseProps from './parseProps';
 
-export default (styleKey, styleValue, props = {}, touchedProps) => {
-  if(styleKey === 'content') {
-    styleValue = `'${styleValue}'`;
+export default (key, value, props = {}, touchedProps) => {
+  if(key === 'content') {
+    value = `'${value}'`;
   }
   
   // Parse props
-  styleValue = parseProps('' + styleValue, props, touchedProps);
+  value = parseProps(value, props, touchedProps);
 
   // Parse variables
-  styleValue = parseVariables('' + styleValue);
+  value = parseVariables(value);
 
-  // styleKey = runPlugin('parseKey', styleKey);
-
-  // runPlugin('parseValue', styleValue);
   runPlugin('parseKeyValue', (handler) => {
-    const res = handler(styleKey, styleValue);
+    const res = handler(key, value);
     if(typeof res !== 'object' || typeof res.key !== 'string') {
       return console.warn('swiss plugin error for: parseKeyValue. Expected object with key and value.');
     }
-    styleKey = res.key;
-    styleValue = res.value;
+    key = res.key;
+    value = res.value;
   })
 
   return {
-    key: styleKey,
-    value: styleValue,
+    key,
+    value,
   };
 }

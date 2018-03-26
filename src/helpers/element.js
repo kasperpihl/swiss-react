@@ -3,18 +3,25 @@ import React from 'react';
 import { defaultSwissController } from '../classes/SwissController';
 import SwissElement from '../components/SwissElement';
 import { getOption } from '../features/options';
+import convertStylesToArray from './convertStylesToArray';
 
 const element = (options, ...styles) => {
   if(typeof options !== 'object') {
     options = { element: options };
   }
   if(!options.element) {
-    return console.warn('swiss element: options must include element');
+    return console.warn('swiss element(): options must include element');
   }
   if(typeof options.inline === 'undefined') {
     options.inline = !!getOption('inline');
   }
-  options.styles = styles;
+  options.styles = Object.entries(styles).map((entry) => ({
+    selectors: ['&'],
+    type: 'nested',
+    condition: null,
+    key: '&',
+    value: convertStylesToArray(entry[1], ['&']),
+  }));
   options.defaultSwissController = defaultSwissController;
 
   const render = props => {

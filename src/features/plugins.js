@@ -1,8 +1,6 @@
 const plugins = {};
 
 const supportedPlugins = [
-  'parseKey',
-  'parseValue',
   'parseKeyValue',
   'parseRawCss'
 ];

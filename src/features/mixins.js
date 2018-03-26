@@ -1,47 +1,57 @@
 import parseProps from '../helpers/parseProps';
+import { parseVariables } from './variables';
+import convertStylesToArray from '../helpers/convertStylesToArray';
 
 const mixins = {};
 
-export function addMixin(name, handler) {
+export function addMixin(name, mixin) {
   if(typeof name !== 'string') {
     return console.warn('swiss addMixin: first argument should be name of mixin');
   }
-  if(typeof handler !== 'function') {
-    return console.warn('swiss addMixin: second argument should be the mixin handler');
+  if(['function', 'object'].indexOf(typeof mixin) === -1) {
+    return console.warn('swiss addMixin: second argument should be a function or an object');
   }
   if(!name.startsWith('_')) {
     name = `_${name}`;
   }
-  mixins[name] = handler;
+  mixins[name] = mixin;
 }
 
-export function runMixin(mixinName, mixinArgs) {
-  let result = {};
-  const mixin = mixins[mixinName];
+function getMixin(name) {
+  if(!mixins[name] && name.startsWith('_')) {
+    name = name.slice(1);
+  }
+  const foundMixin = mixins[name];
+  if(!foundMixin) {
+    console.warn(`swiss: unknown mixin: ${name}`);
+  }
+  return foundMixin;
+}
+
+export function runMixin({ key, value, selectors }, props, touchedProps) {
+  const mixin = getMixin(key);
+  let result = mixin || null;
   if(typeof mixin === 'function') {
-    if(!Array.isArray(mixinArgs)) {
-      mixinArgs = [mixinArgs];
+    if(!Array.isArray(value)) {
+      value = [ value ];
     }
-    result = mixin(...mixinArgs);
+    // Make sure keys for mixins get parsed.
+    value = parseProps(value, props, touchedProps);
+    value = value.map(v => parseVariables(v));
+
+    // Create a function for getting props
+    const getProp = (name) => {
+      touchedProps[name] = true;
+      return props[name];
+    }
+    result = mixin(getProp, ...value);
     if(typeof result !== 'object') {
-      console.warn(`swiss: mixin "${mixinName.slice(1)}" returned ${typeof result}. Expected object`);
+      console.warn(`swiss: mixin "${name.slice(1)}" returned ${typeof result}. Expected object`);
       result = {};
     }
-  } else {
-    console.warn(`swiss: unknown mixin: ${mixinName.slice(1)}`);
+  }
+  if(result) {
+    result = convertStylesToArray(result, selectors)
   }
   return result;
-}
-
-export function parseMixins(styleObject, props, touchedProps) {
-  const mutatedObject = Object.assign({}, styleObject);
-  const newObject = {};
-  Object.entries(styleObject).forEach(([styleKey, styleValue]) => {
-    if(styleKey.startsWith('_')) {
-      delete mutatedObject[styleKey];
-      Object.assign(newObject, runMixin(styleKey, parseProps(styleValue, props, touchedProps)));
-    }
-  })
-  Object.assign(newObject, mutatedObject);
-  return newObject;
 }

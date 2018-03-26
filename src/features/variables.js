@@ -6,7 +6,13 @@ export function addVariables(...varObjects) {
   variables = Object.assign(variables, ...varObjects);
 }
 
+export function getVariable(key) {
+  return variables[key];
+}
+
 export function parseVariables(string) {
+  if(typeof string !== 'string') return string;
+
   return string.replace(VAR_REGEX, (v1, varName) => {
     const result = variables[varName];
     if(typeof result === 'undefined') {
