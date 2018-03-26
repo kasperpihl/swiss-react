@@ -76,7 +76,7 @@ export default class StyleParser {
       obj.selector = parseProps(obj.selector, props, touchedProps);
       obj.selector = parseVariables(obj.selector);
       // TODO: support comma separated stuff.
-      obj.selector = obj.selector.replace(/&/gi, className);
+      obj.selector = className.split(/,\ ?/g).map(s => obj.selector.replace(/&/gi, s)).join(', ');
       if(obj.children.length) {
         this.replacePropsAndVarDeep(obj.children);
       }

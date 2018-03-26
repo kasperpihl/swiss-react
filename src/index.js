@@ -18,8 +18,9 @@ export { default as SwissProvider } from './components/SwissProvider';
 export { default as SwissController } from './classes/SwissController';
 
 
-// Guide
-// Tutorial
+// Website
+// Getting started guide
+// Tutorials
 // Getting started project.
 // Cheat sheet
 // Udemy course
