@@ -2,7 +2,6 @@ import indentString from './indentString';
 
 const printToCss = (printableStyles, depth = 0) => {
   let string = '';
-  console.log(printableStyles);
   printableStyles.forEach(({ selector, styles, children }) => {
     
     string += `${indentString(depth)}${selector} {\r\n`;
