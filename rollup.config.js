@@ -10,10 +10,13 @@ const prod = process.env.NODE_ENV === 'production';
 const config = {
   input: './src/index',
   external: [ 'react' ],
-  globals: {
-    react: 'React',
+  output: {
+    globals: {
+      react: 'React',
+    },
+    name: 'Swiss',
   },
-  name: 'Swiss',
+  
   plugins: [
     babel({
       exclude: ['node_modules/**']

@@ -11,9 +11,13 @@ export default class SwissController {
     this.domHandler.add();
   }
   subscribe(props) {
+    let className = `.sw-${this.refCounter}`;
+    if(props.__swissOptions.name) {
+      className += `-${props.__swissOptions.name}`;
+    }
     const subscription = {
       ref: this.refCounter,
-      className: `.sw-${this.refCounter}`,
+      className,
       options: props.__swissOptions,
       props,
     };

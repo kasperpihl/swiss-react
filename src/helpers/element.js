@@ -12,6 +12,10 @@ const element = (options, ...styles) => {
   if(!options.element) {
     return console.warn('swiss element(): options must include element');
   }
+  if(typeof styles[0] === 'string') {
+    options.name = styles[0];
+  }
+
   if(typeof options.inline === 'undefined') {
     options.inline = !!getOption('inline');
   }

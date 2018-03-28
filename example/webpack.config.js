@@ -8,12 +8,13 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var config = {
   context: __dirname,
   devtool: 'eval',
+  mode: 'development',
   resolve: {
     modules: [ path.join(__dirname, 'node_modules') ],
     extensions: ['.js']
   },
   entry: {
-    app: ['react-hot-loader/patch', './src/index'],
+    app: './src/index',
   },
   output: {
       path: path.join(__dirname, 'dist'),
@@ -47,6 +48,7 @@ var config = {
     hot: true,
     contentBase: './dist',
     inline: true,
+    hot: true,
     historyApiFallback: true
   }
 };
