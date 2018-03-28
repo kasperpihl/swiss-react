@@ -32,6 +32,16 @@ export default class StyleParser {
       'parseRawCss', 
       rawCss,
     );
+
+    if(this.sub.options.debug) {
+      console.log(`START RENDERING ${this.sub.className}`);
+      if(this.sub.options.inline) {
+        console.log(`style = ${JSON.stringify(this.sub.inlineStyles,null,2)}`);
+      } else {
+        console.log(this.sub.printedCss);
+      }
+      console.log(`END RENDERING ${this.sub.className}`);
+    }
   }
   runQueue() {
     while (this.runningQueue.length) {

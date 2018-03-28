@@ -13,12 +13,16 @@ const element = (options, ...styles) => {
     return console.warn('swiss element(): options must include element');
   }
   if(typeof styles[0] === 'string') {
-    options.name = styles[0];
+    options.className = styles[0];
   }
 
   if(typeof options.inline === 'undefined') {
     options.inline = !!getOption('inline');
   }
+  if(typeof options.debug === 'undefined') {
+    options.debug = !!getOption('debug');
+  }
+
   styles = styles.filter((s) => typeof s === 'object');
   options.styles = Object.entries(styles).map((entry) => ({
     selectors: ['&'],
