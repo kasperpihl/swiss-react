@@ -5,6 +5,12 @@ export default class DomHandler {
     this.id = `sw-${id}`;
     this.add();
   }
+  getId() {
+    return this.id;
+  }
+  getContent() {
+    return this._childContent;
+  }
   toString() {
     if(!this._childContent) {
       return null;

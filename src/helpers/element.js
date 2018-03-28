@@ -15,6 +15,7 @@ const element = (options, ...styles) => {
   if(typeof options.inline === 'undefined') {
     options.inline = !!getOption('inline');
   }
+  styles = styles.filter((s) => typeof s === 'object');
   options.styles = Object.entries(styles).map((entry) => ({
     selectors: ['&'],
     type: 'nested',

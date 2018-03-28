@@ -1,7 +1,7 @@
 {
-  "name": "swiss-tester",
+  "name": "swiss-example",
   "version": "1.0.0",
-  "description": "Swiss tester",
+  "description": "Swiss example",
   "scripts": {
     "prestart": "open-cli http://localhost:3000",
     "start": "webpack-dev-server --progress"
