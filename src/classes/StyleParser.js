@@ -1,6 +1,7 @@
 import parseProps from '../helpers/parseProps';
 import { parseVariables } from '../features/variables';
 import parseKeyValue from '../helpers/parseKeyValue';
+import { logSubscription } from '../helpers/logger';
 
 import { runMixin } from '../features/mixins';
 import { runPlugin } from '../features/plugins';
@@ -13,6 +14,7 @@ export default class StyleParser {
     this.sub = subscription;
   }
   run() {
+    const startTime = new Date();
     let rawCss = this.sub.printedCss;
     if(this.sub.options.styles && !this.sub.options.dontParse) {
       this.printStyleArray = [];
@@ -33,15 +35,7 @@ export default class StyleParser {
       rawCss,
     );
 
-    if(this.sub.options.debug) {
-      console.log(`START RENDERING ${this.sub.className}`);
-      if(this.sub.options.inline) {
-        console.log(`style = ${JSON.stringify(this.sub.inlineStyles,null,2)}`);
-      } else {
-        console.log(this.sub.printedCss);
-      }
-      console.log(`END RENDERING ${this.sub.className}`);
-    }
+    logSubscription(this.sub, startTime);
   }
   runQueue() {
     while (this.runningQueue.length) {

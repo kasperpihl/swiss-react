@@ -4,6 +4,7 @@ import { element, setOption, addMixin, addGlobalStyles } from 'react-swiss';
 import sw from './App.swiss';
 
 setOption('debug', true);
+
 addGlobalStyles({
   '@keyframes fire-diamonds': {
     '0%': {
@@ -28,8 +29,6 @@ addGlobalStyles({
 const Wrapper = element({
   element: 'div',
   className: 'Wrapper',
-  debug: true,
-  inline: true,
 }, sw.Wrapper);
 const Label = element('span', {
   test: {

@@ -1,6 +1,7 @@
 import convertStylesToArray from '../helpers/convertStylesToArray';
 import DomHandler from '../classes/DomHandler';
 import StyleParser from '../classes/StyleParser';
+import { getOption } from './options';
 
 let gSubs = [];
 const _domHandler = new DomHandler('globals');
@@ -28,6 +29,10 @@ export function addGlobalStyles(...globalsObj) {
           className, 
           options: {}
         };
+        if(getOption('debug')) {
+          subscription.options.debug = true;
+          subscription.options.originalStyles = [ { [className]: v } ];
+        }
         if(typeof v === 'object') {
           subscription.options.styles = convertStylesToArray(v, [selector], {
             disableProps: true,

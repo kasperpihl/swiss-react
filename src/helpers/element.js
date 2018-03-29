@@ -23,7 +23,11 @@ const element = (options, ...styles) => {
     options.debug = !!getOption('debug');
   }
 
+
   styles = styles.filter((s) => typeof s === 'object');
+  if(options.debug) {
+    options.originalStyles = styles;
+  }
   options.styles = Object.entries(styles).map((entry) => ({
     selectors: ['&'],
     type: 'nested',
