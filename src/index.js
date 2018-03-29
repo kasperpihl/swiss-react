@@ -15,8 +15,9 @@ export { setOption } from './features/options';
 
 export { default as SwissProvider } from './components/SwissProvider';
 
-export { default as SwissController } from './classes/SwissController';
+export { default as SwissGlobalProvider } from './components/SwissGlobalProvider';
 
+export { default as SwissServerSide } from './components/SwissServerSide';
 
 // Website
 // Getting started guide

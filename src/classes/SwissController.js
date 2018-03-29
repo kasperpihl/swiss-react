@@ -23,7 +23,7 @@ export default class SwissController {
     this.shouldUpdateDOM = true;
     return subscription;
   }
-  update(subscription, props, oldProps) {
+  update(subscription, props) {
     if(subscription) {
       this.shouldUpdateDOM = true;
       subscription.props = props;
@@ -37,7 +37,7 @@ export default class SwissController {
       this.shouldUpdateDOM = true;
     }
   }
-  getPropsForSubscription(subscription, excludeProps = []) {
+  filterPropsForSubscription(subscription, props, excludeProps = []) {
     const options = subscription.options;
 
     if(Array.isArray(options.excludeProps)) {
@@ -52,7 +52,7 @@ export default class SwissController {
     const elementProps = {};
     const touchedProps = subscription.touchedProps || {};
 
-    Object.entries(subscription.props).forEach(([propName, propValue]) => {
+    Object.entries(props).forEach(([propName, propValue]) => {
       if(includeProps.indexOf(propName) > -1 || 
         (!touchedProps[propName] && excludeProps.indexOf(propName) === -1)) {
         elementProps[propName] = propValue;

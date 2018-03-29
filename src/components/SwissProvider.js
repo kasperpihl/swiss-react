@@ -1,21 +1,21 @@
-import React, { PureComponent, Children } from 'react';
-import propValidate from '../utils/propValidate';
+import React, { PureComponent } from 'react';
 
-export default class SwissProvider extends PureComponent {
+class ProvideProps extends PureComponent {
   getChildContext() {
-    const { controller } = this.props;
+    const {
+      children,
+      ...rest,
+    } = this.props;
 
-    return { swissController: controller };
+    return { providedProps: rest };
   }
   render() {
-    const { children } = this.props;
-    return Children.only(children);
+    return this.props.children;
   }
 }
 
-SwissProvider.childContextTypes = {
-  swissController: propValidate,
+ProvideProps.childContextTypes = {
+  providedProps: () => null,
 };
-SwissProvider.propTypes = {
-  controller: propValidate,
-};
+
+export default ProvideProps;

@@ -1,32 +1,26 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 
-let Context;
-let Provider;
-let GlobalConsumer;
+class GlobalProvideProps extends PureComponent {
+  getChildContext() {
+    const {
+      children,
+      controller,
+      ...rest,
+    } = this.props;
 
-if(typeof React.createContext !== 'undefined') {
-  Context = React.createContext("blue");
-  Provider = Context.Provider;
-  GlobalConsumer = Context.Consumer;
+    return {
+      globalProvidedProps: rest,
+      swissController: controller,
+    };
+  }
+  render() {
+    return this.props.children;
+  }
 }
 
-const GlobalProvider = (props) => {
-  const {
-    children,
-    ...rest,
-  } = props;
-  
-  if(Provider) {
-    return (
-      <Provider value={rest}>
-        {children}
-      </Provider>
-    )
-  }
-  return children;
+GlobalProvideProps.childContextTypes = {
+  globalProvidedProps: () => null,
+  swissController: () => null,
 };
 
-export {
-  GlobalConsumer,
-  GlobalProvider,
-}
+export default GlobalProvideProps;

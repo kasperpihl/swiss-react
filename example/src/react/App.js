@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
-import { element, setOption, addMixin, addGlobalStyles } from 'react-swiss';
+import { element, setOption, addMixin, addGlobalStyles, SwissProvider, SwissGlobalProvider } from 'react-swiss';
 
 import sw from './App.swiss';
-
 setOption('debug', true);
 
 addGlobalStyles({
@@ -59,9 +58,13 @@ const Label = element('span', {
 class App extends PureComponent {
   render() {
     return (
-      <Wrapper>
-        <Label test test2 color="rgba(#ff4400, 0.9)">Hello</Label>
-      </Wrapper>
+      <SwissGlobalProvider test={true} theme="red">
+        <SwissProvider test={false}>
+          <Wrapper>
+            <Label color="rgba(#ff4400, 0.9)">Hello</Label>
+          </Wrapper>
+        </SwissProvider>
+      </SwissGlobalProvider>
     );
   }
 }

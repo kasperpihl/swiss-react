@@ -1,12 +1,12 @@
 import formatTime from '../utils/formatTime';
 
 export const logSubscription = (sub, startTime) => {
-  if(sub.options.debug) {
+  if(sub.options.debug && typeof console !== 'undefined' && typeof console.groupCollapsed !== 'undefined') {
     const duration = new Date().getTime() - startTime.getTime();
     const parts = [];
 
     const title = [
-      'swiss',
+      sub.options.globals ? 'GLOBALS' : 'COMPONENT',
       `%c${sub.className}`,
       `%c@ ${formatTime(startTime)}`,
       `%c(in ${duration.toFixed(2)} ms)`
@@ -19,6 +19,8 @@ export const logSubscription = (sub, startTime) => {
     ];
 
     console.groupCollapsed(`%c ${title}`, ...styles);
+
+
     if(sub.options.originalStyles && sub.options.originalStyles.length) {
       console.groupCollapsed(`%c swiss stylesheet`, `color: blue; font-weight: bold`);
       sub.options.originalStyles.forEach((s) => {
@@ -28,6 +30,8 @@ export const logSubscription = (sub, startTime) => {
       });
       console.groupEnd();
     }
+
+
     if(sub.props) {
       const filteredProps = {};
       let hasProps = false;
@@ -38,7 +42,7 @@ export const logSubscription = (sub, startTime) => {
         }
       })
       if(hasProps) {
-        console.log('%c with props', `color: blue; font-weight: bold`, filteredProps);
+        console.log('%c received props', `color: blue; font-weight: bold`, filteredProps);
       }
     }
     
@@ -46,17 +50,14 @@ export const logSubscription = (sub, startTime) => {
     if(sub.options.inline) {
       console.groupCollapsed(`%c applied inline styles`, `color: blue; font-weight: bold`);
       console.log(sub.inlineStyles);
+      console.log('');
       console.log(`style = ${JSON.stringify(sub.inlineStyles,null,2)}`);
     } else {
       console.groupCollapsed(`%c applied css`, `color: blue; font-weight: bold`);
       console.log(sub.printedCss);
     }
-    console.groupEnd();
 
-    try {
-      console.groupEnd();
-    } catch (e) {
-      console.log('—— log end ——');
-    }
+    console.groupEnd();
+    console.groupEnd();
   }
 }

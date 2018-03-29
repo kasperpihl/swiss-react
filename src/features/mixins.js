@@ -17,7 +17,7 @@ export function addMixin(name, mixin) {
   mixins[name] = mixin;
 }
 
-function getMixin(name) {
+export function getMixin(name) {
   if(!mixins[name] && name.startsWith('_')) {
     name = name.slice(1);
   }

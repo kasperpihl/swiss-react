@@ -8,7 +8,17 @@ const _domHandler = new DomHandler('globals');
 let _timer;
 
 function renderGlobals() {
-  _domHandler.update(gSubs.map(s => s.printedCss).filter(s => !!s).join(''));
+  _domHandler.update(gSubs.map(s => {
+    if(!s.printedCss) {
+      if(getOption('debug')) {
+        s.options.debug = true; 
+      } else {
+        delete s.options.originalStyles;
+      }
+      new StyleParser(s).run();
+    }
+    return s.printedCss 
+  }).filter(s => !!s).join(''));
 }
 export function toString() {
   return _domHandler.toString();
@@ -27,12 +37,11 @@ export function addGlobalStyles(...globalsObj) {
         const selector = className.startsWith('@') ? className : '&';
         const subscription = {
           className, 
-          options: {}
+          options: {
+            globals: true,
+            originalStyles: [ { [className]: v } ],
+          }
         };
-        if(getOption('debug')) {
-          subscription.options.debug = true;
-          subscription.options.originalStyles = [ { [className]: v } ];
-        }
         if(typeof v === 'object') {
           subscription.options.styles = convertStylesToArray(v, [selector], {
             disableProps: true,
@@ -42,7 +51,6 @@ export function addGlobalStyles(...globalsObj) {
           subscription.options.dontParse = true;
         }
 
-        new StyleParser(subscription).run();
         gSubs.push(subscription);
       })
       

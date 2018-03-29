@@ -10,11 +10,12 @@ export function getVariable(key) {
   return variables[key];
 }
 
-export function parseVariables(string) {
+export function parseVariables(string, touchedVariables) {
   if(typeof string !== 'string') return string;
 
   return string.replace(VAR_REGEX, (v1, varName) => {
     const result = variables[varName];
+    touchedVariables[`$${varName}`] = result;
     if(typeof result === 'undefined') {
       console.warn('swiss unknown variable: ' + varName);
     } else if(['bool', 'number', 'string'].indexOf(typeof result) === -1) {

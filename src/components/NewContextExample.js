@@ -1,15 +1,16 @@
 import React from 'react';
 
+let Context;
 let Provider;
-let LocalConsumer;
+let GlobalConsumer;
 
 if(typeof React.createContext !== 'undefined') {
-  const context = React.createContext({});
+  Context = React.createContext("blue");
   Provider = Context.Provider;
-  LocalConsumer = Context.Consumer;
+  GlobalConsumer = Context.Consumer;
 }
 
-const LocalProvider = (props) => {
+const GlobalProvider = (props) => {
   const {
     children,
     ...rest,
@@ -26,6 +27,6 @@ const LocalProvider = (props) => {
 };
 
 export {
-  LocalConsumer,
-  LocalProvider,
-};
+  GlobalConsumer,
+  GlobalProvider,
+}

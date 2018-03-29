@@ -3,7 +3,7 @@ import { parseVariables } from '../features/variables';
 import parseKeyValue from '../helpers/parseKeyValue';
 import { logSubscription } from '../helpers/logger';
 
-import { runMixin } from '../features/mixins';
+import { runMixin, getMixin } from '../features/mixins';
 import { runPlugin } from '../features/plugins';
 
 import { testCondition } from '../utils/conditions';
@@ -22,7 +22,12 @@ export default class StyleParser {
       this.nextQueue = [];
 
       this.sub.inlineStyles = {};
-      this.sub.touchedProps = {}
+      this.sub.touchedProps = {};
+      this.sub.touched = {
+        props: {},
+        mixins: {},
+        variables: {},
+      }
       this.runQueue();
       if(this.printStyleArray.length) {
         this.replacePropsAndVarDeep(this.printStyleArray);
@@ -34,17 +39,17 @@ export default class StyleParser {
       'parseRawCss', 
       rawCss,
     );
-
     logSubscription(this.sub, startTime);
   }
   runQueue() {
     while (this.runningQueue.length) {
       const node = this.runningQueue.shift();
-      const { touchedProps, props } = this.sub;
+      const { touchedProps, props, touched } = this.sub;
       switch(node.type) {
         case 'mixin': {
           // On mixins, inject on current queue, to keep hierachy
           const mixinValue = runMixin(node, props, touchedProps);
+          touched.mixins[node.key] = true;
           if(Array.isArray(mixinValue)) {
             this.runningQueue = mixinValue.concat(this.runningQueue);
           }
@@ -75,10 +80,10 @@ export default class StyleParser {
     }
   }
   replacePropsAndVarDeep(array) {
-    const { touchedProps, props, className } = this.sub;
+    const { touchedProps, props, className, touched } = this.sub;
     array.forEach((obj) => {
       obj.selector = parseProps(obj.selector, props, touchedProps);
-      obj.selector = parseVariables(obj.selector);
+      obj.selector = parseVariables(obj.selector, touched.variables);
       // TODO: support comma separated stuff.
       obj.selector = className.split(/,\ ?/g).map(s => obj.selector.replace(/&/gi, s)).join(', ');
       if(obj.children.length) {

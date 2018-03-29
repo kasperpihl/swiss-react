@@ -4,13 +4,13 @@ import propValidate from '../utils/propValidate';
 
 class SwissElement extends React.PureComponent {
   componentWillMount() {
-    this.subscription = this.getController().subscribe(this.props);
+    this.subscription = this.getController().subscribe(this.generateProps(this.props));
   }
   componentDidMount() {
     this.getController().checkIfDomNeedsUpdate();
   }
   componentWillReceiveProps(nextProps) {
-    this.getController().update(this.subscription, nextProps, this.props);
+    this.getController().update(this.subscription, this.generateProps(nextProps));
   }
   componentDidUpdate() {
     this.getController().checkIfDomNeedsUpdate();
@@ -22,6 +22,10 @@ class SwissElement extends React.PureComponent {
     const { swissController } = this.context;
     return swissController || this.getOptions().defaultSwissController;
   }
+  generateProps(props) {
+    const { providedProps, globalProvidedProps } = this.context;
+    return Object.assign({}, globalProvidedProps, providedProps, props);
+  }
   getOptions() {
     return this.props.__swissOptions;
   }
@@ -31,7 +35,7 @@ class SwissElement extends React.PureComponent {
     // React specific excludes.
     const exclude = ['className', 'innerRef', '__swissOptions'];
     const props = this.getController()
-                      .getPropsForSubscription(this.subscription, exclude);
+                      .filterPropsForSubscription(this.subscription, this.props, exclude);
     
     const swissProps = { className: this.subscription.className.slice(1) };
     if(this.props.className) {
@@ -52,6 +56,8 @@ class SwissElement extends React.PureComponent {
 
 SwissElement.contextTypes = {
   swissController: propValidate,
+  providedProps: () => null,
+  globalProvidedProps: () => null,
 };
 
 export default SwissElement;  
