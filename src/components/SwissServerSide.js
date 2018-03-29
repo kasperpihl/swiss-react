@@ -14,7 +14,7 @@ class SwissServerSide extends PureComponent {
   render() {
     if(typeof this.props.context === 'object') {
       this.props.context.toString = this.controller.toString;
-      this.props.context.toComponent = this.controller.toComponent;
+      this.props.context.toComponents = this.controller.toComponents;
     }
     return this.props.children;
   }
