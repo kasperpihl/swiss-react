@@ -3,14 +3,15 @@ import React from 'react';
 import propValidate from '../utils/propValidate';
 
 class SwissElement extends React.PureComponent {
-  componentWillMount() {
-    this.subscription = this.getController().subscribe(this.generateProps(this.props));
+  constructor(props) {
+    super(props);
+    this.subscription = this.getController().subscribe(this.props);
   }
   componentDidMount() {
     this.getController().checkIfDomNeedsUpdate();
   }
   componentWillReceiveProps(nextProps) {
-    this.getController().update(this.subscription, this.generateProps(nextProps));
+    this.getController().update(this.subscription, nextProps);
   }
   componentDidUpdate() {
     this.getController().checkIfDomNeedsUpdate();
@@ -19,32 +20,38 @@ class SwissElement extends React.PureComponent {
     this.getController().unsubscribe(this.subscription);
   }
   getController() {
-    const { swissController } = this.context;
-    return swissController || this.getOptions().defaultSwissController;
-  }
-  generateProps(props) {
-    const { providedProps, globalProvidedProps } = this.context;
-    return Object.assign({}, globalProvidedProps, providedProps, props);
+    return this.props.__swissController;
   }
   getOptions() {
     return this.props.__swissOptions;
   }
 
-  render() {
-    const EL = this.getOptions().element;
-    // React specific excludes.
-    const exclude = ['className', 'innerRef', '__swissOptions'];
-    const props = this.getController()
-                      .filterPropsForSubscription(this.subscription, this.props, exclude);
-    
-    const swissProps = { className: this.subscription.className.slice(1) };
+  generateSwissProps() {
+    const swissProps = {
+      className: this.subscription.className.slice(1),
+    };
+
     if(this.props.className) {
       swissProps.className = `${this.props.className} ${swissProps.className}`;
     }
+    
     if(this.getOptions().inline) {
       delete swissProps.className;
       swissProps.style = this.subscription.inlineStyles;
     }
+
+    return swissProps;
+  }
+
+  render() {
+    const EL = this.getOptions().element;
+    // React specific excludes.
+    const exclude = ['className', 'innerRef', '__swissOptions', '__swissController', '__swissContextKeys', ...this.props.__swissContextKeys];
+
+    const props = this.getController()
+                      .filterPropsForSubscription(this.subscription, this.props, exclude);
+    
+    const swissProps = this.generateSwissProps();
 
     return (
       <EL ref={this.props.innerRef} {...props} {...swissProps}>
@@ -53,11 +60,5 @@ class SwissElement extends React.PureComponent {
     );
   }
 }
-
-SwissElement.contextTypes = {
-  swissController: propValidate,
-  providedProps: () => null,
-  globalProvidedProps: () => null,
-};
 
 export default SwissElement;  

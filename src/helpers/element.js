@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { defaultSwissController } from '../classes/SwissController';
-import SwissElement from '../components/SwissElement';
+import SwissContext from '../components/SwissContext';
 import { getOption } from '../features/options';
 import convertStylesToArray from './convertStylesToArray';
 
@@ -38,16 +38,9 @@ const element = (options, ...styles) => {
   options.defaultSwissController = defaultSwissController;
 
   const render = props => {
-    const {
-      __swissOptions,
-      ...rest,
-    } = props;
-    if(__swissOptions) {
-      console.warn('__swissOptions is a reserved prop name.')
-    }
     return (
-      <SwissElement 
-        {...rest}
+      <SwissContext 
+        {...props}
         __swissOptions={options}
       />
     )

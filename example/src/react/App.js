@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { element, setOption, addMixin, addGlobalStyles, SwissProvider, SwissGlobalProvider } from 'react-swiss';
+import { element, setOption, addMixin, addGlobalStyles, SwissProvider, SwissGlobalProvider, SwissServerSide } from 'react-swiss';
 
 import sw from './App.swiss';
 setOption('debug', true);
@@ -30,8 +30,9 @@ const Wrapper = element({
   className: 'Wrapper',
 }, sw.Wrapper);
 const Label = element('span', {
+  color: '#{color}',
   test: {
-    color: 'red',
+    color: '#{color}',
     '&:hover': {
       color: 'black',
       '#{hoverClass=.good-luck} &': {
@@ -58,8 +59,8 @@ const Label = element('span', {
 class App extends PureComponent {
   render() {
     return (
-      <SwissGlobalProvider test={true} theme="red">
-        <SwissProvider test={false}>
+      <SwissGlobalProvider>
+        <SwissProvider>
           <Wrapper>
             <Label color="rgba(#ff4400, 0.9)">Hello</Label>
           </Wrapper>

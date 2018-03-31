@@ -36,7 +36,7 @@ export const logSubscription = (sub, startTime) => {
       const filteredProps = {};
       let hasProps = false;
       Object.entries(sub.props).forEach(([k, v]) =>{
-        if(['__swissOptions', 'children'].indexOf(k) === -1) {
+        if(['__swissOptions', '__swissController', '__swissContextKeys', 'children'].indexOf(k) === -1) {
           filteredProps[k] = v;
           hasProps = true;
         }

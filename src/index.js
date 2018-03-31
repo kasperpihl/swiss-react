@@ -13,11 +13,9 @@ export { setOption } from './features/options';
 
 // react-swiss
 
-export { default as SwissProvider } from './components/SwissProvider';
+export { SwissProvider, SwissGlobalProvider } from './components/SwissProviders';
 
-export { default as SwissGlobalProvider } from './components/SwissGlobalProvider';
-
-export { default as SwissServerSide } from './components/SwissServerSide';
+export { SwissServerSide } from './components/SwissServerSide';
 
 // Website
 // Getting started guide
