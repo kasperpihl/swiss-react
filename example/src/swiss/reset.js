@@ -22,9 +22,6 @@ addGlobalStyles({
     outline: 0,
     outlineOffset: 0,
   },
-  'input, textarea': {
-    cursor: ['text', 'pointer'],
-  },
   'img': {
     display: 'block',
   },

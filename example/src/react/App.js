@@ -25,35 +25,11 @@ addGlobalStyles({
     }
   }
 });
-const Wrapper = element({
-  element: 'div',
-  className: 'Wrapper',
-}, sw.Wrapper);
-const Label = element('span', {
+const Wrapper = element('div', 'Wrapper', sw.Wrapper);
+const NewWrapper = element('div', 'New', Wrapper, { color: 'blue' });
+const ExtendedWrapper = element(Wrapper, 'Extended', { color: 'red' });
+const Label = element('span', 'Label', {
   color: '#{color}',
-  test: {
-    color: '#{color}',
-    '&:hover': {
-      color: 'black',
-      '#{hoverClass=.good-luck} &': {
-        color: 'green',
-        '@media $max600': {
-          color: 'blue',
-          test2: {
-            color: 'yellow',
-            '&': {
-              '@media $max600': {
-                color: 'purple',
-                '#{hoverClass=.good-luck} &': {
-                  background: 'blue',
-                },
-              }
-            }
-          }
-        },
-      },  
-    }
-  },
 });
 
 class App extends PureComponent {
@@ -64,6 +40,8 @@ class App extends PureComponent {
           <Wrapper>
             <Label color="rgba(#ff4400, 0.9)">Hello</Label>
           </Wrapper>
+          <NewWrapper />
+          <ExtendedWrapper />
         </SwissProvider>
       </SwissGlobalProvider>
     );

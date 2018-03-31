@@ -6,14 +6,22 @@ import { getOption } from '../features/options';
 import convertStylesToArray from './convertStylesToArray';
 
 const element = (options, ...styles) => {
+  const className = typeof styles[0] === 'string' ? styles[0] : null;
+
+  if(options && options.__isSwiss) {
+    styles = options.getStyles().concat(styles);
+    options = options.getOptions();
+  }
+
   if(typeof options !== 'object') {
     options = { element: options };
   }
+
   if(!options.element) {
     return console.warn('swiss element(): options must include element');
   }
-  if(typeof styles[0] === 'string') {
-    options.className = styles[0];
+  if(className) {
+    options.className = className;
   }
 
   if(typeof options.inline === 'undefined') {
@@ -23,8 +31,20 @@ const element = (options, ...styles) => {
     options.debug = !!getOption('debug');
   }
 
+  let index = 0;
+  do {
+    const s = styles[index];
+    if(typeof s === 'function' && s.__isSwiss) {
+      const dStyles = s.getStyles();
+      styles.splice(index, 1, ...dStyles);
+      index += dStyles.length;
+    } else if(typeof s !== 'object') {
+      styles.splice(index, 1);
+    } else {
+      index++;
+    }
+  } while(index < styles.length);
 
-  styles = styles.filter((s) => typeof s === 'object');
   if(options.debug) {
     options.originalStyles = styles;
   }
@@ -45,6 +65,9 @@ const element = (options, ...styles) => {
       />
     )
   };
+  render.__isSwiss = true;
+  render.getOptions = () => options;
+  render.getStyles = () => styles;
 
   return render;
 }
