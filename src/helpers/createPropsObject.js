@@ -13,6 +13,9 @@ export default (props) => {
   });
 
   Object.keys(props).forEach((k) => {
+    if(k.startsWith('__swiss')) {
+      return;
+    }
     Object.defineProperty(lProps, k, {
       get() {
         this.__swissTouchedProps[k] = true;
