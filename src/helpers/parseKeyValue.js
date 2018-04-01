@@ -2,13 +2,13 @@ import { parseVariables } from '../features/variables';
 import { runPlugin } from '../features/plugins';
 import parseProps from './parseProps';
 
-export default (key, value, props = {}, touchedProps) => {
+export default (key, value, props = {}) => {
   if(key === 'content') {
     value = `'${value}'`;
   }
   
   // Parse props
-  value = parseProps(value, props, touchedProps);
+  value = parseProps(value, props);
 
   // Parse variables
   value = parseVariables(value);

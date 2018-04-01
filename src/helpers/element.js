@@ -31,6 +31,7 @@ const element = (options, ...styles) => {
     options.debug = !!getOption('debug');
   }
 
+  // Support for adding swiss elements and grab their styles.
   let index = 0;
   do {
     const s = styles[index];

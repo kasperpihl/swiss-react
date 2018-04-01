@@ -1,7 +1,5 @@
 import React from 'react';
 
-import propValidate from '../utils/propValidate';
-
 class SwissElement extends React.PureComponent {
   constructor(props) {
     super(props);

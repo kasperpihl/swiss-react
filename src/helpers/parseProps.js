@@ -1,6 +1,6 @@
 const PROPS_REGEX = /#{([a-zA-Z0-9_-]*)\=?(.*?)}/gi; 
 
-export default (values, props, touchedProps) => {
+export default (values, props) => {
   props = props || {};
   let wasArray = true;
   if(!Array.isArray(values)) {
@@ -13,10 +13,6 @@ export default (values, props, touchedProps) => {
       return v;
     }
     return v.replace(PROPS_REGEX, (v1, propName, defaultValue) => {
-      if(touchedProps) {
-        touchedProps[propName] = true;
-      }
-
       const pVal = props[propName]
       return pVal || defaultValue || '';
     })

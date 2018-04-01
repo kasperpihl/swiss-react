@@ -28,7 +28,7 @@ export function getMixin(name) {
   return foundMixin;
 }
 
-export function runMixin({ key, value, selectors }, props, touchedProps) {
+export function runMixin({ key, value, selectors }, props) {
   const mixin = getMixin(key);
   let result = mixin || null;
   if(typeof mixin === 'function') {
@@ -36,15 +36,10 @@ export function runMixin({ key, value, selectors }, props, touchedProps) {
       value = [ value ];
     }
     // Make sure keys for mixins get parsed.
-    value = parseProps(value, props, touchedProps);
+    value = parseProps(value, props);
     value = value.map(v => parseVariables(v));
 
-    // Create a function for getting props
-    const getProp = (name) => {
-      touchedProps[name] = true;
-      return props[name];
-    }
-    result = mixin(getProp, ...value);
+    result = mixin(props, ...value);
     if(typeof result !== 'object') {
       console.warn(`swiss: mixin "${name.slice(1)}" returned ${typeof result}. Expected object`);
       result = {};

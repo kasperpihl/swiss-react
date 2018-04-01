@@ -1,6 +1,7 @@
 import StyleParser from './StyleParser';
 import DomHandler from './DomHandler';
 import { toString, toComponent } from '../features/global-styles';
+import createPropsObject from '../helpers/createPropsObject';
 
 export default class SwissController {
   constructor(isDefault) {
@@ -15,7 +16,8 @@ export default class SwissController {
       ref: this.refCounter,
       className: `.${props.__swissOptions.className || 'sw'}-${this.refCounter}`,
       options: props.__swissOptions,
-      props,
+      orgProps: props,
+      props: createPropsObject(props),
     };
     this.refCounter++;
     this.subscriptions.push(subscription);
@@ -26,7 +28,8 @@ export default class SwissController {
   update(subscription, props) {
     if(subscription) {
       this.shouldUpdateDOM = true;
-      subscription.props = props;
+      subscription.orgProps = props;
+      subscription.props = createPropsObject(props);
       new StyleParser(subscription).run();
     }
   }
@@ -50,7 +53,7 @@ export default class SwissController {
     }
   
     const elementProps = {};
-    const touchedProps = subscription.touchedProps || {};
+    const touchedProps = subscription.props.__swissTouchedProps || {};
 
     Object.entries(props).forEach(([propName, propValue]) => {
       if(includeProps.indexOf(propName) > -1 || 

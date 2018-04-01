@@ -13,6 +13,7 @@ export default class StyleParser {
   constructor(subscription) {
     this.sub = subscription;
   }
+
   run() {
     const startTime = new Date();
     let rawCss = this.sub.printedCss;
@@ -22,9 +23,8 @@ export default class StyleParser {
       this.nextQueue = [];
 
       this.sub.inlineStyles = {};
-      this.sub.touchedProps = {};
+
       this.sub.touched = {
-        props: {},
         mixins: {},
         variables: {},
       }
@@ -34,21 +34,22 @@ export default class StyleParser {
         rawCss = printToCss(this.printStyleArray);
       }
     }
-    
+
     this.sub.printedCss = runPlugin(
       'parseRawCss', 
       rawCss,
     );
+
     logSubscription(this.sub, startTime);
   }
   runQueue() {
     while (this.runningQueue.length) {
       const node = this.runningQueue.shift();
-      const { touchedProps, props, touched } = this.sub;
+      const { props, touched } = this.sub;
       switch(node.type) {
         case 'mixin': {
           // On mixins, inject on current queue, to keep hierachy
-          const mixinValue = runMixin(node, props, touchedProps);
+          const mixinValue = runMixin(node, props);
           touched.mixins[node.key] = true;
           if(Array.isArray(mixinValue)) {
             this.runningQueue = mixinValue.concat(this.runningQueue);
@@ -80,9 +81,9 @@ export default class StyleParser {
     }
   }
   replacePropsAndVarDeep(array) {
-    const { touchedProps, props, className, touched } = this.sub;
+    const { props, className, touched } = this.sub;
     array.forEach((obj) => {
-      obj.selector = parseProps(obj.selector, props, touchedProps);
+      obj.selector = parseProps(obj.selector, props);
       obj.selector = parseVariables(obj.selector, touched.variables);
       // TODO: support comma separated stuff.
       obj.selector = className.split(/,\ ?/g).map(s => obj.selector.replace(/&/gi, s)).join(', ');
@@ -112,7 +113,7 @@ export default class StyleParser {
     const {
       key,
       value,
-    } = parseKeyValue(node.key, node.value, this.sub.props, this.sub.touchedProps);
+    } = parseKeyValue(node.key, node.value, this.sub.props);
 
     // If inline, just override the values.
     if(this.sub.options.inline) {

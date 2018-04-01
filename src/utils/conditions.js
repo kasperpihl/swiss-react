@@ -23,8 +23,7 @@ export const determineCondition = (key) => {
   return condition;
 };
 
-export const testCondition = ({ key, value, operator }, cProps, touchedProps) => {
-  touchedProps[key] = true;
+export const testCondition = ({ key, value, operator }, cProps) => {
   let pVal = cProps[key];
   switch(operator) {
     case 'hasValue': return !!pVal;

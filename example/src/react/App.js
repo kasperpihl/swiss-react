@@ -29,6 +29,8 @@ const Wrapper = element('div', 'Wrapper', sw.Wrapper);
 const NewWrapper = element('div', 'New', Wrapper, { color: 'blue' });
 const ExtendedWrapper = element(Wrapper, 'Extended', { color: 'red' });
 const Label = element('span', 'Label', {
+  _size: ['100px', '100px'],
+  background: 'blue',
   color: '#{color}',
 });
 
@@ -38,7 +40,7 @@ class App extends PureComponent {
       <SwissGlobalProvider>
         <SwissProvider>
           <Wrapper>
-            <Label color="rgba(#ff4400, 0.9)">Hello</Label>
+            <Label width="200px" onChange={() => null} color="rgba(#ff4400, 0.9)">Hello</Label>
           </Wrapper>
           <NewWrapper />
           <ExtendedWrapper />
