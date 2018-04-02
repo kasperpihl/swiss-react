@@ -35,8 +35,9 @@ export default class StyleParser {
     }
 
     this.sub.printedCss = runPlugin(
-      'parseRawCss', 
+      'parseRawCss',
       rawCss,
+      this.sub.props,
     );
 
     logSubscription(this.sub, startTime);
@@ -114,7 +115,7 @@ export default class StyleParser {
     value = parseVariables(node.value, this.sub.touched.variables);
     
     runPlugin('parseKeyValue', (handler) => {
-      const res = handler(key, value);
+      const res = handler(key, value, this.sub.props);
       if(typeof res !== 'object' || typeof res.key !== 'string') {
         return console.warn('swiss plugin error for: parseKeyValue. Expected object with key and value.');
       }

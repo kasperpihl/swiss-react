@@ -11,7 +11,7 @@ export default (props) => {
     value: {},
   });
   Object.defineProperty(dProps, 'markAsTouched', {
-    value: (...keys) => {
+    value(...keys) {
       keys.forEach(k => {
         if(typeof k === 'string' && k) {
           this.__swissTouchedProps[k] = true;

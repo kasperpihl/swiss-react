@@ -20,7 +20,7 @@ export function addPlugin(name, handler) {
   plugins[name].push(handler);
 }
 
-export function runPlugin(name, iterator) {
+export function runPlugin(name, iterator, props) {
   if(supportedPlugins.indexOf(name) === -1) {
     console.warn(`swiss runPlugin: unknown plugin ${name}`)
   }
@@ -31,7 +31,7 @@ export function runPlugin(name, iterator) {
     if(typeof iterator === 'function') {
       iterator(handler);
     } else {
-      iterator = handler(iterator);
+      iterator = handler(iterator, props);
     }
   })
 
