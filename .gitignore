@@ -2,5 +2,5 @@
 dist/
 node_modules/
 
-tester/dist/
-tester/node_modules/
+example/dist/
+example/node_modules/

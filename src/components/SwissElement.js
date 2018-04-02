@@ -24,7 +24,7 @@ class SwissElement extends React.PureComponent {
     return this.props.__swissOptions;
   }
 
-  generateSwissProps() {
+  getSwissPropsStyleOrClassName() {
     const swissProps = {
       className: this.subscription.className.slice(1),
     };
@@ -43,13 +43,21 @@ class SwissElement extends React.PureComponent {
 
   render() {
     const EL = this.getOptions().element;
-    // React specific excludes.
-    const exclude = ['className', 'innerRef', '__swissOptions', '__swissController', '__swissContextKeys', ...this.props.__swissContextKeys];
 
-    const props = this.getController()
-                      .filterPropsForSubscription(this.subscription, this.props, exclude);
+    // React specific excluded props to element.
+    const exclude = [
+      'className',
+      'innerRef',
+      '__swissOptions',
+      '__swissController',
+      '__swissContextKeys',
+      ...this.props.__swissContextKey,
+    ];
+
+    const filterFunc = this.getController().filterPropsForSubscription;
+    const props = filterFunc(this.subscription, this.props, exclude);
     
-    const swissProps = this.generateSwissProps();
+    const swissProps = this.getSwissPropsStyleOrClassName();
 
     return (
       <EL ref={this.props.innerRef} {...props} {...swissProps}>
