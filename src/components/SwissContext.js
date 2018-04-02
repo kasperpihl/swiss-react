@@ -8,7 +8,11 @@ import SwissElement from './SwissElement';
 
 class SwissContext extends PureComponent {
   generateContextKeys(...provided) {
-    return Object.keys(Object.assign({}, ...provided));
+    const returnObj = {};
+    provided.forEach(o => Object.keys(o).forEach(k => {
+      returnObj[k] = o[k];
+    }));
+    return returnObj;
   }
   renderOldContextAPI() {
     const {

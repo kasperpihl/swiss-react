@@ -1,6 +1,5 @@
 import parseProps from '../helpers/parseProps';
 import { parseVariables } from '../features/variables';
-import parseKeyValue from '../helpers/parseKeyValue';
 import { logSubscription } from '../helpers/logger';
 
 import { runMixin, getMixin } from '../features/mixins';
@@ -30,7 +29,7 @@ export default class StyleParser {
       }
       this.runQueue();
       if(this.printStyleArray.length) {
-        this.replacePropsAndVarDeep(this.printStyleArray);
+        this.replacePropsAndVarForSelectors(this.printStyleArray);
         rawCss = printToCss(this.printStyleArray);
       }
     }
@@ -80,7 +79,7 @@ export default class StyleParser {
       this.runQueue();
     }
   }
-  replacePropsAndVarDeep(array) {
+  replacePropsAndVarForSelectors(array) {
     const { props, className, touched } = this.sub;
     array.forEach((obj) => {
       obj.selector = parseProps(obj.selector, props);
@@ -88,7 +87,7 @@ export default class StyleParser {
       // TODO: support comma separated stuff.
       obj.selector = className.split(/,\ ?/g).map(s => obj.selector.replace(/&/gi, s)).join(', ');
       if(obj.children.length) {
-        this.replacePropsAndVarDeep(obj.children);
+        this.replacePropsAndVarForSelectors(obj.children);
       }
     });
   }
@@ -110,16 +109,22 @@ export default class StyleParser {
   }
   handleNode(node) {
     
-    const {
-      key,
-      value,
-    } = parseKeyValue(node.key, node.value, this.sub.props);
+    let key = node.key;
+    let value = parseProps(node.value, this.sub.props);
+    value = parseVariables(node.value, this.sub.touched.variables);
+    
+    runPlugin('parseKeyValue', (handler) => {
+      const res = handler(key, value);
+      if(typeof res !== 'object' || typeof res.key !== 'string') {
+        return console.warn('swiss plugin error for: parseKeyValue. Expected object with key and value.');
+      }
+      key = res.key;
+      value = res.value;
+    });
 
     // If inline, just override the values.
     if(this.sub.options.inline) {
-      Object.assign(this.sub.inlineStyles, {
-        [key]: value,
-      });
+      this.sub.inlineStyles[key] = value;
     } else {
       // Else figure out order and stuff
       const target = this.findTargetFromSelectors(node.selectors);
