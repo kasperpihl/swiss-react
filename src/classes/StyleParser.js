@@ -50,7 +50,7 @@ export default class StyleParser {
       switch(node.type) {
         case 'mixin': {
           // On mixins, inject on current queue, to keep hierachy
-          const mixinValue = runMixin(node, props);
+          const mixinValue = runMixin(node, props, touched);
           touched.mixins[node.key] = true;
           if(Array.isArray(mixinValue)) {
             this.runningQueue = mixinValue.concat(this.runningQueue);

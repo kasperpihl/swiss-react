@@ -29,18 +29,19 @@ if(typeof createContext !== 'undefined') {
 } else {
 
   class OldContextServerSide extends PureComponent {
+    constructor(props) {
+      super(props);
+      this.controller = new SwissController();
+    }
     getChildContext() {
-      if(!this.controller) {
-        this.controller = new SwissController();
-      }
       return {
         swissController: this.controller,
       };
     }
     render() {
       if(typeof this.props.context === 'object') {
-        this.props.context.toString = this.controller.toString;
-        this.props.context.toComponents = this.controller.toComponents;
+        this.props.context.toString = this.controller.toString.bind(this.controller);
+        this.props.context.toComponents = this.controller.toComponents.bind(this.controller);
       }
       return this.props.children;
     }

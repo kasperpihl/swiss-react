@@ -28,7 +28,7 @@ export function getMixin(name) {
   return foundMixin;
 }
 
-export function runMixin({ key, value, selectors }, props) {
+export function runMixin({ key, value, selectors }, props, touched) {
   const mixin = getMixin(key);
   let result = mixin || null;
   if(typeof mixin === 'function') {
@@ -37,7 +37,7 @@ export function runMixin({ key, value, selectors }, props) {
     }
     // Make sure keys for mixins get parsed.
     value = parseProps(value, props);
-    value = value.map(v => parseVariables(v));
+    value = value.map(v => parseVariables(v, touched.variables));
 
     result = mixin(props, ...value);
     if(typeof result !== 'object') {

@@ -19,7 +19,9 @@ export function parseVariables(string, touchedVariables) {
 
   return string.replace(VAR_REGEX, (v1, varName) => {
     const result = variables[varName];
-    touchedVariables[`$${varName}`] = result;
+    if(touchedVariables) {
+      touchedVariables[`$${varName}`] = result;
+    }
     if(typeof result === 'undefined') {
       console.warn('swiss unknown variable: ' + varName);
     } else if(['bool', 'number', 'string'].indexOf(typeof result) === -1) {
