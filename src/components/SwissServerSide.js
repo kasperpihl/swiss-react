@@ -14,8 +14,8 @@ if(typeof createContext !== 'undefined') {
     }
     render() {
       if(typeof this.props.context === 'object') {
-        this.props.context.toString = this.controller.toString;
-        this.props.context.toComponents = this.controller.toComponents;
+        this.props.context.toString = this.controller.toString.bind(this.controller);
+        this.props.context.toComponents = this.controller.toComponents.bind(this.controller);
       }
       return (
         <Context.Provider value={this.controller}>

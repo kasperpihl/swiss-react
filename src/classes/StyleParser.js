@@ -64,7 +64,7 @@ export default class StyleParser {
         }
         case 'nested': {
           // Only parse the children if condition is met
-          if(!node.condition || testCondition(node.condition, props, touchedProps)) {
+          if(!node.condition || testCondition(node.condition, props)) {
             this.nextQueue = this.nextQueue.concat(node.value);
           }
           break;
