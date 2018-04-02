@@ -21,8 +21,6 @@ export default class SwissController {
     };
     this.refCounter++;
     this.subscriptions.push(subscription);
-    this.toString = this.toString.bind(this);
-    this.toComponents = this.toComponents.bind(this);
     new StyleParser(subscription).run();
     this.shouldUpdateDOM = true;
     return subscription;
@@ -69,11 +67,11 @@ export default class SwissController {
   _getPrintedStyles() {
     return this.subscriptions.map(s => s.printedCss).filter(s => !!s).join('');
   }
-  toString() {
+  toString = () => {
     this.checkIfDomNeedsUpdate(true);
     return toString() + '\r\n' + this.domHandler.toString();
   }
-  toComponents() {
+  toComponents = () => {
     this.checkIfDomNeedsUpdate(true);
     return [toComponent(), this.domHandler.toComponent()].filter(v => !!v);
   }

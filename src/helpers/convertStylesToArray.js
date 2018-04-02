@@ -38,7 +38,9 @@ const convertStylesToArray = (obj, previousSelectors, recursiveOptions = {}) => 
         selectors.push(previousSelectors[previousSelectors.length - 1]);
       }
       else if(selectors[0].startsWith('@keyframes')) {
-        selectors.push(key);
+        if(!key.startsWith('@keyframes')){
+          selectors.push(key);
+        }
       }
       // CSS Selectors like "&:hover" etc.
       else if(key.indexOf('&') > -1) {

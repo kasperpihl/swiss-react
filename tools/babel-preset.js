@@ -3,6 +3,7 @@ const building = BABEL_ENV != undefined && BABEL_ENV !== 'cjs'
 
 const plugins = [
   'transform-object-rest-spread',
+  'transform-class-properties',
 ];
 
 if (BABEL_ENV === 'umd') {
