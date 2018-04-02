@@ -40,24 +40,24 @@ export default class SwissController {
       this.shouldUpdateDOM = true;
     }
   }
-  filterPropsForSubscription(subscription, props, excludeProps = []) {
+  filterPropsForSubscription(subscription, props, dontForwardProps = []) {
     const options = subscription.options;
 
-    if(Array.isArray(options.excludeProps)) {
-      excludeProps = excludeProps.concat(options.excludeProps);
+    if(Array.isArray(options.dontForwardProps)) {
+      dontForwardProps = dontForwardProps.concat(options.dontForwardProps);
     }
+    const touched = subscription.props.__swissDontForwardProps;
+    dontForwardProps = dontForwardProps.concat(Object.keys(touched));
 
-    let includeProps = [];
-    if(Array.isArray(options.includeProps)) {
-      includeProps = includeProps.concat(options.includeProps);
+    let forwardProps = [];
+    if(Array.isArray(options.forwardProps)) {
+      forwardProps = forwardProps.concat(options.forwardProps);
     }
   
     const elementProps = {};
-    const touchedProps = subscription.props.__swissTouchedProps || {};
 
     Object.entries(props).forEach(([propName, propValue]) => {
-      if(includeProps.indexOf(propName) > -1 || 
-        (!touchedProps[propName] && excludeProps.indexOf(propName) === -1)) {
+      if(forwardProps.indexOf(propName) > -1 || dontForwardProps.indexOf(propName) === -1) {
         elementProps[propName] = propValue;
       }
     });

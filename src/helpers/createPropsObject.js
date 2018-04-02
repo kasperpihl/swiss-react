@@ -2,25 +2,35 @@ export default (props) => {
   const dProps = {};
   Object.defineProperty(dProps, '__swissProps', {
     value: props,
-    writable: false,
-    enumerable: false,
   });
-  Object.defineProperty(dProps, '__swissTouchedProps', {
-    enumerable: false,
-    writable: true,
+  Object.defineProperty(dProps, '__swissDontForwardProps', {
     value: {},
   });
-  Object.defineProperty(dProps, 'markAsTouched', {
+  Object.defineProperty(dProps, '__swissForwardedProps', {
+    value: {},
+  });
+  Object.defineProperty(dProps, 'forwardProps', {
     value(...keys) {
       keys.forEach(k => {
         if(typeof k === 'string' && k) {
-          this.__swissTouchedProps[k] = true;
+          this.__swissForwardedProps[k] = true;
+          if(this.__swissDontForwardProps[k]) {
+            delete this.__swissDontForwardProps[k];
+          }
         }
       })
     },
-    writable: false,
-    enumerable: false,
-  })
+  });
+  Object.defineProperty(dProps, 'dontForwardProps', {
+    value(...keys) {
+      keys.forEach(k => {
+        if(typeof k === 'string' && k && !this.__swissForwardedProps[k]) {
+          this.__swissDontForwardProps[k] = true;
+        }
+      })
+    },
+  });
+
 
   Object.keys(props).forEach((k) => {
     // ignore and remove all swiss internal props.
@@ -29,7 +39,9 @@ export default (props) => {
     }
     Object.defineProperty(dProps, k, {
       get() {
-        this.__swissTouchedProps[k] = true;
+        if(!this.__swissDontTouch && !this.__swissForwardedProps[k]) {
+          this.__swissDontForwardProps[k] = true;
+        }
         return this.__swissProps[k]
       },
       enumerable: true,

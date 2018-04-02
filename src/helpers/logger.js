@@ -33,17 +33,20 @@ export const logSubscription = (sub, startTime) => {
 
 
     if(sub.props) {
+      sub.props.__swissDontTouch = true;
       const filteredProps = {};
       let hasProps = false;
-      Object.entries(sub.props).forEach(([k, v]) =>{
-        if(['__swissOptions', '__swissController', '__swissContextKeys', 'children'].indexOf(k) === -1) {
-          filteredProps[k] = v;
-          hasProps = true;
-        }
+      
+      Object.entries(sub.props).forEach(([k, v]) => {
+        if(k.startsWith('__swiss')) return;
+        filteredProps[k] = v;
+        hasProps = true;
       })
       if(hasProps) {
         console.log('%c received props', `color: blue; font-weight: bold`, filteredProps);
+        console.log('%c excluded props', `color: blue; font-weight: bold`, Object.keys(sub.props.__swissDontForwardProps).join(', '));
       }
+      sub.props.__swissDontTouch = false;
     }
     
     

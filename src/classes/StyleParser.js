@@ -1,4 +1,5 @@
 import parseProps from '../helpers/parseProps';
+import parseFunctional from '../helpers/parseFunctional';
 import { parseVariables } from '../features/variables';
 import { logSubscription } from '../helpers/logger';
 
@@ -110,7 +111,10 @@ export default class StyleParser {
   }
   handleNode(node) {
     let key = node.key;
-    let value = parseProps(node.value, this.sub.props);
+    let value = node.value;
+
+    value = parseFunctional(value, this.sub.props);
+    value = parseProps(value, this.sub.props);
     value = parseVariables(value, this.sub.touched.variables);
     
     runPlugin('parseKeyValue', (handler) => {
@@ -121,6 +125,8 @@ export default class StyleParser {
       key = res.key;
       value = res.value;
     });
+    // value is nothing, but accept 0
+    if(typeof value !== 'number' && !value) return;
 
     // If inline, just override the values.
     if(this.sub.options.inline) {
