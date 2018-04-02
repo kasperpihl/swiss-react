@@ -3,9 +3,11 @@ let variables = {};
 const VAR_REGEX = /\$([a-zA-Z0-9_-]*)/g;
 
 export function addVariables(...varObjects) {
-  varObjects.forEach(vO => Object.keys(vO).forEach(k => {
-    variables[k] = vO[k];
-  }))
+  varObjects.forEach(vO => {
+    for(let k in vO) {
+      variables[k] = vO[k];
+    }
+  });
 }
 
 export function getVariable(key) {

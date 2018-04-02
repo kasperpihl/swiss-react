@@ -109,10 +109,9 @@ export default class StyleParser {
     return dRes;
   }
   handleNode(node) {
-    
     let key = node.key;
     let value = parseProps(node.value, this.sub.props);
-    value = parseVariables(node.value, this.sub.touched.variables);
+    value = parseVariables(value, this.sub.touched.variables);
     
     runPlugin('parseKeyValue', (handler) => {
       const res = handler(key, value, this.sub.props);

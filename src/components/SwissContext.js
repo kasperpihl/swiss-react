@@ -7,12 +7,19 @@ import { SwissServerSideConsumer } from './SwissServerSide';
 import SwissElement from './SwissElement';
 
 class SwissContext extends PureComponent {
-  generateContextKeys(...provided) {
+  generateContextKeys(globalProvidedProps, providedProps) {
     const returnObj = {};
-    provided.forEach(o => Object.keys(o).forEach(k => {
-      returnObj[k] = o[k];
-    }));
-    return returnObj;
+    if(globalProvidedProps) {
+      for(let k in globalProvidedProps) {
+        returnObj[k] = globalProvidedProps[k];
+      }
+    }
+    if(providedProps) {
+      for(let k in providedProps) {
+        returnObj[k] = providedProps[k];
+      }
+    }
+    return Object.keys(returnObj);
   }
   renderOldContextAPI() {
     const {

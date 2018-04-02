@@ -2,7 +2,6 @@ import { determineCondition } from '../utils/conditions';
 
 const convertStylesToArray = (obj, previousSelectors, recursiveOptions = {}) => {
   if(typeof obj !== 'object') return obj;
-  
   const newObj = Object.entries(obj);
   return newObj.map(([key, value]) => {
     let selectors = [...previousSelectors];

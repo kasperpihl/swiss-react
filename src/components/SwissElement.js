@@ -51,7 +51,7 @@ class SwissElement extends React.PureComponent {
       '__swissOptions',
       '__swissController',
       '__swissContextKeys',
-      ...this.props.__swissContextKey,
+      ...this.props.__swissContextKeys,
     ];
 
     const filterFunc = this.getController().filterPropsForSubscription;

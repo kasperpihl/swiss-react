@@ -31,7 +31,6 @@ const ExtendedWrapper = element(Wrapper, 'Extended', { color: 'red' });
 const Label = element('span', 'Label', {
   _size: ['100px', '100px'],
   background: 'blue',
-  color: '#{color}',
 });
 
 class App extends PureComponent {
