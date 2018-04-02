@@ -21,6 +21,8 @@ export default class SwissController {
     };
     this.refCounter++;
     this.subscriptions.push(subscription);
+    this.toString = this.toString.bind(this);
+    this.toComponents = this.toComponents.bind(this);
     new StyleParser(subscription).run();
     this.shouldUpdateDOM = true;
     return subscription;
