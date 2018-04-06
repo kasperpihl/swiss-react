@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { element, setOption, addMixin, addGlobalStyles, SwissProvider, SwissGlobalProvider, SwissServerSide } from 'react-swiss';
+import { styleElement, setOption, addMixin, addGlobalStyles, SwissProvider, SwissGlobalProvider, SwissServerSide } from 'react-swiss';
 
 import sw from './App.swiss';
 setOption('debug', true);
@@ -25,13 +25,12 @@ addGlobalStyles({
     }
   }
 });
-const Wrapper = element('div', 'Wrapper', sw.Wrapper);
-const NewWrapper = element('div', 'New', Wrapper, { color: 'blue' });
-const ExtendedWrapper = element(Wrapper, 'Extended', { color: 'red' });
-const Label = element('span', 'Label', {
+const Wrapper = styleElement('div', 'Wrapper', sw.Wrapper);
+const NewWrapper = styleElement('div', 'New', Wrapper, { color: 'blue' });
+const ExtendedWrapper = styleElement(Wrapper, 'Extended', { color: 'red' });
+const Label = styleElement('span', 'Label', {
   _size: ['100px', '100px'],
   background: 'blue',
-  color: ({color}) => color,
 });
 
 class App extends PureComponent {

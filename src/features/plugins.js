@@ -1,39 +1,67 @@
-const plugins = {};
-
-const supportedPlugins = [
-  'parseKeyValue',
-  'parseRawCss'
-];
+const plugins = {
+  parseKeyValue: [],
+  parseRawCss: [],
+  parseInlineStyles: [],
+};
 
 export function addPlugin(name, handler) {
-  if(typeof name !== 'string' || supportedPlugins.indexOf(name) === -1) {
-    return console.warn(`swiss addPlugin: first argument should be one of: ${supportedPlugins.join(', ')}.`);
+  if(!plugins[name]){
+    return console.warn(`swiss addPlugin: unknown plugin ${name}`);
   }
   if(typeof handler !== 'function') {
     return console.warn('swiss addPlugin: second argument should be the plugin handler');
   }
 
-  if(!plugins[name]){
-    plugins[name] = [];
-  }
-
   plugins[name].push(handler);
 }
 
-export function runPlugin(name, iterator, props) {
-  if(supportedPlugins.indexOf(name) === -1) {
-    console.warn(`swiss runPlugin: unknown plugin ${name}`)
-  }
-  if(!plugins[name]) {
-    return iterator;
-  }
-  plugins[name].forEach((handler) => {
-    if(typeof iterator === 'function') {
-      iterator(handler);
-    } else {
-      iterator = handler(iterator, props);
-    }
-  })
 
-  return iterator;
+export function parseRawCss(rawCss, props) {
+  runPlugin('parseRawCss', (handler, i) => {
+    const res = handler(rawCss, props);
+    if(typeof res !== 'undefined' && res !== false) {
+      if(typeof res !== 'string') {
+        return console.warn(`swiss plugin parseRawCss[${i}] error: Expected string. Got ${typeof res}`);
+      } 
+      rawCss = res;
+    }
+  });
+  return rawCss;
+}
+
+export function parseKeyValue(key, value, props) {
+  runPlugin('parseKeyValue', (handler, i) => {
+    const res = handler(key, value, props);
+    if(typeof res !== 'undefined' && res !== false) {
+      if(!Array.isArray(res)) {
+        return console.warn(`swiss plugin parseKeyValue[${i}] error: Expected array. Got ${typeof res}`);
+      }
+      if(res.length !== 2 || typeof res[0] !== 'string') {
+        return console.warn(`swiss plugin parseKeyValue[${i}] error: Expected array with [string, value]`);
+      } 
+      key = res[0];
+      value = res[1];
+    }
+    
+  });
+  return [key, value];
+}
+
+export function parseInlineStyles(inlineStyles, props) {
+  runPlugin('parseInlineStyles', (handler, i) => {
+    const res = handler(inlineStyles, props);
+    if(typeof res !== 'undefined') {
+      if(typeof res !== 'object') {
+        return console.warn(`swiss plugin parseInlineStyles[${i}] error: Expected object. Got ${typeof res}`);
+      }
+      inlineStyles = res;
+    }
+  });
+  return inlineStyles;
+}
+
+function runPlugin(name, iterator) {
+  plugins[name].forEach((handler, i) => {
+    iterator(handler, i);
+  });
 }

@@ -6,7 +6,7 @@ export const logSubscription = (sub, startTime) => {
     const parts = [];
 
     const title = [
-      sub.options.globals ? 'GLOBALS' : 'COMPONENT',
+      sub.options.globals ? 'GLOBALS' : 'ELEMENT',
       `%c${sub.className}`,
       `%c@ ${formatTime(startTime)}`,
       `%c(in ${duration.toFixed(2)} ms)`

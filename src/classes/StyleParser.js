@@ -4,7 +4,7 @@ import { parseVariables } from '../features/variables';
 import { logSubscription } from '../helpers/logger';
 
 import { runMixin, getMixin } from '../features/mixins';
-import { runPlugin } from '../features/plugins';
+import { parseKeyValue, parseRawCss, parseInlineStyles } from '../features/plugins';
 
 import { testCondition } from '../utils/conditions';
 import printToCss from '../utils/printToCss';
@@ -17,9 +17,10 @@ export default class StyleParser {
   run() {
     const startTime = new Date();
     let rawCss = this.sub.printedCss;
-    if(this.sub.options.styles && !this.sub.options.dontParse) {
+    const { options } = this.sub;
+    if(options.styles && !options.dontParse) {
       this.printStyleArray = [];
-      this.runningQueue = [...this.sub.options.styles];
+      this.runningQueue = [...options.styles];
       this.nextQueue = [];
 
       this.sub.inlineStyles = {};
@@ -35,11 +36,12 @@ export default class StyleParser {
       }
     }
 
-    this.sub.printedCss = runPlugin(
-      'parseRawCss',
-      rawCss,
-      this.sub.props,
-    );
+    // Run post plugins. (parseInlineStyles, parseRawCss)
+    if(options.inline) {
+      this.sub.inlineStyles = parseInlineStyles(this.sub.inlineStyles, this.sub.props);
+    } else {
+      this.sub.printedCss = parseRawCss(rawCss || '', this.sub.props);
+    }
 
     logSubscription(this.sub, startTime);
   }
@@ -113,24 +115,22 @@ export default class StyleParser {
     let key = node.key;
     let value = node.value;
 
-    value = parseFunctional(value, this.sub.props);
-    value = parseProps(value, this.sub.props);
-    value = parseVariables(value, this.sub.touched.variables);
+    const { props, touched, options, inlineStyles } = this.sub;
+
+    value = parseFunctional(value, props);
+    value = parseProps(value, props);
+    value = parseVariables(value, touched.variables);
     
-    runPlugin('parseKeyValue', (handler) => {
-      const res = handler(key, value, this.sub.props);
-      if(typeof res !== 'object' || typeof res.key !== 'string') {
-        return console.warn('swiss plugin error for: parseKeyValue. Expected object with key and value.');
-      }
-      key = res.key;
-      value = res.value;
-    });
+    const res = parseKeyValue(key, value, props);
+    key = res[0];
+    value = res[1];
+
     // value is nothing, but accept 0
     if(typeof value !== 'number' && !value) return;
 
     // If inline, just override the values.
-    if(this.sub.options.inline) {
-      this.sub.inlineStyles[key] = value;
+    if(options.inline) {
+      inlineStyles[key] = value;
     } else {
       // Else figure out order and stuff
       const target = this.findTargetFromSelectors(node.selectors);

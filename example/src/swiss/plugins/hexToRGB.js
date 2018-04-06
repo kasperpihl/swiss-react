@@ -1,9 +1,6 @@
 import { addPlugin } from 'react-swiss';
 
-addPlugin('parseKeyValue', (key, value) => ({
-  key,
-  value: hexToRGBA(value),
-}));
+addPlugin('parseKeyValue', (key, value) => ([key, hexToRGBA(value)]));
 
 const hexToRGBA = (value) => {
 
