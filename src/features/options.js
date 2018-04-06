@@ -1,11 +1,5 @@
 const options = {};
 
-if(
-  (typeof window !== 'undefined' && window.__DEV__) ||
-  (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production')) {
-  options.enableWarnings = true;
-}
-
 export function setOption(key, value) {
   options[key] = value;
 }

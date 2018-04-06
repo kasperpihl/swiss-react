@@ -1,6 +1,6 @@
 import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify'
-import replace from 'rollup-plugin-replace'
+import replace from 'rollup-plugin-replace';
 import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs';
 
@@ -17,17 +17,17 @@ const config = {
   },
   
   plugins: [
-    babel({
-      exclude: ['node_modules/**']
-    }),
     replace({
       'process.env.NODE_ENV': JSON.stringify(prod ? 'production' : 'development'),
+    }),
+    babel({
+      exclude: ['node_modules/**']
     }),
     resolve(), // so Rollup can find `ms`
     commonjs({
       ignoreGlobal: true,
     }),
-    prod && uglify({})
+    prod && uglify()
   ]
 };
 
