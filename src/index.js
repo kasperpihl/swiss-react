@@ -1,5 +1,6 @@
 import './polyfills';
 import './features/default-plugins';
+import './features/default-options';
 
 export { default as styleElement } from './helpers/styleElement';
 

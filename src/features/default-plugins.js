@@ -8,7 +8,7 @@ if (typeof navigator != 'undefined' && navigator.product == 'ReactNative') {
     if(intRegex.test(v)) {
       return [k, parseInt(v, 10)];
     } else if(floatRegex.test(v)) {
-      return [k, parseFloat(v)]¥;
+      return [k, parseFloat(v)];
     }
   });
 } else {

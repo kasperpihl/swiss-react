@@ -1,7 +1,7 @@
 const options = {};
 
 if(
-  (typeof window !== 'undefined' && window.__DEV__) || // react native
+  (typeof window !== 'undefined' && window.__DEV__) ||
   (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production')) {
   options.enableWarnings = true;
 }
