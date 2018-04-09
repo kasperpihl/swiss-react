@@ -1,7 +1,7 @@
 const plugins = {
   parseKeyValue: [],
   parseRawCss: [],
-  parseInlineStyles: [],
+  parseRawInline: [],
 };
 
 export function addPlugin(name, handler) {
@@ -47,12 +47,12 @@ export function parseKeyValue(key, value, props) {
   return [key, value];
 }
 
-export function parseInlineStyles(inlineStyles, props) {
-  runPlugin('parseInlineStyles', (handler, i) => {
+export function parseRawInline(inlineStyles, props) {
+  runPlugin('parseRawInline', (handler, i) => {
     const res = handler(inlineStyles, props);
     if(typeof res !== 'undefined') {
       if(typeof res !== 'object') {
-        return console.warn(`swiss plugin parseInlineStyles[${i}] error: Expected object. Got ${typeof res}`);
+        return console.warn(`swiss plugin parseRawInline[${i}] error: Expected object. Got ${typeof res}`);
       }
       inlineStyles = res;
     }

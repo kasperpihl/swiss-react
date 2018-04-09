@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { styleElement, setOption, addMixin, addGlobalStyles, SwissProvider, SwissGlobalProvider, SwissServerSide } from 'react-swiss';
 
-import sw from './App.swiss';
-setOption('debug', true);
+import styles from './App.swiss';
+// setOption('debug', true);
 
 addGlobalStyles({
   '@keyframes fire-diamonds': {
@@ -25,13 +25,8 @@ addGlobalStyles({
     }
   }
 });
-const Wrapper = styleElement('div', 'Wrapper', sw.Wrapper);
-const NewWrapper = styleElement('div', 'New', Wrapper, { color: 'blue' });
-const ExtendedWrapper = styleElement(Wrapper, 'Extended', { color: 'red' });
-const Label = styleElement('span', 'Label', {
-  _size: ['100px', '100px'],
-  background: 'blue',
-});
+const Wrapper = styleElement('div', styles, 'Wrapper');
+const Label = styleElement('span', styles, 'Label');
 
 class App extends PureComponent {
   render() {
@@ -41,8 +36,6 @@ class App extends PureComponent {
           <Wrapper>
             <Label width="200px" onClick={() => console.log('hi')} color="rgba(#ff4400, 0.9)">Hello</Label>
           </Wrapper>
-          <NewWrapper />
-          <ExtendedWrapper />
         </SwissProvider>
       </SwissGlobalProvider>
     );

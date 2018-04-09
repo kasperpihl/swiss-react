@@ -14,7 +14,7 @@ export default class SwissController {
   subscribe(props) {
     const subscription = {
       ref: this.refCounter,
-      className: `.${props.__swissOptions.className || 'sw'}-${this.refCounter}`,
+      className: `.${props.__swissOptions.className || 'swiss'}-${this.refCounter}`,
       options: props.__swissOptions,
       orgProps: props,
       props: createPropsObject(props),

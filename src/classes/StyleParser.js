@@ -4,7 +4,7 @@ import { parseVariables } from '../features/variables';
 import { logSubscription } from '../helpers/logger';
 
 import { runMixin, getMixin } from '../features/mixins';
-import { parseKeyValue, parseRawCss, parseInlineStyles } from '../features/plugins';
+import { parseKeyValue, parseRawCss, parseRawInline } from '../features/plugins';
 
 import { testCondition } from '../utils/conditions';
 import printToCss from '../utils/printToCss';
@@ -36,9 +36,9 @@ export default class StyleParser {
       }
     }
 
-    // Run post plugins. (parseInlineStyles, parseRawCss)
+    // Run post plugins. (parseRawInline, parseRawCss)
     if(options.inline) {
-      this.sub.inlineStyles = parseInlineStyles(this.sub.inlineStyles, this.sub.props);
+      this.sub.inlineStyles = parseRawInline(this.sub.inlineStyles, this.sub.props);
     } else {
       this.sub.printedCss = parseRawCss(rawCss || '', this.sub.props);
     }
