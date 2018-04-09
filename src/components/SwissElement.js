@@ -30,7 +30,7 @@ class SwissElement extends React.PureComponent {
     };
 
     if(this.props.className) {
-      swissProps.className = `${this.props.className} ${swissProps.className}`;
+      swissProps.className = `${swissProps.className} ${this.props.className}`;
     }
     
     if(this.getOptions().inline) {

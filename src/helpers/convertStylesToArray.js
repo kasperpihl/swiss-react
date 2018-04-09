@@ -31,7 +31,7 @@ const convertStylesToArray = (obj, previousSelectors, recursiveOptions = {}) => 
         };
       })
     }
-    else if(typeof value === 'object'){
+    else if(typeof value === 'object' && value){
       type = 'nested';
       // If media query, take current selector, and put it after the media query
       if(key.startsWith('@media')) {
