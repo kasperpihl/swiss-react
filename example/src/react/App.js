@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
-import { styleElement, setOption, addMixin, addGlobalStyles, SwissProvider, SwissGlobalProvider, SwissServerSide, createStyleSheet } from 'react-swiss';
+import { styleElement, setOption, addMixin, addGlobalStyles, SwissProvider, SwissGlobalProvider, SwissServerSide, styleSheet } from 'react-swiss';
 
 import styles from './App.swiss';
 // setOption('debug', true);
-createStyleSheet('App', styles);
 
 addGlobalStyles({
   '@keyframes fire-diamonds': {
@@ -26,6 +25,9 @@ addGlobalStyles({
     }
   }
 });
+
+
+styleSheet('App', styles);
 const Wrapper = styleElement('div', styles.Wrapper);
 const Label = styleElement('span', styles.Label);
 

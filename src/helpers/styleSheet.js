@@ -15,7 +15,6 @@ export default (name, styles) => {
       value: name;
     })
   }
-  
 
   for(let key in styles) {
     if(typeof styles[key] === 'object') {

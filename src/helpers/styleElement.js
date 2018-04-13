@@ -35,13 +35,13 @@ const styleElement = (options, ...styles) => {
       const dStyles = styleSheet.getStyles();
       styles.splice(index, 1, ...dStyles);
       index += dStyles.length;
-    } else if(typeof styleSheet !== 'object') {
-      styles.splice(index, 1);
-    } else {
+    } else if(typeof styleSheet === 'object') {
       if(styleSheet.__swissStyleClassName) {
         foundClassName += styleSheet.__swissStyleClassName;
       }
       index++;
+    } else {
+      styles.splice(index, 1);
     }
   } while(index < styles.length);
 

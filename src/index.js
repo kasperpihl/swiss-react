@@ -14,7 +14,7 @@ export { addPlugin } from './features/plugins';
 
 export { setOption } from './features/options';
 
-export { default as createStyleSheet } from './helpers/createStyleSheet';
+export { default as styleSheet } from './helpers/styleSheet';
 
 
 // react specific stuff
