@@ -4,7 +4,7 @@ export default (name, styles) => {
     name = '';
   }
   if(typeof styles !== 'object') {
-    return console.warn('swiss createStyleSheet: first or second argument be an object with styles');
+    return console.warn('swiss createStyleSheet: first or second argument must be an object with styles');
   }
   if(typeof name !== 'string') {
     console.warn('swiss createStyleSheet: first argument(name) must be a string');
