@@ -10,6 +10,12 @@ export default (name, styles) => {
     console.warn('swiss createStyleSheet: first argument(name) must be a string');
     name = '';
   }
+  if(name) {
+    Object.defineProperty(styles, '__swissStyleClassName', {
+      value: name;
+    })
+  }
+  
 
   for(let key in styles) {
     if(typeof styles[key] === 'object') {
