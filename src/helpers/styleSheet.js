@@ -12,7 +12,7 @@ export default (name, styles) => {
   }
   if(name) {
     Object.defineProperty(styles, '__swissStyleClassName', {
-      value: name;
+      value: name,
     })
   }
 
