@@ -70,6 +70,10 @@ const styleElement = (options, ...styles) => {
   render.__isSwissElement = true;
   render.getOptions = () => options;
   render.getStyles = () => styles;
+  render.pure = (...keys) => {
+    options.pure = keys;
+    return render;
+  }
   render.debug = () => {
     options.debug = true;
     return render;

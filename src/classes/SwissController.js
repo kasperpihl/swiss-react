@@ -27,10 +27,23 @@ export default class SwissController {
   }
   update(subscription, props) {
     if(subscription) {
-      this.shouldUpdateDOM = true;
-      subscription.orgProps = props;
-      subscription.props = createPropsObject(props);
-      new StyleParser(subscription).run();
+      let shouldUpdateStyles = false;
+      if(subscription.options.pure) {
+        subscription.options.pure.forEach((propName) => {
+          if(subscription.props[propName] !== props[propName]) {
+            shouldUpdateStyles = true;
+          }
+        })
+      } else {
+        shouldUpdateStyles = true;
+      }
+      if(shouldUpdateStyles) {
+        this.shouldUpdateDOM = true;
+        subscription.orgProps = props;
+        subscription.props = createPropsObject(props);
+        new StyleParser(subscription).run();
+      }
+      
     }
   }
   unsubscribe({ ref }) {

@@ -3,7 +3,7 @@ import React from 'react';
 class SwissElement extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.subscription = this.getController().subscribe(this.props);
+    this.subscription = this.getController().subscribe(props);
   }
   componentDidMount() {
     this.getController().checkIfDomNeedsUpdate();
