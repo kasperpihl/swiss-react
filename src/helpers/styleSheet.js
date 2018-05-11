@@ -18,7 +18,7 @@ export default (name, styles) => {
 
   for(let key in styles) {
     if(typeof styles[key] === 'object') {
-      const className = name ? `${name}-${key}` : key;
+      const className = name ? `${name}_${key}` : key;
       Object.defineProperty(styles[key], '__swissStyleClassName', {
         value: className,
       });
