@@ -27,3 +27,11 @@ The UMD build is also available on [unpkg](https://unpkg.com):
 
 You can find the library on `window.Swiss`.
 
+## Documentation
+http://swiss-react.com/docs/getting-started
+
+## CodePen Examples
+
+Original: [Simple Test](https://codepen.io/kasperpihl/pen/JLwaeb?editors=0011)
+
+Props: [Props Test](https://codepen.io/atav32/pen/qYYKXo?editors=0010)
