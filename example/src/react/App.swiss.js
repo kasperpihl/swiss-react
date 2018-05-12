@@ -1,4 +1,6 @@
-export default {
+import { styleSheet } from 'react-swiss';
+
+export default styleSheet('App', {
   Wrapper: {
     _flex: 'center',
     _size: '100%',
@@ -8,4 +10,4 @@ export default {
     background: 'blue',
     color: '#{color}',
   },
-}
+});
