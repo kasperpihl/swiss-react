@@ -6,7 +6,7 @@ import { logSubscription } from '../helpers/logger';
 import { runMixin, getMixin } from '../features/mixins';
 import { parseKeyValue, parseRawCss, parseRawInline } from '../features/plugins';
 
-import { testCondition } from '../utils/conditions';
+import testCondition from '../utils/testCondition';
 import printToCss from '../utils/printToCss';
 
 export default class StyleParser {

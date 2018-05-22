@@ -51,13 +51,18 @@ const styleElement = (options, ...styles) => {
   }
 
   options.originalStyles = styles; // save before converting
+  // Keeping track of touched prop conditions.
+  options.touchedProps = {};
   options.styles = Object.entries(styles).map((entry) => ({
     selectors: ['&'],
     type: 'nested',
     condition: null,
     key: '&',
-    value: convertStylesToArray(entry[1], ['&']),
+    value: convertStylesToArray(entry[1], ['&'], {
+      touchedProps: options.touchedProps,
+    }),
   }));
+
   options.defaultSwissController = defaultSwissController;
 
   const render = props => {

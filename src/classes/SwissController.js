@@ -61,7 +61,9 @@ export default class SwissController {
     }
     const touched = subscription.props.__swissDontForwardProps;
     dontForwardProps = dontForwardProps.concat(Object.keys(touched));
-
+    if(options.touchedProps) {
+      dontForwardProps = dontForwardProps.concat(Object.keys(options.touchedProps));
+    }
     let forwardProps = [];
     if(Array.isArray(options.forwardProps)) {
       forwardProps = forwardProps.concat(options.forwardProps);
