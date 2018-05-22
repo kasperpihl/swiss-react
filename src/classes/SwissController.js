@@ -53,32 +53,6 @@ export default class SwissController {
       this.shouldUpdateDOM = true;
     }
   }
-  filterPropsForSubscription(subscription, props, dontForwardProps = []) {
-    const options = subscription.options;
-
-    if(Array.isArray(options.dontForwardProps)) {
-      dontForwardProps = dontForwardProps.concat(options.dontForwardProps);
-    }
-    const touched = subscription.props.__swissDontForwardProps;
-    dontForwardProps = dontForwardProps.concat(Object.keys(touched));
-    if(options.touchedProps) {
-      dontForwardProps = dontForwardProps.concat(Object.keys(options.touchedProps));
-    }
-    let forwardProps = [];
-    if(Array.isArray(options.forwardProps)) {
-      forwardProps = forwardProps.concat(options.forwardProps);
-    }
-  
-    const elementProps = {};
-
-    Object.entries(props).forEach(([propName, propValue]) => {
-      if(forwardProps.indexOf(propName) > -1 || dontForwardProps.indexOf(propName) === -1) {
-        elementProps[propName] = propValue;
-      }
-    });
-
-    return elementProps;
-  }
   _getPrintedStyles() {
     return this.subscriptions.map(s => s.printedCss).filter(s => !!s).join('');
   }

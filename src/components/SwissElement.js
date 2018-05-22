@@ -1,4 +1,5 @@
 import React from 'react';
+import filterPropsForSubscription from '../utils/filterPropsForSubscription';
 
 class SwissElement extends React.PureComponent {
   constructor(props) {
@@ -54,8 +55,7 @@ class SwissElement extends React.PureComponent {
       ...this.props.__swissContextKeys,
     ];
 
-    const filterFunc = this.getController().filterPropsForSubscription;
-    const props = filterFunc(this.subscription, this.props, exclude);
+    const props = filterPropsForSubscription(this.subscription, this.props, exclude);
     
     const swissProps = this.getSwissPropsStyleOrClassName();
 

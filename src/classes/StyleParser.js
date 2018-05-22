@@ -43,7 +43,14 @@ export default class StyleParser {
       this.sub.printedCss = parseRawCss(rawCss || '', this.sub.props);
     }
 
-    logSubscription(this.sub, startTime);
+    
+    if(options.debug) {
+      // Hack to make sure that render has been called and we know which props was forwarded and which was not.
+      setTimeout(() => {
+        logSubscription(this.sub, startTime);
+      }, 1);
+    }
+    
   }
   runQueue() {
     while (this.runningQueue.length) {

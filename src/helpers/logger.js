@@ -1,7 +1,8 @@
 import formatTime from '../utils/formatTime';
+import filterPropsForSubscription from '../utils/filterPropsForSubscription';
 
 export const logSubscription = (sub, startTime) => {
-  if(sub.options.debug && typeof console !== 'undefined' && typeof console.groupCollapsed !== 'undefined') {
+  if(typeof console !== 'undefined' && typeof console.groupCollapsed !== 'undefined') {
     const duration = new Date().getTime() - startTime.getTime();
     const parts = [];
 
@@ -33,7 +34,7 @@ export const logSubscription = (sub, startTime) => {
 
 
     if(sub.props) {
-      sub.props.__swissDontTouch = true;
+      sub.props.__swissDisableTouch = true;
       const filteredProps = {};
       let hasProps = false;
       
@@ -43,10 +44,12 @@ export const logSubscription = (sub, startTime) => {
         hasProps = true;
       })
       if(hasProps) {
-        console.log('%c received props', `color: blue; font-weight: bold`, filteredProps);
-        console.log('%c excluded props', `color: blue; font-weight: bold`, Object.keys(sub.props.__swissDontForwardProps).join(', '));
+        console.log('%c component received props', `color: blue; font-weight: bold`, filteredProps);
+        console.log('%c swiss handled props (not forwarded)', `color: blue; font-weight: bold`, (sub.__swissIgnoredProps || ['none']).join(', '));
+        console.log('%c forwarded props to inner element', `color: blue; font-weight: bold`, (sub.__swissForwardedProps || ['none']).join(', '));
+        
       }
-      sub.props.__swissDontTouch = false;
+      sub.props.__swissDisableTouch = false;
     }
     
     

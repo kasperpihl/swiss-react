@@ -39,7 +39,7 @@ export default (props) => {
     }
     Object.defineProperty(dProps, k, {
       get() {
-        if(!this.__swissDontTouch && !this.__swissForwardedProps[k]) {
+        if(!this.__swissDisableTouch && !this.__swissForwardedProps[k]) {
           this.__swissDontForwardProps[k] = true;
         }
         return this.__swissProps[k]
