@@ -1,4 +1,4 @@
-import { addGlobalStyles } from 'react-swiss';
+import { addGlobalStyles } from 'swiss-react';
 
 addGlobalStyles({
   '@import': 'url(\'https://fonts.googleapis.com/css?family=Anton|Overpass+Mono:700\')',

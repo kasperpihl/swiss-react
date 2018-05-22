@@ -1,4 +1,4 @@
-import { addPlugin } from 'react-swiss';
+import { addPlugin } from 'swiss-react';
 
 addPlugin('parseKeyValue', (key, value) => ([key, hexToRGBA(value)]));
 

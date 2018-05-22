@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { styleElement, setOption } from 'react-swiss';
+import { styleElement, setOption } from 'swiss-react';
 
 import styles from './App.swiss';
 setOption('debug', true);

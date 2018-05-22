@@ -1,28 +1,28 @@
-# react-swiss
+# swiss-react
 
 ## Installation
 
 Using [npm](https://www.npmjs.com/):
 
-    $ npm install --save react-swiss
+    $ npm install --save swiss-react
 
 Then with a module bundler like [webpack](https://webpack.github.io/), use as you would anything else:
 
 ```js
 // using ES6 modules
-import { element, addGlobalStyles, addVariables, addPlugin } from 'react-swiss'
+import { element, addGlobalStyles, addVariables, addPlugin } from 'swiss-react'
 
 // using CommonJS modules
-var element = require('react-swiss').element;
-var addGlobalStyles = require('react-swiss').addGlobalStyles;
-var addVariables = require('react-swiss').addVariables;
-var addPlugin = require('react-swiss').addPlugin;
+var element = require('swiss-react').element;
+var addGlobalStyles = require('swiss-react').addGlobalStyles;
+var addVariables = require('swiss-react').addVariables;
+var addPlugin = require('swiss-react').addPlugin;
 ```
 
 The UMD build is also available on [unpkg](https://unpkg.com):
 
 ```html
-<script src="https://unpkg.com/react-swiss/dist/umd/swiss.min.js"></script>
+<script src="https://unpkg.com/swiss-react/dist/umd/swiss.min.js"></script>
 ```
 
 You can find the library on `window.Swiss`.

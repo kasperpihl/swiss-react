@@ -1,4 +1,4 @@
-import { addVariables } from 'react-swiss';
+import { addVariables } from 'swiss-react';
 
 addVariables({
   min400: 'screen and (min-width: 400px)',

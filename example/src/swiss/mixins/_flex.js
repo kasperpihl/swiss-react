@@ -1,4 +1,4 @@
-import { addMixin } from 'react-swiss';
+import { addMixin } from 'swiss-react';
 
 addMixin('flex', (props, direction, horizontal, vertical) => {
   let flex = {};
