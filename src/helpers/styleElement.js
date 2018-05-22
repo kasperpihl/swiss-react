@@ -16,7 +16,8 @@ const styleElement = (options, ...styles) => {
   }
 
   if(!options.element) {
-    return console.warn('swiss styleElement(): options must include element');
+    console.warn('swiss styleElement(): options must include element, falling back to div');
+    options.element = 'div';
   }
 
   if(typeof options.inline === 'undefined') {

@@ -13,7 +13,7 @@ export default class DomHandler {
   }
   toString() {
     if(!this._childContent) {
-      return null;
+      return '';
     }
     let string = `<style id="${this.id}" type="text/css">`;
     string += this._childContent;
