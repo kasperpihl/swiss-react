@@ -27,34 +27,49 @@ export function toComponent() {
   return _domHandler.toComponent();
 }
 
+function addSubscription(className, selectors, value) {
+  const subscription = {
+    className, 
+    options: {
+      globals: true,
+      originalStyles: [ { [className]: value } ],
+    }
+  };
+  if(typeof value === 'object') {
+    subscription.options.styles = convertStylesToArray(value, selectors, {
+      disableProps: true,
+    });
+  } else {
+    subscription.printedCss = `${className} ${value};\r\n`;
+    subscription.options.dontParse = true;
+  }
+
+  gSubs.push(subscription);
+}
+
+function iterateStyleObject(selectors, object) {
+  if(typeof object !== 'object') {
+    return;
+  }
+  Object.entries(object).forEach(([className, value]) => {
+    if(!Array.isArray(value)) {
+      value = [ value ];
+    }
+    value.forEach((v) => {
+      // Make sure media queries work in global styles
+      if(className.startsWith('@media')) {
+        return iterateStyleObject([className], v);
+      }
+      const selector = className.startsWith('@') ? className : '&';
+      let theseSels = selectors.concat([selector]);
+      addSubscription(className, theseSels, v);
+    })
+  })
+}
+
 export function addGlobalStyles(...globalsObj) {
   globalsObj.forEach((gO) => {
-    Object.entries(gO).forEach(([className, value]) => {
-      if(!Array.isArray(value)) {
-        value = [ value ];
-      }
-      value.forEach((v) => {
-        const selector = className.startsWith('@') ? className : '&';
-        const subscription = {
-          className, 
-          options: {
-            globals: true,
-            originalStyles: [ { [className]: v } ],
-          }
-        };
-        if(typeof v === 'object') {
-          subscription.options.styles = convertStylesToArray(v, [selector], {
-            disableProps: true,
-          });
-        } else {
-          subscription.printedCss = `${className} ${v};\r\n`;
-          subscription.options.dontParse = true;
-        }
-
-        gSubs.push(subscription);
-      })
-      
-    })
+    iterateStyleObject([], gO);
   });
 
   if(typeof window !== 'undefined') {
