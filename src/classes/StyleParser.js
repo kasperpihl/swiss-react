@@ -60,7 +60,6 @@ export default class StyleParser {
         case 'mixin': {
           // On mixins, inject on current queue, to keep hierachy
           const mixinValue = runMixin(node, props, touched);
-          touched.mixins[node.key] = true;
           if(Array.isArray(mixinValue)) {
             this.runningQueue = mixinValue.concat(this.runningQueue);
           }
@@ -74,6 +73,12 @@ export default class StyleParser {
         case 'nested': {
           // Only parse the children if condition is met
           if(!node.condition || testCondition(node.condition, props)) {
+            
+            if(node.condition) {
+              node.value.forEach((n) => {
+                n.selectors[n.selectors.length - 1] += `, .sw_${node.condition.key}`;
+              })
+            }
             this.nextQueue = this.nextQueue.concat(node.value);
           }
           break;
@@ -106,8 +111,9 @@ export default class StyleParser {
     // Support iterative structere with children
     let dRes = { children: this.printStyleArray };
     selectors.forEach((selector) => {
-      let index = dRes.children.findIndex(o => o.selector === selector);
-      if(index === -1) {
+      let index = 0;
+      const length = dRes.children.length;
+      if(!length || dRes.children[length - 1].selector !== selector) {
         index = dRes.children.push({
           selector,
           children: [],
@@ -151,6 +157,7 @@ export default class StyleParser {
         key,
         value,
       });
+      
     }
   }
 }
