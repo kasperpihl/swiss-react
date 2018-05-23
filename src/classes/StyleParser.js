@@ -111,8 +111,8 @@ export default class StyleParser {
     // Support iterative structere with children
     let dRes = { children: this.printStyleArray };
     selectors.forEach((selector) => {
-      let index = 0;
       const length = dRes.children.length;
+      let index = length - 1;
       if(!length || dRes.children[length - 1].selector !== selector) {
         index = dRes.children.push({
           selector,

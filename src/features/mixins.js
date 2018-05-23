@@ -46,6 +46,7 @@ export function runMixin({ key, value, selectors }, props, touched) {
     }
   }
   if(result) {
+    if(touched) touched.mixins[key] = true;
     result = convertStylesToArray(result, selectors)
   }
   return result;

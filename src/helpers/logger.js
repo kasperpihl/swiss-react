@@ -47,7 +47,6 @@ export const logSubscription = (sub, startTime) => {
         console.log('%c component received props', `color: blue; font-weight: bold`, filteredProps);
         console.log('%c swiss handled props (not forwarded)', `color: blue; font-weight: bold`, (sub.__swissIgnoredProps || ['none']).join(', '));
         console.log('%c forwarded props to inner element', `color: blue; font-weight: bold`, (sub.__swissForwardedProps || ['none']).join(', '));
-        
       }
       sub.props.__swissDisableTouch = false;
     }
