@@ -76,7 +76,10 @@ export default class StyleParser {
             
             if(node.condition) {
               node.value.forEach((n) => {
-                n.selectors[n.selectors.length - 1] += `, .sw_${node.condition.key}`;
+                const length = n.selectors.length;
+                if(n.selectors[length - 1].indexOf(', .sw_') === -1) {
+                  n.selectors[length - 1] += `, .sw_${node.condition.key}`;
+                }
               })
             }
             this.nextQueue = this.nextQueue.concat(node.value);
