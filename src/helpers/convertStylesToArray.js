@@ -43,7 +43,7 @@ const convertStylesToArray = (obj, previousSelectors, recursiveOptions = {}) => 
         }
       }
       // CSS Selectors like "&:hover" etc.
-      else if(key.indexOf('&') > -1) {
+      else if(key.indexOf('&') > -1 && key.indexOf('&&') === -1) {
         selectors[selectors.length - 1] = key;
       }
       // Else we assume this is prop based conditions
