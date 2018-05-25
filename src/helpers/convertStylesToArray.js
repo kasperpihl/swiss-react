@@ -1,4 +1,5 @@
 import determineCondition from '../utils/determineCondition';
+import isSelector from '../utils/isSelector';
 
 const convertStylesToArray = (obj, previousSelectors, recursiveOptions = {}) => {
   if(typeof obj !== 'object') return obj;
@@ -43,7 +44,16 @@ const convertStylesToArray = (obj, previousSelectors, recursiveOptions = {}) => 
         }
       }
       // CSS Selectors like "&:hover" etc.
-      else if(key.indexOf('&') > -1 && key.indexOf('&&') === -1) {
+      else if(isSelector(key)) {
+        const currentSel = selectors[selectors.length - 1];
+        if(currentSel !== '&' && isSelector(currentSel)) {
+          // Support multi level , seperated deeper nesting.
+          key = key.split(/,\ ?/g).map(keyS => {
+            return currentSel.split(/,\ ?/g).map((currentS) => {
+              return keyS.replace(/&/gi, currentS);
+            }).join(', ');
+          }).join(', ');
+        }
         selectors[selectors.length - 1] = key;
       }
       // Else we assume this is prop based conditions
