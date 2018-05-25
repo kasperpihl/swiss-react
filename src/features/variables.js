@@ -5,7 +5,11 @@ const VAR_REGEX = /\$([a-zA-Z0-9_-]*)/g;
 export function addVariables(...varObjects) {
   varObjects.forEach(vO => {
     for(let k in vO) {
-      variables[k] = vO[k];
+      if(['bool', 'number', 'string'].indexOf(typeof vO[k]) === -1){
+        console.warn(`swiss invalid varible of type: ${typeof result}. Expected string, number of bool`);
+      } else {
+        variables[k] = vO[k];
+      }
     }
   });
 }
@@ -20,12 +24,10 @@ export function parseVariables(string, touchedVariables) {
   return string.replace(VAR_REGEX, (v1, varName) => {
     const result = variables[varName];
     if(touchedVariables) {
-      touchedVariables[`$${varName}`] = result;
+      touchedVariables[`$${varName}`] = result || null;
     }
     if(typeof result === 'undefined') {
       console.warn('swiss unknown variable: ' + varName);
-    } else if(['bool', 'number', 'string'].indexOf(typeof result) === -1) {
-      console.warn(`swiss invalid varible of type: ${typeof result}. Expected string, number of bool`);
     } else {
       return result;
     }
