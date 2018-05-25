@@ -48,6 +48,7 @@ const convertStylesToArray = (obj, previousSelectors, recursiveOptions = {}) => 
         const currentSel = selectors[selectors.length - 1];
         if(currentSel !== '&' && isSelector(currentSel)) {
           // Support multi level , seperated deeper nesting.
+          console.warn('swiss temporary warning. check', currentSel, key, 'there might be breaking changes');
           key = key.split(/,\ ?/g).map(keyS => {
             return currentSel.split(/,\ ?/g).map((currentS) => {
               return keyS.replace(/&/gi, currentS);
