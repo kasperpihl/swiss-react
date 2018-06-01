@@ -21,7 +21,6 @@ export default class StyleParser {
     if(options.styles && !options.dontParse) {
       this.printStyleArray = [];
       this.runningQueue = [...options.styles];
-      this.nextQueue = [];
 
       this.sub.inlineStyles = {};
 
@@ -82,7 +81,7 @@ export default class StyleParser {
                 }
               })
             }
-            this.nextQueue = this.nextQueue.concat(node.value);
+            this.runningQueue = node.value.concat(this.runningQueue);
           }
           break;
         }
@@ -91,11 +90,6 @@ export default class StyleParser {
           break;
         }
       }
-    } 
-    if(this.nextQueue.length) {
-      this.runningQueue = this.nextQueue;
-      this.nextQueue = [];
-      this.runQueue();
     }
   }
   replacePropsAndVarForSelectors(array) {
