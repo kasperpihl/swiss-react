@@ -24,7 +24,7 @@ const expected = [
       type: 'node',
       key: 'color',
       value: 'blue',
-      selectors: [ '&2' ],
+      selectors: [ '&' ],
       condition: null 
     } ],
     selectors: [ '&' ],

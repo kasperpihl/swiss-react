@@ -1,18 +1,14 @@
 import React, { PureComponent } from 'react';
-import { styleElement, setOption } from 'swiss-react';
+import { styleElement } from 'swiss-react';
 
-import styles from './App.swiss';
-setOption('debug', true);
-
-const Wrapper = styleElement('div', styles.Wrapper);
-const Label = styleElement('span', styles.Label);
+import SW from './App.swiss';
 
 class App extends PureComponent {
   render() {
     return (
-      <Wrapper>
-        <Label width="200px" color="rgba(#ff4400, 0.9)">Hello</Label>
-      </Wrapper>
+      <SW.Wrapper>
+        <SW.Label width="200px" color="rgba(#ff4400, 0.9)">Hello</SW.Label>
+      </SW.Wrapper>
     );
   }
 }
