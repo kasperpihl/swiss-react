@@ -34,7 +34,7 @@ export default (props) => {
 
   Object.keys(props).forEach((k) => {
     // ignore and remove all swiss internal props.
-    if(k.startsWith('__swiss') || k === 'children') {
+    if(k.startsWith('__swiss')) {
       return;
     }
     Object.defineProperty(dProps, k, {
