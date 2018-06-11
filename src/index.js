@@ -1,6 +1,7 @@
 import './polyfills';
 import './features/default-plugins';
 import './features/default-options';
+import './features/default-mixins';
 
 export { default as styleElement } from './helpers/styleElement';
 

@@ -5,4 +5,5 @@ if (typeof navigator != 'undefined' && navigator.product == 'ReactNative') {
   setOption('inline', true);
 } else {
   // I'm on the web or node js!
+  setOption('defaultEl', 'div');
 }

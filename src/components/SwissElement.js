@@ -43,8 +43,7 @@ class SwissElement extends React.PureComponent {
   }
 
   render() {
-    const EL = this.getOptions().element;
-
+    let EL = this.subscription.options.element;
     // React specific excluded props to element.
     const exclude = [
       'className',
@@ -57,6 +56,10 @@ class SwissElement extends React.PureComponent {
 
     const props = filterPropsForSubscription(this.subscription, this.props, exclude);
     
+    if(!EL) {
+      console.warn('swiss error: no element found. got props:', props);
+      EL = () => null;
+    }
     const swissProps = this.getSwissPropsStyleOrClassName();
 
     return (

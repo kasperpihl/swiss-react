@@ -5,26 +5,14 @@ import SwissContext from '../components/SwissContext';
 import { getOption } from '../features/options';
 import convertStylesToArray from './convertStylesToArray';
 
-const styleElement = (options, ...styles) => {
-  if(options && options.__isSwissElement) {
-    styles = options.getStyles().concat(styles);
-    options = Object.assign({}, options.getOptions());
+const styleElement = (...styles) => {
+  const options = {
+    inline: !!getOption('inline'),
+    debug: !!getOption('debug'),
+    element: getOption('defaultEl'),
   }
-
-  if(typeof options !== 'object') {
-    options = { element: options };
-  }
-
-  if(!options.element) {
-    console.warn('swiss styleElement(): options must include element, falling back to div');
-    options.element = 'div';
-  }
-
-  if(typeof options.inline === 'undefined') {
-    options.inline = !!getOption('inline');
-  }
-  if(typeof options.debug === 'undefined') {
-    options.debug = !!getOption('debug');
+  if(styles[0] && styles[0].__isSwissElement) {
+    Object.assign(options, styles[0].getOptions());
   }
 
   // Support for adding swiss elements and grab their styles.
@@ -32,16 +20,24 @@ const styleElement = (options, ...styles) => {
   let foundClassName = '';
   do {
     const styleSheet = styles[index];
+
     if(typeof styleSheet === 'function' && styleSheet.__isSwissElement) {
       const dStyles = styleSheet.getStyles();
       styles.splice(index, 1, ...dStyles);
       index += dStyles.length;
-    } else if(typeof styleSheet === 'object') {
+    } else if(
+      typeof styleSheet === 'object' &&
+      styleSheet !== null &&
+      !Array.isArray(styleSheet)
+    ) {
       if(styleSheet.__swissStyleClassName) {
-        foundClassName += styleSheet.__swissStyleClassName;
+        foundClassName = styleSheet.__swissStyleClassName;
       }
       index++;
     } else {
+      if(typeof styleSheet === 'string') {
+        foundClassName += styleSheet;
+      }
       styles.splice(index, 1);
     }
   } while(index < styles.length);
@@ -60,6 +56,8 @@ const styleElement = (options, ...styles) => {
     key: '&',
     value: convertStylesToArray(entry[1], ['&'], {
       __touchedConditionalProps: options.__touchedConditionalProps,
+    }, (k, v) => {
+      options[k] = v;
     }),
   }));
 

@@ -41,7 +41,6 @@ export default class StyleParser {
     } else {
       this.sub.printedCss = parseRawCss(rawCss || '', this.sub.props);
     }
-
     
     if(options.debug) {
       // Hack to make sure that render has been called and we know which props was forwarded and which was not.
@@ -57,7 +56,7 @@ export default class StyleParser {
       const { props, touched } = this.sub;
       switch(node.type) {
         case 'mixin': {
-          // On mixins, inject on current queue, to keep hierachy
+          // inject on current queue, to keep hierachy
           const mixinValue = runMixin(node, props, touched);
           if(Array.isArray(mixinValue)) {
             this.runningQueue = mixinValue.concat(this.runningQueue);
@@ -72,7 +71,6 @@ export default class StyleParser {
         case 'nested': {
           // Only parse the children if condition is met
           if(!node.condition || testCondition(node.condition, props)) {
-            
             if(node.condition) {
               node.value.forEach((n) => {
                 const length = n.selectors.length;

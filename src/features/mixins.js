@@ -3,6 +3,13 @@ import { parseVariables } from './variables';
 import convertStylesToArray from '../helpers/convertStylesToArray';
 
 const mixins = {};
+const defaultMixins = {};
+export function addDefaultMixin(name, mixin) {
+  if(!name.startsWith('_')) {
+    name = `_${name}`;
+  }
+  defaultMixins[name] = mixin;
+}
 
 export function addMixin(name, mixin) {
   if(typeof name !== 'string') {
@@ -14,21 +21,35 @@ export function addMixin(name, mixin) {
   if(!name.startsWith('_')) {
     name = `_${name}`;
   }
+  if(defaultMixins[name]) {
+    return console.warn(`swiss addMixin: ${name.slice(1)} is a reserved mixin name.`);
+  }
   mixins[name] = mixin;
 }
 
 export function getMixin(name) {
-  if(!mixins[name] && name.startsWith('_')) {
-    name = name.slice(1);
-  }
   const foundMixin = mixins[name];
   if(!foundMixin) {
     console.warn(`swiss: unknown mixin: ${name}`);
   }
   return foundMixin;
 }
-
+export function runDefaultMixin(name, value, setOption) {
+  const mixin = defaultMixins[name];
+  if(mixin) {
+    if(setOption) {
+      mixin(setOption, value);
+    } else {
+      console.warn(`swiss warning: mixin "${name.slice(1)}" can only be called in root, it cannot be returned in mixins, global styles or functional values.`);
+    }
+    return true;
+  }
+  return false;
+}
 export function runMixin({ key, value, selectors }, props, touched) {
+  if(runDefaultMixin(key, value)) {
+    return null;
+  }
   const mixin = getMixin(key);
   let result = mixin || null;
   if(typeof mixin === 'function') {

@@ -1,7 +1,8 @@
 import determineCondition from '../utils/determineCondition';
 import isSelector from '../utils/isSelector';
+import { runDefaultMixin } from '../features/mixins';
 
-const convertStylesToArray = (obj, previousSelectors, recursiveOptions = {}) => {
+const convertStylesToArray = (obj, previousSelectors, recursiveOptions = {}, setOption) => {
   if(typeof obj !== 'object') return obj;
   const newObj = Object.entries(obj);
   return newObj.map(([key, value]) => {
@@ -14,6 +15,9 @@ const convertStylesToArray = (obj, previousSelectors, recursiveOptions = {}) => 
     let type = 'node';
     let condition = null;
     if(key.startsWith('_')) {
+      if(runDefaultMixin(key, value, setOption)) {
+        return null;
+      }
       type = 'mixin';
     }
     else if(Array.isArray(value)) {
@@ -76,6 +80,6 @@ const convertStylesToArray = (obj, previousSelectors, recursiveOptions = {}) => 
       selectors,
       condition,
     };
-  })
+  }).filter(v => !!v);
 }
 export default convertStylesToArray;
