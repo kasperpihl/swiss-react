@@ -6,7 +6,8 @@ export default styleSheet('App', {
     _size: '100%',
   },
   Label: {
-    _el: 'span',
+    __el: 'span',
+    __className: 'Wrapper',
     _size: ['100px', '100px'],
     background: 'blue',
     color: '#{color}',

@@ -27,7 +27,7 @@ export default class StyleParser {
       this.sub.touched = {
         mixins: {},
         variables: {},
-      }
+      };
       this.runQueue();
       if(this.printStyleArray.length) {
         this.replacePropsAndVarForSelectors(this.printStyleArray);
