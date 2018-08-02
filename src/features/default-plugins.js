@@ -15,5 +15,5 @@ if (typeof navigator != 'undefined' && navigator.product == 'ReactNative') {
 } else {
   // I'm on the web or node js!
   // CSS:after content fix. Turns 'value' into ''value'';
-  addPlugin('parseKeyValue', (k, v) => k === 'content' && [k, `'${v}'`]);
+  addPlugin('parseKeyValue', (k, v) => k === 'content' && v === '' && [k, `'${v}'`]);
 }
