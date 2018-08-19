@@ -32,6 +32,7 @@ export default (name, styles) => {
   if(typeof Proxy !== 'undefined') {
     styles = new Proxy(styles, {
       get: (obj, prop) => {
+        if(prop === '__esModule') return obj;
         if(obj[prop]) return obj[prop];
         let warning = `swiss error: component not found: "${prop}"`;
         if(name) {
