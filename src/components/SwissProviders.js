@@ -1,34 +1,13 @@
 import React, { PureComponent, createContext } from "react";
 
 const createContextClass = propKey => {
-  let Provider;
-  let Consumer = null;
+  const Context = createContext({});
+  const Consumer = Context.Consumer;
+  const Provider = props => {
+    const { children, ...rest } = props;
 
-  if (typeof createContext !== "undefined") {
-    const Context = createContext({});
-    Consumer = Context.Consumer;
-    Provider = props => {
-      const { children, ...rest } = props;
-
-      return <Context.Provider value={rest}>{children}</Context.Provider>;
-    };
-  } else {
-    class ProvideProps extends PureComponent {
-      getChildContext() {
-        const { children, ...rest } = this.props;
-
-        return { [propKey]: rest };
-      }
-      render() {
-        return this.props.children;
-      }
-    }
-
-    ProvideProps.childContextTypes = {
-      [propKey]: () => null
-    };
-    Provider = ProvideProps;
-  }
+    return <Context.Provider value={rest}>{children}</Context.Provider>;
+  };
 
   return {
     Provider,

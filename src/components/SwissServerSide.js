@@ -1,73 +1,36 @@
-import React, { PureComponent, createContext } from 'react';
-import SwissController from '../classes/SwissController';
+import React, { PureComponent, createContext } from "react";
+import SwissController from "../classes/SwissController";
 
-let SwissServerSide;
-let SwissServerSideConsumer = null;
-if(typeof createContext !== 'undefined') {
-
-  const Context = createContext(null);
-  SwissServerSideConsumer = Context.Consumer;
-  class NewContextServerSide extends PureComponent {
-    constructor(props) {
-      super(props);
-      this.controller = new SwissController();
-    }
-    render() {
-      if(typeof this.props.context === 'object') {
-        this.props.context.toString = this.controller.toString;
-        this.props.context.toComponents = this.controller.toComponents;
-      }
-      return (
-        <Context.Provider value={this.controller}>
-          {this.props.children}
-        </Context.Provider>
-      );
-    }
+const Context = createContext(null);
+const SwissServerSideConsumer = Context.Consumer;
+class SwissServerSide extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.controller = new SwissController();
   }
-  SwissServerSide = NewContextServerSide;
-
-} else {
-
-  class OldContextServerSide extends PureComponent {
-    constructor(props) {
-      super(props);
-      this.controller = new SwissController();
+  render() {
+    if (typeof this.props.context === "object") {
+      this.props.context.toString = this.controller.toString;
+      this.props.context.toComponents = this.controller.toComponents;
     }
-    getChildContext() {
-      return {
-        swissController: this.controller,
-      };
-    }
-    render() {
-      if(typeof this.props.context === 'object') {
-        this.props.context.toString = this.controller.toString;
-        this.props.context.toComponents = this.controller.toComponents;
-      }
-      return this.props.children;
-    }
+    return (
+      <Context.Provider value={this.controller}>
+        {this.props.children}
+      </Context.Provider>
+    );
   }
-
-  OldContextServerSide.childContextTypes = {
-    swissController: () => null,
-  };
-  SwissServerSide = OldContextServerSide;
-
 }
 
 SwissServerSide.propTypes = {
   context: (props, propName) => {
     const value = props[propName];
-    if(!value) {
-      console.warn('SwissServerSide expects prop context');
-    }
-    else if(typeof value !== 'object') {
-      console.warn('SwissServerSide prop context must be an object');
+    if (!value) {
+      console.warn("SwissServerSide expects prop context");
+    } else if (typeof value !== "object") {
+      console.warn("SwissServerSide prop context must be an object");
     }
     return null;
   }
-}
+};
 
-export {
-  SwissServerSide,
-  SwissServerSideConsumer,
-}
+export { SwissServerSide, SwissServerSideConsumer };

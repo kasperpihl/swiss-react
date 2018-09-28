@@ -1,5 +1,5 @@
-import React from 'react';
-import filterPropsForSubscription from '../utils/filterPropsForSubscription';
+import React from "react";
+import filterPropsForSubscription from "../utils/filterPropsForSubscription";
 
 class SwissElement extends React.PureComponent {
   constructor(props) {
@@ -9,7 +9,7 @@ class SwissElement extends React.PureComponent {
   componentDidMount() {
     this.getController().checkIfDomNeedsUpdate();
   }
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps) {
     this.getController().update(this.subscription, nextProps);
   }
   componentDidUpdate() {
@@ -27,14 +27,14 @@ class SwissElement extends React.PureComponent {
 
   getSwissPropsStyleOrClassName() {
     const swissProps = {
-      className: this.subscription.className.slice(1),
+      className: this.subscription.className.slice(1)
     };
 
-    if(this.props.className) {
+    if (this.props.className) {
       swissProps.className = `${swissProps.className} ${this.props.className}`;
     }
-    
-    if(this.getOptions().inline) {
+
+    if (this.getOptions().inline) {
       delete swissProps.className;
       swissProps.style = this.subscription.inlineStyles;
     }
@@ -46,19 +46,23 @@ class SwissElement extends React.PureComponent {
     let EL = this.subscription.options.element;
     // React specific excluded props to element.
     const exclude = [
-      'className',
-      'innerRef',
-      '__swissOptions',
-      '__swissController',
-      '__swissContextKeys',
-      ...this.props.__swissContextKeys,
+      "className",
+      "innerRef",
+      "__swissOptions",
+      "__swissController",
+      "__swissContextKeys",
+      ...this.props.__swissContextKeys
     ];
 
-    const props = filterPropsForSubscription(this.subscription, this.props, exclude);
-    
-    if(!EL) {
-      console.warn('swiss error: no element found. got props:', props);
-      EL = () => null;
+    const props = filterPropsForSubscription(
+      this.subscription,
+      this.props,
+      exclude
+    );
+
+    if (!EL) {
+      console.warn("swiss error: no element found. got props:", props);
+      EL = () => null;
     }
     const swissProps = this.getSwissPropsStyleOrClassName();
 
@@ -70,4 +74,4 @@ class SwissElement extends React.PureComponent {
   }
 }
 
-export default SwissElement;  
+export default SwissElement;
