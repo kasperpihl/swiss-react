@@ -1,4 +1,4 @@
-import { setOption } from './options';
+import { setOption } from './options';
 
 if (typeof navigator != 'undefined' && navigator.product == 'ReactNative') {
   // I'm in react-native

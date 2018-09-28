@@ -26,4 +26,4 @@ export {
 
 export { SwissServerSide } from "./components/SwissServerSide";
 
-export { default as initDOM } from "./helpers/initDOM";
+export { default as initSwiss } from "./helpers/initSwiss";

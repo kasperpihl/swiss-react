@@ -1,51 +1,50 @@
-export default (props) => {
+export default props => {
   const dProps = {};
   Object.defineProperty(dProps, '__swissProps', {
-    value: props,
+    value: props
   });
   Object.defineProperty(dProps, '__swissDontForwardProps', {
-    value: {},
+    value: {}
   });
   Object.defineProperty(dProps, '__swissForwardedProps', {
-    value: {},
+    value: {}
   });
   Object.defineProperty(dProps, 'forwardProps', {
     value(...keys) {
       keys.forEach(k => {
-        if(typeof k === 'string' && k) {
-          this.__swissForwardedProps[k] = true;
-          if(this.__swissDontForwardProps[k]) {
+        if (typeof k === 'string' && k) {
+          this.__swissForwardedProps[k] = true;
+          if (this.__swissDontForwardProps[k]) {
             delete this.__swissDontForwardProps[k];
           }
         }
-      })
-    },
+      });
+    }
   });
   Object.defineProperty(dProps, 'dontForwardProps', {
     value(...keys) {
       keys.forEach(k => {
-        if(typeof k === 'string' && k && !this.__swissForwardedProps[k]) {
-          this.__swissDontForwardProps[k] = true;
+        if (typeof k === 'string' && k && !this.__swissForwardedProps[k]) {
+          this.__swissDontForwardProps[k] = true;
         }
-      })
-    },
+      });
+    }
   });
 
-
-  Object.keys(props).forEach((k) => {
+  Object.keys(props).forEach(k => {
     // ignore and remove all swiss internal props.
-    if(k.startsWith('__swiss')) {
+    if (k.startsWith('__swiss')) {
       return;
     }
     Object.defineProperty(dProps, k, {
       get() {
-        if(!this.__swissDisableTouch && !this.__swissForwardedProps[k]) {
-          this.__swissDontForwardProps[k] = true;
+        if (!this.__swissDisableTouch && !this.__swissForwardedProps[k]) {
+          this.__swissDontForwardProps[k] = true;
         }
-        return this.__swissProps[k]
+        return this.__swissProps[k];
       },
-      enumerable: true,
+      enumerable: true
     });
   });
   return dProps;
-}
+};

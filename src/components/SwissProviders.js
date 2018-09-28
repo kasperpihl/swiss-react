@@ -1,4 +1,4 @@
-import React, { PureComponent, createContext } from "react";
+import React, { PureComponent, createContext } from 'react';
 
 const createContextClass = propKey => {
   const Context = createContext({});
@@ -16,13 +16,13 @@ const createContextClass = propKey => {
 };
 
 const { Provider: SwissProvider, Consumer: SwissConsumer } = createContextClass(
-  "providedProps"
+  'providedProps'
 );
 
 const {
   Provider: SwissGlobalProvider,
   Consumer: SwissGlobalConsumer
-} = createContextClass("globalProvidedProps");
+} = createContextClass('globalProvidedProps');
 
 export {
   SwissProvider,

@@ -1,5 +1,5 @@
-import React from "react";
-import filterPropsForSubscription from "../utils/filterPropsForSubscription";
+import React from 'react';
+import filterPropsForSubscription from '../utils/filterPropsForSubscription';
 
 class SwissElement extends React.PureComponent {
   constructor(props) {
@@ -46,11 +46,11 @@ class SwissElement extends React.PureComponent {
     let EL = this.subscription.options.element;
     // React specific excluded props to element.
     const exclude = [
-      "className",
-      "innerRef",
-      "__swissOptions",
-      "__swissController",
-      "__swissContextKeys",
+      'className',
+      'innerRef',
+      '__swissOptions',
+      '__swissController',
+      '__swissContextKeys',
       ...this.props.__swissContextKeys
     ];
 
@@ -61,7 +61,7 @@ class SwissElement extends React.PureComponent {
     );
 
     if (!EL) {
-      console.warn("swiss error: no element found. got props:", props);
+      console.warn('swiss error: no element found. got props:', props);
       EL = () => null;
     }
     const swissProps = this.getSwissPropsStyleOrClassName();

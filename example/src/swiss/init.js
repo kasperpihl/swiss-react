@@ -1,5 +1,5 @@
-import { initDOM } from "swiss-react";
-initDOM();
+import { initSwiss } from "swiss-react";
+initSwiss();
 
 import "./reset";
 import "./mixins/_size";

@@ -1,6 +1,6 @@
 import StyleParser from './StyleParser';
 import DomHandler from './DomHandler';
-import { toString, toComponent } from '../features/global-styles';
+import { toString, toComponent } from '../features/global-styles';
 import createPropsObject from '../helpers/createPropsObject';
 
 export default class SwissController {
@@ -14,10 +14,12 @@ export default class SwissController {
   subscribe(props) {
     const subscription = {
       ref: this.refCounter,
-      className: `.${props.__swissOptions.className || 'swiss'}-${this.refCounter}`,
+      className: `.${props.__swissOptions.className || 'swiss'}-${
+        this.refCounter
+      }`,
       options: props.__swissOptions,
       orgProps: props,
-      props: createPropsObject(props),
+      props: createPropsObject(props)
     };
     this.refCounter++;
     this.subscriptions.push(subscription);
@@ -26,46 +28,48 @@ export default class SwissController {
     return subscription;
   }
   update(subscription, props) {
-    if(subscription) {
+    if (subscription) {
       let shouldUpdateStyles = true;
-      if(subscription.options.pure) {
+      if (subscription.options.pure) {
         shouldUpdateStyles = false;
-        subscription.options.pure.forEach((propName) => {
-          if(subscription.props[propName] !== props[propName]) {
+        subscription.options.pure.forEach(propName => {
+          if (subscription.props[propName] !== props[propName]) {
             shouldUpdateStyles = true;
           }
-        })
+        });
       }
 
-      if(shouldUpdateStyles) {
+      if (shouldUpdateStyles) {
         this.shouldUpdateDOM = true;
         subscription.orgProps = props;
         subscription.props = createPropsObject(props);
         new StyleParser(subscription).run();
       }
-      
     }
   }
   unsubscribe({ ref }) {
     const index = this.subscriptions.findIndex(s => s.ref === ref);
-    if(index > -1) {
+    if (index > -1) {
       this.subscriptions.splice(index, 1);
       this.shouldUpdateDOM = true;
     }
   }
   _getPrintedStyles() {
-    return this.subscriptions.map(s => s.printedCss).filter(s => !!s).join('');
+    return this.subscriptions
+      .map(s => s.printedCss)
+      .filter(s => !!s)
+      .join('');
   }
   toString = () => {
     this.checkIfDomNeedsUpdate(true);
     return toString() + '\r\n' + this.domHandler.toString();
-  }
+  };
   toComponents = () => {
     this.checkIfDomNeedsUpdate(true);
     return [toComponent(), this.domHandler.toComponent()].filter(v => !!v);
-  }
+  };
   checkIfDomNeedsUpdate(force) {
-    if(this.shouldUpdateDOM || force) {
+    if (this.shouldUpdateDOM || force) {
       // Update DOM!
       const css = this._getPrintedStyles();
       this.domHandler.update(css);
@@ -76,6 +80,4 @@ export default class SwissController {
 
 const defaultSwissController = new SwissController();
 
-export {
-  defaultSwissController,
-}
+export { defaultSwissController };

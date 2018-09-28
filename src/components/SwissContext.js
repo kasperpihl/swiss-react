@@ -1,7 +1,7 @@
-import React, { PureComponent } from "react";
-import { SwissConsumer, SwissGlobalConsumer } from "./SwissProviders";
-import { SwissServerSideConsumer } from "./SwissServerSide";
-import SwissElement from "./SwissElement";
+import React, { PureComponent } from 'react';
+import { SwissConsumer, SwissGlobalConsumer } from './SwissProviders';
+import { SwissServerSideConsumer } from './SwissServerSide';
+import SwissElement from './SwissElement';
 
 class SwissContext extends PureComponent {
   generateContextKeys(globalProvidedProps, providedProps) {

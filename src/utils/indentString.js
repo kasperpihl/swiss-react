@@ -1,10 +1,10 @@
 export default (string, depth) => {
-  if(typeof string === 'number') {
+  if (typeof string === 'number') {
     depth = string;
     string = '';
   }
-  for (let i = depth ; i > 0 ; i--){
+  for (let i = depth; i > 0; i--) {
     string += '  ';
   }
   return string;
-}
+};

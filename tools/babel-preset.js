@@ -6,10 +6,6 @@ const plugins = [
   "@babel/plugin-proposal-class-properties"
 ];
 
-if (BABEL_ENV === "umd") {
-  plugins.push("@babel/plugin-external-helpers");
-}
-
 if (process.env.NODE_ENV === "production") {
   plugins.push("babel-plugin-dev-expression");
 }
