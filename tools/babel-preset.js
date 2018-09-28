@@ -1,27 +1,28 @@
-const BABEL_ENV = process.env.BABEL_ENV
-const building = BABEL_ENV != undefined && BABEL_ENV !== 'cjs'
+const BABEL_ENV = process.env.BABEL_ENV;
+const building = BABEL_ENV != undefined && BABEL_ENV !== "cjs";
 
 const plugins = [
-  'transform-object-rest-spread',
-  'transform-class-properties',
+  "@babel/plugin-proposal-object-rest-spread",
+  "@babel/plugin-proposal-class-properties"
 ];
 
-if (BABEL_ENV === 'umd') {
-  plugins.push('external-helpers')
+if (BABEL_ENV === "umd") {
+  plugins.push("@babel/plugin-external-helpers");
 }
 
-if (process.env.NODE_ENV === 'production') {
-  plugins.push(
-    'dev-expression'
-  )
+if (process.env.NODE_ENV === "production") {
+  plugins.push("babel-plugin-dev-expression");
 }
 
-module.exports = {
+module.exports = () => ({
   presets: [
-    [ 'es2015', {
-      modules: building ? false : 'commonjs'
-    } ],
-    'react'
+    [
+      "@babel/preset-env",
+      {
+        modules: building ? false : "commonjs"
+      }
+    ],
+    "@babel/preset-react"
   ],
   plugins: plugins
-}
+});
