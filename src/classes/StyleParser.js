@@ -58,47 +58,49 @@ export default class StyleParser {
     }
   }
   runQueue() {
-    while (this.runningQueue.length) {
-      const node = this.runningQueue.shift();
-      const { props, touched } = this.sub;
-      switch (node.type) {
-        case 'mixin': {
-          // inject on current queue, to keep hierachy
-          let mixinValue = runMixin(node, props, touched);
-          if (mixinValue) {
-            mixinValue = convertStylesToArray(mixinValue, node.selectors);
-          }
-          if (Array.isArray(mixinValue)) {
-            this.runningQueue = mixinValue.concat(this.runningQueue);
-          }
-          break;
+    if (!this.runningQueue.length) return;
+
+    const node = this.runningQueue.shift();
+
+    const { props, touched } = this.sub;
+    switch (node.type) {
+      case 'mixin': {
+        // inject on current queue, to keep hierachy
+        let mixinValue = runMixin(node, props, touched);
+        if (mixinValue) {
+          mixinValue = convertStylesToArray(mixinValue, node.selectors);
         }
-        case 'array': {
-          // On array, inject on current queue, to keep hierachy
+        if (Array.isArray(mixinValue)) {
+          this.runningQueue = mixinValue.concat(this.runningQueue);
+        }
+        break;
+      }
+      case 'array': {
+        // On array, inject on current queue, to keep hierachy
+        this.runningQueue = node.value.concat(this.runningQueue);
+        break;
+      }
+      case 'nested': {
+        // Only parse the children if condition is met
+        if (!node.condition || testCondition(node.condition, props)) {
+          if (node.condition) {
+            node.value.forEach(n => {
+              const length = n.selectors.length;
+              if (n.selectors[length - 1].indexOf(', .sw_') === -1) {
+                n.selectors[length - 1] += `, .sw_${node.condition.key}`;
+              }
+            });
+          }
           this.runningQueue = node.value.concat(this.runningQueue);
-          break;
         }
-        case 'nested': {
-          // Only parse the children if condition is met
-          if (!node.condition || testCondition(node.condition, props)) {
-            if (node.condition) {
-              node.value.forEach(n => {
-                const length = n.selectors.length;
-                if (n.selectors[length - 1].indexOf(', .sw_') === -1) {
-                  n.selectors[length - 1] += `, .sw_${node.condition.key}`;
-                }
-              });
-            }
-            this.runningQueue = node.value.concat(this.runningQueue);
-          }
-          break;
-        }
-        case 'node': {
-          this.handleNode(node);
-          break;
-        }
+        break;
+      }
+      case 'node': {
+        this.handleNode(node);
+        break;
       }
     }
+    this.runQueue();
   }
   replacePropsAndVarForSelectors(array) {
     const { props, className, touched } = this.sub;
