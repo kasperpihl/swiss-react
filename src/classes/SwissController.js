@@ -25,6 +25,7 @@ export default class SwissController {
     this.subscriptions.push(subscription);
     new StyleParser(subscription).run();
     this.shouldUpdateDOM = true;
+    window.styleHandler.updateSubscriptions(this.subscriptions);
     return subscription;
   }
   update(subscription, props) {
@@ -44,6 +45,9 @@ export default class SwissController {
         subscription.orgProps = props;
         subscription.props = createPropsObject(props);
         new StyleParser(subscription).run();
+        if (typeof subscription.onUpdate === 'function') {
+          subscription.onUpdate();
+        }
       }
     }
   }
@@ -51,6 +55,7 @@ export default class SwissController {
     const index = this.subscriptions.findIndex(s => s.ref === ref);
     if (index > -1) {
       this.subscriptions.splice(index, 1);
+      window.styleHandler.updateSubscriptions(this.subscriptions);
       this.shouldUpdateDOM = true;
     }
   }
@@ -71,8 +76,8 @@ export default class SwissController {
   checkIfDomNeedsUpdate(force) {
     if (this.shouldUpdateDOM || force) {
       // Update DOM!
-      const css = this._getPrintedStyles();
-      this.domHandler.update(css);
+      // const css = this._getPrintedStyles();
+      // this.domHandler.update(css);
       this.shouldUpdateDOM = false;
     }
   }

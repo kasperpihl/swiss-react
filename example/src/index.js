@@ -1,11 +1,8 @@
-import React from "react";
-import { render } from "react-dom";
+import React from 'react';
+import { render } from 'react-dom';
 
-import "./swiss/init";
+import './swiss/init';
 
-import App from "./react/App";
-// import Test from "./react/Test";
+import App from './react/App';
 
-render(<App />, document.getElementById("content"));
-
-// render(<Test />, document.getElementById("swiss-test"));
+render(<App />, document.getElementById('content'));

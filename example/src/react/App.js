@@ -1,8 +1,19 @@
-import React, { PureComponent } from "react";
+import React, { PureComponent } from 'react';
 
-import SW from "./App.swiss";
+import SW from './App.swiss';
 
 class App extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({
+        didRender: true
+      });
+    }, 500);
+  }
   render() {
     return (
       <SW.Wrapper>

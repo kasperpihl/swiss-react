@@ -71,6 +71,7 @@ const styleElement = (...styles) => {
   const render = props => {
     return <SwissContext {...props} __swissOptions={options} />;
   };
+  render.displayName = foundClassName || 'SwissElement';
   render.__isSwissElement = true;
   render.getOptions = () => options;
   render.getStyles = () => styles;
