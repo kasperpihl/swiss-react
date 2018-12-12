@@ -1,6 +1,6 @@
 import { addMixin } from 'swiss-react';
 
-addMixin('flex', (props, direction, horizontal, vertical) => {
+addMixin('flex', (direction, horizontal, vertical) => {
   let flex = {};
   flex.display = 'flex';
 
@@ -10,7 +10,7 @@ addMixin('flex', (props, direction, horizontal, vertical) => {
   }
 
   if (direction === 'row') {
-    flex.flexDirection = direction
+    flex.flexDirection = direction;
 
     switch (horizontal) {
       case 'left':
@@ -43,12 +43,12 @@ addMixin('flex', (props, direction, horizontal, vertical) => {
       case 'stretch':
         flex.alignItems = 'stretch';
         break;
-    }    
+    }
   }
 
   if (direction === 'column') {
-    flex.flexDirection = direction
-    
+    flex.flexDirection = direction;
+
     switch (horizontal) {
       case 'left':
         flex.alignItems = 'flex-start';
@@ -59,7 +59,7 @@ addMixin('flex', (props, direction, horizontal, vertical) => {
       case 'right':
         flex.alignItems = 'flex-end';
         break;
-    } 
+    }
 
     switch (vertical) {
       case 'top':
@@ -80,5 +80,5 @@ addMixin('flex', (props, direction, horizontal, vertical) => {
     }
   }
 
-  return {...flex}
+  return { ...flex };
 });

@@ -4,7 +4,7 @@ import { toString, toComponent } from '../features/global-styles';
 import createPropsObject from '../helpers/createPropsObject';
 
 export default class SwissController {
-  constructor(isDefault) {
+  constructor() {
     this.refCounter = 0;
     this.subscriptions = [];
     this.shouldUpdateDOM = false;

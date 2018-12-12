@@ -7,20 +7,20 @@
     "start": "webpack-dev-server --progress"
   },
   "dependencies": {
-    "react": "^16.5.2",
-    "react-dom": "^16.5.2",
-    "stylis": "^3.5.3"
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "stylis": "^3.5.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/core": "^7.2.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
     "babel-loader": "^8.0.4",
     "babel-plugin-module-resolver": "^3.1.1",
     "html-webpack-plugin": "^3.2.0",
-    "opn-cli": "^3.1.0",
-    "react-hot-loader": "^4.3.11",
-    "webpack": "^4.20.2",
-    "webpack-cli": "^3.1.1",
-    "webpack-dev-server": "^3.1.9"
+    "opn-cli": "^4.0.0",
+    "react-hot-loader": "^4.3.12",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10"
   }
 }

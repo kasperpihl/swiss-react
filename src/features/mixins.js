@@ -1,4 +1,3 @@
-import parseProps from '../helpers/parseProps';
 import { parseVariables } from './variables';
 
 const mixins = {};
@@ -55,21 +54,23 @@ export function runDefaultMixin(name, value, setOption) {
   }
   return false;
 }
-export function runMixin({ key, value, selectors }, props, touched) {
+export function runMixin({ key, value }, props, touched) {
   if (runDefaultMixin(key, value)) {
     return null;
   }
   const mixin = getMixin(key);
   let result = mixin || null;
   if (typeof mixin === 'function') {
+    if (typeof value === 'function') {
+      value = value(props);
+    }
     if (!Array.isArray(value)) {
       value = [value];
     }
     // Make sure keys for mixins get parsed.
-    value = parseProps(value, props);
     value = value.map(v => parseVariables(v, touched.variables));
 
-    result = mixin(props, ...value);
+    result = mixin(...value);
     if (typeof result !== 'object') {
       console.warn(
         `swiss: mixin "${name.slice(

@@ -48,12 +48,4 @@ class SwissContext extends PureComponent {
   }
 }
 
-if (!SwissConsumer) {
-  SwissContext.contextTypes = {
-    swissController: () => null,
-    providedProps: () => null,
-    globalProvidedProps: () => null
-  };
-}
-
 export default SwissContext;
