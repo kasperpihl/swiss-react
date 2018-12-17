@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-
 import SW from './App.swiss';
 
 class App extends PureComponent {
@@ -16,7 +15,7 @@ class App extends PureComponent {
   }
   render() {
     return (
-      <SW.Wrapper>
+      <SW.Wrapper background="green">
         <SW.Label width="200px" color="rgba(#ff4400, 0.9)">
           Hello
         </SW.Label>

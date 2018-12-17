@@ -2,14 +2,18 @@ import { styleSheet } from 'swiss-react';
 
 export default styleSheet('App', {
   Wrapper: {
-    _flex: props => ['center'],
-    _size: '100%'
+    _debug: true,
+    _flex: 'center',
+    _size: '100%',
+    background: props => props.background || 'red'
   },
   Label: {
+    _debug: true,
     _el: 'span',
-    _className: 'Wrapper',
     _size: ['100px', '100px'],
-    background: 'blue',
-    color: '#{color}'
+    color: '#{color}',
+    'background=red': {
+      background: 'red'
+    }
   }
 });
