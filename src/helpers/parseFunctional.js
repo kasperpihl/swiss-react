@@ -1,8 +1,8 @@
-export default (value, props) => {
+export default (value, getProp) => {
   if (typeof value !== 'function') {
     return value;
   }
-  let res = value(props);
+  let res = value(getProp);
   if (
     [false, null].indexOf(res) === -1 &&
     ['number', 'string', 'undefined'].indexOf(typeof res) === -1

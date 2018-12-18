@@ -1,40 +1,51 @@
-import styleElement from './styleElement';
+import React, { forwardRef } from 'react';
+import SwissElement from '../components/SwissElement';
+import SwissProvideContext from '../components/SwissProvideContext';
+import convertStylesToArray from './convertStylesToArray';
+
 const nullFunc = () => null;
 
 export default (name, styles) => {
-  if (typeof name === 'object') {
-    styles = name;
-    name = '';
+  if (typeof name !== 'string') {
+    return console.warn(
+      'swiss styleSheet: first argument(name) must be a string'
+    );
   }
   if (typeof styles !== 'object') {
     return console.warn(
-      'swiss createStyleSheet: first or second argument must be an object with styles'
+      'swiss styleSheet: first or second argument must be an object with styles'
     );
-  }
-  if (typeof name !== 'string') {
-    console.warn(
-      'swiss createStyleSheet: first argument(name) must be a string'
-    );
-    name = '';
-  }
-  if (name) {
-    Object.defineProperty(styles, '__swissStyleClassName', {
-      value: name
-    });
   }
 
+  let StyleSheet = {};
   for (let key in styles) {
     if (typeof styles[key] === 'object') {
-      const className = name ? `${name}_${key}` : key;
-      Object.defineProperty(styles[key], '__swissStyleClassName', {
-        value: className
-      });
-      styles[key] = styleElement(styles[key]);
+      const options = {
+        type: `${name}_${key}`,
+        originalStyles: styles[key]
+      };
+      options.styles = [
+        {
+          selectors: ['&'],
+          type: 'nested',
+          condition: null,
+          key: '&',
+          value: convertStylesToArray(styles[key], ['&'], {}, (k, v) => {
+            options[k] = v;
+          })
+        }
+      ];
+      const render = forwardRef((props, ref) => (
+        <SwissElement innerRef={ref} {...props} __swissOptions={options} />
+      ));
+      render.displayName = `${name}_${key}`;
+      StyleSheet[key] = render;
     }
   }
+  StyleSheet.ProvideContext = SwissProvideContext;
 
   if (typeof Proxy !== 'undefined') {
-    styles = new Proxy(styles, {
+    StyleSheet = new Proxy(StyleSheet, {
       get: (obj, prop) => {
         if (prop === '__esModule' || prop === 'default') return obj;
         if (obj[prop]) return obj[prop];
@@ -48,5 +59,5 @@ export default (name, styles) => {
     });
   }
 
-  return styles;
+  return StyleSheet;
 };

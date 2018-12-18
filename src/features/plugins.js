@@ -17,9 +17,9 @@ export function addPlugin(name, handler) {
   plugins[name].push(handler);
 }
 
-export function parseRawCss(rawCss, props) {
+export function parseRawCss(rawCss) {
   runPlugin('parseRawCss', (handler, i) => {
-    const res = handler(rawCss, props);
+    const res = handler(rawCss);
     if (typeof res !== 'undefined' && res !== false) {
       if (typeof res !== 'string') {
         return console.warn(
@@ -32,9 +32,9 @@ export function parseRawCss(rawCss, props) {
   return rawCss;
 }
 
-export function parseKeyValue(key, value, props) {
+export function parseKeyValue(key, value) {
   runPlugin('parseKeyValue', (handler, i) => {
-    const res = handler(key, value, props);
+    const res = handler(key, value);
     if (typeof res !== 'undefined' && res !== false) {
       if (!Array.isArray(res)) {
         return console.warn(
@@ -53,9 +53,9 @@ export function parseKeyValue(key, value, props) {
   return [key, value];
 }
 
-export function parseRawInline(inlineStyles, props) {
+export function parseRawInline(inlineStyles) {
   runPlugin('parseRawInline', (handler, i) => {
-    const res = handler(inlineStyles, props);
+    const res = handler(inlineStyles);
     if (typeof res !== 'undefined') {
       if (typeof res !== 'object') {
         return console.warn(

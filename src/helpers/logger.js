@@ -1,5 +1,4 @@
 import formatTime from '../utils/formatTime';
-import filterPropsForSubscription from '../utils/filterPropsForSubscription';
 
 export const logSubscription = (sub, startTime) => {
   if (
@@ -52,11 +51,6 @@ export const logSubscription = (sub, startTime) => {
           '%c component received props',
           `color: blue; font-weight: bold`,
           filteredProps
-        );
-        console.log(
-          '%c swiss handled props (not forwarded)',
-          `color: blue; font-weight: bold`,
-          (sub.__swissIgnoredProps || ['none']).join(', ')
         );
         console.log(
           '%c forwarded props to inner element',

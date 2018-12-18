@@ -1,5 +1,5 @@
-export default ({ key, value, operator }, cProps) => {
-  let pVal = cProps[key];
+export default ({ key, value, operator }, getProp) => {
+  let pVal = getProp(key);
   switch (operator) {
     case 'hasValue':
       return !!pVal;

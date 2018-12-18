@@ -1,10 +1,9 @@
-import parseProps from '../helpers/parseProps';
 import parseFunctional from '../helpers/parseFunctional';
 import { parseVariables } from '../features/variables';
 import { logSubscription } from '../helpers/logger';
 
 import convertStylesToArray from '../helpers/convertStylesToArray';
-import { runMixin, getMixin } from '../features/mixins';
+import { runMixin } from '../features/mixins';
 import {
   parseKeyValue,
   parseRawCss,
@@ -19,7 +18,8 @@ export default class StyleParser {
     this.sub = subscription;
   }
 
-  run() {
+  run(getProp) {
+    this.getProp = getProp;
     const startTime = new Date();
     let rawCss = this.sub.printedCss;
     const { options } = this.sub;
@@ -29,25 +29,18 @@ export default class StyleParser {
 
       this.sub.inlineStyles = {};
 
-      this.sub.touched = {
-        mixins: {},
-        variables: {}
-      };
       this.runQueue();
       if (this.printStyleArray.length) {
-        this.replacePropsAndVarForSelectors(this.printStyleArray);
+        this.replaceVarForSelectors(this.printStyleArray);
         rawCss = printToCss(this.printStyleArray);
       }
     }
 
     // Run post plugins. (parseRawInline, parseRawCss)
     if (options.inline) {
-      this.sub.inlineStyles = parseRawInline(
-        this.sub.inlineStyles,
-        this.sub.props
-      );
+      this.sub.inlineStyles = parseRawInline(this.sub.inlineStyles);
     } else {
-      this.sub.printedCss = parseRawCss(rawCss || '', this.sub.props);
+      this.sub.printedCss = parseRawCss(rawCss || '');
     }
 
     if (options.debug) {
@@ -62,11 +55,14 @@ export default class StyleParser {
 
     const node = this.runningQueue.shift();
 
-    const { props, touched } = this.sub;
     switch (node.type) {
       case 'mixin': {
         // inject on current queue, to keep hierachy
-        let mixinValue = runMixin(node, props, touched);
+        let value = node.value;
+        if (typeof node.value === 'function') {
+          value = node.value(this.getProp);
+        }
+        let mixinValue = runMixin(node.key, value);
         if (mixinValue) {
           mixinValue = convertStylesToArray(mixinValue, node.selectors);
         }
@@ -82,7 +78,7 @@ export default class StyleParser {
       }
       case 'nested': {
         // Only parse the children if condition is met
-        if (!node.condition || testCondition(node.condition, props)) {
+        if (!node.condition || testCondition(node.condition, this.getProp)) {
           if (node.condition) {
             node.value.forEach(n => {
               const length = n.selectors.length;
@@ -102,18 +98,16 @@ export default class StyleParser {
     }
     this.runQueue();
   }
-  replacePropsAndVarForSelectors(array) {
-    const { props, className, touched } = this.sub;
+  replaceVarForSelectors(array) {
+    const { className } = this.sub;
     array.forEach(obj => {
-      obj.selector = parseProps(obj.selector, props);
-      obj.selector = parseVariables(obj.selector, touched.variables);
-      // TODO: support comma separated stuff.
+      obj.selector = parseVariables(obj.selector);
       obj.selector = className
         .split(/,\ ?/g)
         .map(s => obj.selector.replace(/&/gi, s))
         .join(', ');
       if (obj.children.length) {
-        this.replacePropsAndVarForSelectors(obj.children);
+        this.replaceVarForSelectors(obj.children);
       }
     });
   }
@@ -139,13 +133,12 @@ export default class StyleParser {
     let key = node.key;
     let value = node.value;
 
-    const { props, touched, options, inlineStyles } = this.sub;
+    const { options, inlineStyles } = this.sub;
 
-    value = parseFunctional(value, props);
-    value = parseProps(value, props);
-    value = parseVariables(value, touched.variables);
+    value = parseFunctional(value, this.getProp);
+    value = parseVariables(value);
 
-    const res = parseKeyValue(key, value, props);
+    const res = parseKeyValue(key, value);
     key = res[0];
     value = res[1];
 

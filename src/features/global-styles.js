@@ -1,7 +1,6 @@
 import convertStylesToArray from '../helpers/convertStylesToArray';
 import DomHandler from '../classes/DomHandler';
 import StyleParser from '../classes/StyleParser';
-import { getOption } from './options';
 
 let gSubs = [];
 const _domHandler = new DomHandler('globals');
@@ -12,11 +11,6 @@ function renderGlobals() {
     gSubs
       .map(s => {
         if (!s.printedCss) {
-          if (getOption('debug')) {
-            s.options.debug = true;
-          } else {
-            delete s.options.originalStyles;
-          }
           new StyleParser(s).run();
         }
         return s.printedCss;

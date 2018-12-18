@@ -74,9 +74,6 @@ const convertStylesToArray = (
           // setting condition to determine if styles should be applied
           if (!recursiveOptions.disableProps) {
             condition = determineCondition(key);
-            if (condition && recursiveOptions.__touchedConditionalProps) {
-              recursiveOptions.__touchedConditionalProps[condition.key] = true;
-            }
           }
         }
         value = convertStylesToArray(value, selectors, recursiveOptions);

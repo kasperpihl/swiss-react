@@ -1,64 +1,118 @@
 import StyleParser from './StyleParser';
 import DomHandler from './DomHandler';
 import { toString, toComponent } from '../features/global-styles';
-import createPropsObject from '../helpers/createPropsObject';
 
 export default class SwissController {
   constructor() {
-    this.refCounter = 0;
-    this.subscriptions = [];
     this.shouldUpdateDOM = false;
     this.domHandler = new DomHandler('newglobal');
     this.domHandler.add();
+    this.stylesToAppend = [];
+    this.classNameCache = {};
   }
-  subscribe(props) {
-    const subscription = {
-      ref: this.refCounter,
-      className: `.${props.__swissOptions.className || 'swiss'}-${
-        this.refCounter
-      }`,
-      options: props.__swissOptions,
-      orgProps: props,
-      props: createPropsObject(props)
+  filterProps(className, keyValues, props, context) {
+    const filteredProps = {
+      className: className
+        .split('.')
+        .concat(props.className)
+        .filter(v => !!v)
+        .join(' ')
     };
-    this.refCounter++;
-    this.subscriptions.push(subscription);
-    new StyleParser(subscription).run();
-    this.shouldUpdateDOM = true;
-    return subscription;
-  }
-  update(subscription, props) {
-    if (subscription) {
-      let shouldUpdateStyles = true;
-      if (subscription.options.pure) {
-        shouldUpdateStyles = false;
-        subscription.options.pure.forEach(propName => {
-          if (subscription.props[propName] !== props[propName]) {
-            shouldUpdateStyles = true;
-          }
-        });
-      }
+    const exclude = ['className', 'innerRef'];
 
-      if (shouldUpdateStyles) {
-        this.shouldUpdateDOM = true;
-        subscription.orgProps = props;
-        subscription.props = createPropsObject(props);
-        new StyleParser(subscription).run();
+    Object.entries(props).forEach(([propName, propValue]) => {
+      if (
+        !keyValues[propName] &&
+        !propName.startsWith('__swiss') &&
+        typeof context.contextProps[propName] === 'undefined' &&
+        exclude.indexOf(propName) === -1
+      ) {
+        filteredProps[propName] = propValue;
       }
-    }
+    });
+    return filteredProps;
   }
-  unsubscribe({ ref }) {
-    const index = this.subscriptions.findIndex(s => s.ref === ref);
-    if (index > -1) {
-      this.subscriptions.splice(index, 1);
-      this.shouldUpdateDOM = true;
+  parsePropToPrimitive(value) {
+    if (typeof value === 'object' || typeof value === 'function') {
+      return value.toString();
     }
+    return value;
   }
-  _getPrintedStyles() {
-    return this.subscriptions
-      .map(s => s.printedCss)
-      .filter(s => !!s)
-      .join('');
+  checkCacheForClassName(props, context) {
+    const type = props.__swissOptions.type;
+
+    // Lazy load cache.
+    if (!this.classNameCache[type]) {
+      this.classNameCache[type] = [];
+    }
+    let foundCache;
+    this.classNameCache[type].forEach(cache => {
+      if (foundCache) return;
+      let allWasEqual = true;
+      for (let key in cache.keyValues) {
+        let value = props[key];
+        if (typeof value === 'undefined') {
+          value = context.contextProps[key];
+        }
+        if (cache.keyValues[key] !== this.parsePropToPrimitive(value)) {
+          allWasEqual = false;
+        }
+      }
+      if (allWasEqual) {
+        foundCache = cache;
+      }
+    });
+    return foundCache ? foundCache : this.createStyles(props, context);
+  }
+  prepareToRender(props, context) {
+    const { className, keyValues } = this.checkCacheForClassName(
+      props,
+      context
+    );
+
+    const contextOpt = context.options;
+    const elementOpt = props.__swissOptions;
+
+    const filteredProps = this.filterProps(
+      className,
+      keyValues,
+      props,
+      context
+    );
+
+    return [elementOpt.element || contextOpt.defaultEl, filteredProps];
+  }
+  createStyles(props, context) {
+    const type = props.__swissOptions.type;
+    const index = this.classNameCache[type].length;
+    const className = `.${props.__swissOptions.type}.sw${index}`;
+
+    const subscription = {
+      className,
+      options: Object.assign({}, context.options, props.__swissOptions)
+    };
+
+    const touchedProps = {};
+    const getProp = (key, fallbackValue) => {
+      let value = props[key];
+      if (typeof value === 'undefined') {
+        value = context.contextProps[key];
+      }
+      touchedProps[key] = this.parsePropToPrimitive(value);
+      return typeof value === 'undefined' ? fallbackValue : value;
+    };
+    new StyleParser(subscription).run(getProp);
+
+    const record = {
+      className,
+      keyValues: touchedProps
+    };
+
+    this.classNameCache[type].push(record);
+
+    this.stylesToAppend.push(subscription.printedCss);
+
+    return record;
   }
   toString = () => {
     this.checkIfDomNeedsUpdate(true);
@@ -68,16 +122,12 @@ export default class SwissController {
     this.checkIfDomNeedsUpdate(true);
     return [toComponent(), this.domHandler.toComponent()].filter(v => !!v);
   };
-  checkIfDomNeedsUpdate(force) {
-    if (this.shouldUpdateDOM || force) {
+  checkIfDomNeedsUpdate() {
+    if (this.stylesToAppend.length) {
       // Update DOM!
-      const css = this._getPrintedStyles();
-      this.domHandler.update(css);
-      this.shouldUpdateDOM = false;
+      console.log(this.stylesToAppend);
+      this.domHandler.append(this.stylesToAppend.join('\r\n'));
+      this.stylesToAppend = [];
     }
   }
 }
-
-const defaultSwissController = new SwissController();
-
-export { defaultSwissController };

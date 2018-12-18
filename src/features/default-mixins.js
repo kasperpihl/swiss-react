@@ -17,11 +17,3 @@ addDefaultMixin('debug', (setOption, debug) => {
 addDefaultMixin('inline', (setOption, inline) => {
   setOption('inline', !!inline);
 });
-
-addDefaultMixin('className', (setOption, className) => {
-  if (typeof className === 'string') {
-    setOption('className', className);
-  } else {
-    console.warn('swiss mixin "className" expects its argument to be a string');
-  }
-});

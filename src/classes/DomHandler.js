@@ -29,6 +29,17 @@ export default class DomHandler {
       </style>
     );
   }
+  append(newTextContent) {
+    if (typeof document === 'undefined') {
+      return;
+    }
+    if (!this._domEl) {
+      this.add();
+    }
+
+    const newChildEl = document.createTextNode(newTextContent);
+    this._domEl.appendChild(newChildEl);
+  }
   update(newChildContent) {
     this._childContent = newChildContent;
     if (typeof document === 'undefined') {

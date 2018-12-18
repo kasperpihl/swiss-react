@@ -6,10 +6,6 @@ const plugins = [
   '@babel/plugin-proposal-class-properties'
 ];
 
-if (process.env.NODE_ENV === 'production') {
-  plugins.push('babel-plugin-dev-expression');
-}
-
 module.exports = () => ({
   presets: [
     [

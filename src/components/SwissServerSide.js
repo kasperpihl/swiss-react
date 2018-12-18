@@ -1,8 +1,7 @@
 import React, { PureComponent, createContext } from 'react';
 import SwissController from '../classes/SwissController';
+import SwissServerContext from '../context/SwissServerContext';
 
-const Context = createContext(null);
-const SwissServerSideConsumer = Context.Consumer;
 class SwissServerSide extends PureComponent {
   constructor(props) {
     super(props);
@@ -14,9 +13,9 @@ class SwissServerSide extends PureComponent {
       this.props.context.toComponents = this.controller.toComponents;
     }
     return (
-      <Context.Provider value={this.controller}>
+      <SwissServerContext.Provider value={this.controller}>
         {this.props.children}
-      </Context.Provider>
+      </SwissServerContext.Provider>
     );
   }
 }
@@ -33,4 +32,4 @@ SwissServerSide.propTypes = {
   }
 };
 
-export { SwissServerSide, SwissServerSideConsumer };
+export default SwissServerSide;

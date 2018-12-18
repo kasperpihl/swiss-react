@@ -54,21 +54,18 @@ export function runDefaultMixin(name, value, setOption) {
   }
   return false;
 }
-export function runMixin({ key, value }, props, touched) {
-  if (runDefaultMixin(key, value)) {
+export function runMixin(name, value) {
+  if (runDefaultMixin(name, value)) {
     return null;
   }
-  const mixin = getMixin(key);
+  const mixin = getMixin(name);
   let result = mixin || null;
   if (typeof mixin === 'function') {
-    if (typeof value === 'function') {
-      value = value(props);
-    }
     if (!Array.isArray(value)) {
       value = [value];
     }
     // Make sure keys for mixins get parsed.
-    value = value.map(v => parseVariables(v, touched.variables));
+    value = value.map(v => parseVariables(v));
 
     result = mixin(...value);
     if (typeof result !== 'object') {
@@ -79,9 +76,6 @@ export function runMixin({ key, value }, props, touched) {
       );
       result = {};
     }
-  }
-  if (result) {
-    if (touched) touched.mixins[key] = true;
   }
   return result;
 }
