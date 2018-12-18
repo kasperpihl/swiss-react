@@ -2,7 +2,7 @@ import './polyfills';
 import './features/default-plugins';
 import './features/default-mixins';
 
-export { addVariables } from './features/variables';
+export { addConstants } from './features/constants';
 
 export { addMixin } from './features/mixins';
 

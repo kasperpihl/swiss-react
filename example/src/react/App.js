@@ -18,7 +18,7 @@ class App extends PureComponent {
   render() {
     return (
       <SW.ProvideContext background="red">
-        <SW.Wrapper background="green">
+        <SW.Wrapper className="hello" background="green">
           <SW.Label width={200}>Hello</SW.Label>
           <SW.Label width={this.state.width} color="rgba(#ff4400, 0.9)">
             Hello2

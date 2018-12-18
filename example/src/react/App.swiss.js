@@ -5,7 +5,6 @@ export default styleSheet('App', {
     _flex: 'center',
     _size: '100%',
     background: get => get('background') || 'red'
-    // background: get => get('background', 'red')
   },
   Label: {
     _el: 'span',

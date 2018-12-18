@@ -1,4 +1,4 @@
-import { parseVariables } from './variables';
+import { parseConstants } from './constants';
 
 const mixins = {};
 const defaultMixins = {};
@@ -65,7 +65,7 @@ export function runMixin(name, value) {
       value = [value];
     }
     // Make sure keys for mixins get parsed.
-    value = value.map(v => parseVariables(v));
+    value = value.map(v => parseConstants(v));
 
     result = mixin(...value);
     if (typeof result !== 'object') {

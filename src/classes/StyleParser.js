@@ -1,6 +1,5 @@
 import parseFunctional from '../helpers/parseFunctional';
-import { parseVariables } from '../features/variables';
-import { logSubscription } from '../helpers/logger';
+import { parseConstants } from '../features/constants';
 
 import convertStylesToArray from '../helpers/convertStylesToArray';
 import { runMixin } from '../features/mixins';
@@ -14,20 +13,16 @@ import testCondition from '../utils/testCondition';
 import printToCss from '../utils/printToCss';
 
 export default class StyleParser {
-  constructor(subscription) {
-    this.sub = subscription;
-  }
-
-  run(getProp) {
+  run(options, getProp) {
     this.getProp = getProp;
-    const startTime = new Date();
-    let rawCss = this.sub.printedCss;
-    const { options } = this.sub;
-    if (options.styles && !options.dontParse) {
+    this.options = options;
+    this.inlineStyles = options.inline ? {} : undefined;
+    let rawCss =
+      typeof options.styles === 'string' ? options.styles : undefined;
+
+    if (Array.isArray(options.styles)) {
       this.printStyleArray = [];
       this.runningQueue = [...options.styles];
-
-      this.sub.inlineStyles = {};
 
       this.runQueue();
       if (this.printStyleArray.length) {
@@ -37,18 +32,13 @@ export default class StyleParser {
     }
 
     // Run post plugins. (parseRawInline, parseRawCss)
-    if (options.inline) {
-      this.sub.inlineStyles = parseRawInline(this.sub.inlineStyles);
+    if (this.options.inline) {
+      this.inlineStyles = parseRawInline(this.inlineStyles);
     } else {
-      this.sub.printedCss = parseRawCss(rawCss || '');
+      rawCss = parseRawCss(rawCss || '');
     }
 
-    if (options.debug) {
-      // Hack to make sure that render has been called and we know which props was forwarded and which was not.
-      setTimeout(() => {
-        logSubscription(this.sub, startTime);
-      }, 1);
-    }
+    return [rawCss, this.inlineStyles];
   }
   runQueue() {
     if (!this.runningQueue.length) return;
@@ -99,9 +89,9 @@ export default class StyleParser {
     this.runQueue();
   }
   replaceVarForSelectors(array) {
-    const { className } = this.sub;
+    const { className } = this.options;
     array.forEach(obj => {
-      obj.selector = parseVariables(obj.selector);
+      obj.selector = parseConstants(obj.selector);
       obj.selector = className
         .split(/,\ ?/g)
         .map(s => obj.selector.replace(/&/gi, s))
@@ -133,10 +123,8 @@ export default class StyleParser {
     let key = node.key;
     let value = node.value;
 
-    const { options, inlineStyles } = this.sub;
-
     value = parseFunctional(value, this.getProp);
-    value = parseVariables(value);
+    value = parseConstants(value);
 
     const res = parseKeyValue(key, value);
     key = res[0];
@@ -146,8 +134,8 @@ export default class StyleParser {
     if (typeof value !== 'number' && !value) return;
 
     // If inline, just override the values.
-    if (options.inline) {
-      inlineStyles[key] = value;
+    if (this.options.inline) {
+      this.inlineStyles[key] = value;
     } else {
       // Else figure out order and stuff
       const target = this.findTargetFromSelectors(node.selectors);

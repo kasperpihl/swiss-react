@@ -10,12 +10,12 @@ Then with a module bundler like [webpack](https://webpack.github.io/), use as yo
 
 ```js
 // using ES6 modules
-import { element, addGlobalStyles, addVariables, addPlugin } from 'swiss-react'
+import { element, addGlobalStyles, addConstants, addPlugin } from 'swiss-react';
 
 // using CommonJS modules
 var element = require('swiss-react').element;
 var addGlobalStyles = require('swiss-react').addGlobalStyles;
-var addVariables = require('swiss-react').addVariables;
+var addConstants = require('swiss-react').addConstants;
 var addPlugin = require('swiss-react').addPlugin;
 ```
 
@@ -28,6 +28,7 @@ The UMD build is also available on [unpkg](https://unpkg.com):
 You can find the library on `window.Swiss`.
 
 ## Documentation
+
 http://swiss-react.com/docs/getting-started
 
 ## CodePen Examples

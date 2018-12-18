@@ -1,8 +1,8 @@
 import './reset';
 import './mixins/_size';
 import './mixins/_flex';
-import './variables/colors';
-import './variables/screen-size';
+import './constants/colors';
+import './constants/screen-size';
 
 // import './plugins/minify';
 import './plugins/hexToRGB';

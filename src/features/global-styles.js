@@ -9,13 +9,11 @@ let _timer;
 function renderGlobals() {
   _domHandler.update(
     gSubs
-      .map(s => {
-        if (!s.printedCss) {
-          new StyleParser(s).run();
-        }
-        return s.printedCss;
+      .map(options => {
+        const [rawCss] = new StyleParser().run(options);
+        return rawCss;
       })
-      .filter(s => !!s)
+      .filter(o => !!o)
       .join('')
   );
 }
@@ -27,23 +25,19 @@ export function toComponent() {
 }
 
 function addSubscription(className, selectors, value) {
-  const subscription = {
+  const options = {
     className,
-    options: {
-      globals: true,
-      originalStyles: [{ [className]: value }]
-    }
+    globals: true
   };
   if (typeof value === 'object') {
-    subscription.options.styles = convertStylesToArray(value, selectors, {
+    options.styles = convertStylesToArray(value, selectors, {
       disableProps: true
     });
   } else {
-    subscription.printedCss = `${className} ${value};\r\n`;
-    subscription.options.dontParse = true;
+    options.styles = `${className} ${value};\r\n`;
   }
 
-  gSubs.push(subscription);
+  gSubs.push(options);
 }
 
 function iterateStyleObject(selectors, object) {

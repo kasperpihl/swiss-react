@@ -1,20 +1,22 @@
-import React, { PureComponent, createContext } from 'react';
+import React, { Component } from 'react';
 import SwissController from '../classes/SwissController';
 import SwissServerContext from '../context/SwissServerContext';
 
-class SwissServerSide extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.controller = new SwissController();
-  }
+class SwissServerSide extends Component {
   render() {
-    if (typeof this.props.context === 'object') {
-      this.props.context.toString = this.controller.toString;
-      this.props.context.toComponents = this.controller.toComponents;
+    if (!this.controller) {
+      this.controller = new SwissController();
+    }
+
+    const { context, children } = this.props;
+
+    if (typeof context === 'object') {
+      context.toString = this.controller.toString;
+      context.toComponents = this.controller.toComponents;
     }
     return (
       <SwissServerContext.Provider value={this.controller}>
-        {this.props.children}
+        {children}
       </SwissServerContext.Provider>
     );
   }

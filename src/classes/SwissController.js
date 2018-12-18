@@ -10,15 +10,39 @@ export default class SwissController {
     this.stylesToAppend = [];
     this.classNameCache = {};
   }
-  filterProps(className, keyValues, props, context) {
-    const filteredProps = {
-      className: className
+
+  prepareToRender(props, context) {
+    const { keyValues, passedOnProps } = this.checkCacheForClassName(
+      props,
+      context
+    );
+
+    const contextOpt = context.options;
+    const elementOpt = props.__swissOptions;
+
+    const filteredProps = this.filterProps(
+      keyValues,
+      passedOnProps,
+      props,
+      context
+    );
+
+    return [elementOpt.element || contextOpt.defaultEl, filteredProps];
+  }
+
+  filterProps(keyValues, passedOnProps, props, context) {
+    const filteredProps = {};
+    if (passedOnProps.className || props.className) {
+      filteredProps.className = (passedOnProps.className || '')
         .split('.')
         .concat(props.className)
         .filter(v => !!v)
-        .join(' ')
-    };
-    const exclude = ['className', 'innerRef'];
+        .join(' ');
+    }
+    if (passedOnProps.style || props.style) {
+      filteredProps.style = Object.assign({}, passedOnProps.style, props.style);
+    }
+    const exclude = ['className', 'innerRef', 'style'];
 
     Object.entries(props).forEach(([propName, propValue]) => {
       if (
@@ -40,6 +64,8 @@ export default class SwissController {
   }
   checkCacheForClassName(props, context) {
     const type = props.__swissOptions.type;
+    let inline = props.__swissOptions.inline;
+    if (typeof inline === 'undefined') inline = context.options.inline;
 
     // Lazy load cache.
     if (!this.classNameCache[type]) {
@@ -47,7 +73,7 @@ export default class SwissController {
     }
     let foundCache;
     this.classNameCache[type].forEach(cache => {
-      if (foundCache) return;
+      if (foundCache || cache.inline !== inline) return;
       let allWasEqual = true;
       for (let key in cache.keyValues) {
         let value = props[key];
@@ -64,33 +90,10 @@ export default class SwissController {
     });
     return foundCache ? foundCache : this.createStyles(props, context);
   }
-  prepareToRender(props, context) {
-    const { className, keyValues } = this.checkCacheForClassName(
-      props,
-      context
-    );
-
-    const contextOpt = context.options;
-    const elementOpt = props.__swissOptions;
-
-    const filteredProps = this.filterProps(
-      className,
-      keyValues,
-      props,
-      context
-    );
-
-    return [elementOpt.element || contextOpt.defaultEl, filteredProps];
-  }
   createStyles(props, context) {
     const type = props.__swissOptions.type;
     const index = this.classNameCache[type].length;
     const className = `.${props.__swissOptions.type}.sw${index}`;
-
-    const subscription = {
-      className,
-      options: Object.assign({}, context.options, props.__swissOptions)
-    };
 
     const touchedProps = {};
     const getProp = (key, fallbackValue) => {
@@ -101,16 +104,27 @@ export default class SwissController {
       touchedProps[key] = this.parsePropToPrimitive(value);
       return typeof value === 'undefined' ? fallbackValue : value;
     };
-    new StyleParser(subscription).run(getProp);
+
+    const options = Object.assign({}, context.options, props.__swissOptions, {
+      className
+    });
+    const [rawCss, inlineStyles] = new StyleParser().run(options, getProp);
+
+    const passedOnProps = {};
+    if (options.inline) {
+      passedOnProps.style = inlineStyles;
+    } else {
+      passedOnProps.className = className;
+      this.stylesToAppend.push(rawCss);
+    }
 
     const record = {
-      className,
+      passedOnProps,
+      inline: options.inline,
       keyValues: touchedProps
     };
 
     this.classNameCache[type].push(record);
-
-    this.stylesToAppend.push(subscription.printedCss);
 
     return record;
   }
@@ -123,9 +137,10 @@ export default class SwissController {
     return [toComponent(), this.domHandler.toComponent()].filter(v => !!v);
   };
   checkIfDomNeedsUpdate() {
+    console.log(this.classNameCache);
     if (this.stylesToAppend.length) {
       // Update DOM!
-      console.log(this.stylesToAppend);
+
       this.domHandler.append(this.stylesToAppend.join('\r\n'));
       this.stylesToAppend = [];
     }
