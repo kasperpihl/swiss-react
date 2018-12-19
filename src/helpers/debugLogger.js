@@ -41,21 +41,18 @@ export default ({
     console.groupCollapsed(`%c ${title.join(' ')}`, ...styles);
 
     console.groupCollapsed(
-      '%cstarted component render()',
+      '%c> started component render()',
       'color:black; font-weight: normal;'
     );
     console.log('with these options');
-    console.log(
-      JSON.stringify(
-        Object.assign({}, context.options, props.__swissOptions),
-        null,
-        2
-      )
-    );
+    const options = Object.assign({}, context.options, props.__swissOptions);
+    delete options.styles;
+    delete options.originalStyles;
+    console.log(options);
     console.groupEnd();
 
     console.groupCollapsed(
-      '%casking for styles with props prepareToRender()',
+      '%c> asking for styles with props prepareToRender()',
       'color:black; font-weight: normal;'
     );
     console.log('%ccomponent props', 'color: black; font-weight: bold;');
@@ -69,7 +66,7 @@ export default ({
 
     if (cacheHit) {
       console.groupCollapsed(
-        '%cHIT%c on the cache',
+        '> %cHIT%c on the cache',
         'color: green; font-weight: bold;',
         'color: black; font-weight: normal;'
       );
@@ -78,12 +75,12 @@ export default ({
       console.groupEnd();
     } else {
       console.log(
-        '%cMISS%c on the cache',
+        '> %cMISS%c on the cache',
         'color: red; font-weight: bold;',
         'color: black; font-weight: normal;'
       );
       console.groupCollapsed(
-        `%cCalculated new styles in %c${duration}ms`,
+        `%c> calculated new styles in %c${duration}ms`,
         'font-weight: normal; color: black',
         `color: black; font-weight: bold;`
       );
@@ -111,7 +108,7 @@ export default ({
     }
 
     console.groupCollapsed(
-      '%ccomponent render() with props',
+      '%c> component render() with props',
       'color: black; font-weight: normal;'
     );
     console.log('%cfrom swiss:', 'color: black; font-weight: bold;');
