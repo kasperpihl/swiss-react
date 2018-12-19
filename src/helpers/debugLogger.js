@@ -1,6 +1,6 @@
 export default ({
   cacheHit,
-  renderCycles,
+  elementIndex,
   props,
   context,
   startTime,
@@ -18,9 +18,9 @@ export default ({
     const duration = endTime.getTime() - startTime.getTime();
 
     const title = [
-      `${renderCycles}`,
+      `${elementIndex}`,
       `%c${props.__swissOptions.type}`,
-      `%c${cacheHit ? 'HIT' : 'MISS'}`,
+      `%c${cacheHit ? 'REUSED' : 'CREATED'}`,
       `%c${duration}ms`
     ];
     const styles = [
@@ -66,21 +66,18 @@ export default ({
 
     if (cacheHit) {
       console.groupCollapsed(
-        '> %cHIT%c on the cache',
+        '> %cREUSED%c styles from the cache',
         'color: green; font-weight: bold;',
         'color: black; font-weight: normal;'
       );
-      console.log('found the cache row with this prop combination');
+      console.log('found the cached row with this prop combination');
       console.log(JSON.stringify(keyValues, null, 2));
       console.groupEnd();
     } else {
-      console.log(
-        '> %cMISS%c on the cache',
-        'color: red; font-weight: bold;',
-        'color: black; font-weight: normal;'
-      );
       console.groupCollapsed(
-        `%c> calculated new styles in %c${duration}ms`,
+        `%c> %cCREATED%c new styles in %c${duration}ms`,
+        'font-weight: normal; color: black',
+        'color: red; font-weight: bold;',
         'font-weight: normal; color: black',
         `color: black; font-weight: bold;`
       );

@@ -10,23 +10,15 @@ export default class SwissController {
     this.domHandler.add();
     this.stylesToAppend = [];
     this.cacheByType = {};
-
-    // Counting render cycles for nice logging.
-    this.renderCycles = 0;
-    this.didFinishCycle = true;
   }
 
   prepareToRender(props, context) {
+    // Debugging start
     // Used to know if we hit the cache.
-    this.cacheHit = false;
-    // Counting cycles for nice debugging experience.
-    if (this.didFinishCycle) {
-      this.renderCycles++;
-      this.didFinishCycle = false;
-    }
-
+    this.cacheHit = true;
     const stylesLengthBef = this.stylesToAppend.length;
     const startTime = new Date();
+    // Debugging end
 
     const { keyValues, passedOnProps } = this.checkCacheForClassName(
       props,
@@ -44,9 +36,21 @@ export default class SwissController {
     );
 
     if (contextOpt.debug || elementOpt.debug) {
+      if (!this.isDebuggingRenderCycle) {
+        this.elementIndex = 0;
+        this.renderCycles = this.renderCycles ? this.renderCycles + 1 : 1;
+        this.isDebuggingRenderCycle = true;
+        console.groupCollapsed(
+          `%cswiss %cdebugging render cycle %c(${this.renderCycles})`,
+          'color: black; font-weight: bold;',
+          'color: black; font-weight: normal;',
+          'color: black; font-weight: bold;'
+        );
+      }
+      this.elementIndex++;
       debugLogger({
         cacheHit: this.cacheHit,
-        renderCycles: this.renderCycles,
+        elementIndex: this.elementIndex,
         props,
         context,
         startTime,
@@ -119,12 +123,10 @@ export default class SwissController {
       }
     });
 
-    // Used for showing in the debug log
-    if (foundCache) this.cacheHit = true;
-
     return foundCache ? foundCache : this.createStyles(props, context);
   }
   createStyles(props, context) {
+    this.cacheHit = false;
     const type = props.__swissOptions.type;
     const index = this.cacheByType[type].length;
     const className = `.${props.__swissOptions.type}.sw${index}`;
@@ -174,7 +176,10 @@ export default class SwissController {
     return [toComponent(), this.domHandler.toComponent()].filter(v => !!v);
   };
   checkIfDomNeedsUpdate() {
-    this.didFinishCycle = true;
+    if (this.isDebuggingRenderCycle) {
+      this.isDebuggingRenderCycle = undefined;
+      console.groupEnd();
+    }
     if (this.stylesToAppend.length) {
       // Update DOM!
       this.domHandler.append(this.stylesToAppend.join('\r\n'));
