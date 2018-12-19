@@ -1,19 +1,19 @@
 import React, { PureComponent } from 'react';
-import SwissDefaultContext from '../context/SwissDefaultContext';
+import { DefaultContext } from '../helpers/contexts';
 
 class SwissProvideContext extends PureComponent {
-  static contextType = SwissDefaultContext;
+  static contextType = DefaultContext;
   render() {
     const { children, ...rest } = this.props;
     return (
-      <SwissDefaultContext.Provider
+      <DefaultContext.Provider
         value={{
           ...this.context,
           contextProps: Object.assign({}, this.context.contextProps, rest)
         }}
       >
         {children}
-      </SwissDefaultContext.Provider>
+      </DefaultContext.Provider>
     );
   }
 }

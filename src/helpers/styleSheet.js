@@ -35,9 +35,12 @@ export default (name, styles) => {
           })
         }
       ];
-      const render = forwardRef((props, ref) => (
-        <SwissElement innerRef={ref} {...props} __swissOptions={options} />
-      ));
+      const render = forwardRef((props, ref) => {
+        const refProps = ref ? { innerRef: ref } : null;
+        return (
+          <SwissElement {...refProps} {...props} __swissOptions={options} />
+        );
+      });
       render.displayName = `${name}_${key}`;
       StyleSheet[key] = render;
     }
@@ -49,11 +52,7 @@ export default (name, styles) => {
       get: (obj, prop) => {
         if (prop === '__esModule' || prop === 'default') return obj;
         if (obj[prop]) return obj[prop];
-        let warning = `swiss error: component not found: "${prop}"`;
-        if (name) {
-          warning += ` in ${name}`;
-        }
-        console.warn(warning);
+        console.warn(`swiss error: "${prop}" not found in "${name}"`);
         return nullFunc;
       }
     });

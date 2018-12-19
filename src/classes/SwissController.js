@@ -1,5 +1,6 @@
 import StyleParser from './StyleParser';
 import DomHandler from './DomHandler';
+import debugLogger from '../helpers/debugLogger';
 import { toString, toComponent } from '../features/global-styles';
 
 export default class SwissController {
@@ -8,10 +9,25 @@ export default class SwissController {
     this.domHandler = new DomHandler('newglobal');
     this.domHandler.add();
     this.stylesToAppend = [];
-    this.classNameCache = {};
+    this.cacheByType = {};
+
+    // Counting render cycles for nice logging.
+    this.renderCycles = 0;
+    this.didFinishCycle = true;
   }
 
   prepareToRender(props, context) {
+    // Used to know if we hit the cache.
+    this.cacheHit = false;
+    // Counting cycles for nice debugging experience.
+    if (this.didFinishCycle) {
+      this.renderCycles++;
+      this.didFinishCycle = false;
+    }
+
+    const stylesLengthBef = this.stylesToAppend.length;
+    const startTime = new Date();
+
     const { keyValues, passedOnProps } = this.checkCacheForClassName(
       props,
       context
@@ -27,15 +43,29 @@ export default class SwissController {
       context
     );
 
+    if (contextOpt.debug || elementOpt.debug) {
+      debugLogger({
+        cacheHit: this.cacheHit,
+        renderCycles: this.renderCycles,
+        props,
+        context,
+        startTime,
+        endTime: new Date(),
+        filteredProps,
+        keyValues,
+        passedOnProps,
+        // If we added any css it will be the last element
+        generatedCss: this.stylesToAppend[stylesLengthBef]
+      });
+    }
+
     return [elementOpt.element || contextOpt.defaultEl, filteredProps];
   }
 
   filterProps(keyValues, passedOnProps, props, context) {
     const filteredProps = {};
     if (passedOnProps.className || props.className) {
-      filteredProps.className = (passedOnProps.className || '')
-        .split('.')
-        .concat(props.className)
+      filteredProps.className = [passedOnProps.className, props.className]
         .filter(v => !!v)
         .join(' ');
     }
@@ -68,11 +98,11 @@ export default class SwissController {
     if (typeof inline === 'undefined') inline = context.options.inline;
 
     // Lazy load cache.
-    if (!this.classNameCache[type]) {
-      this.classNameCache[type] = [];
+    if (!this.cacheByType[type]) {
+      this.cacheByType[type] = [];
     }
     let foundCache;
-    this.classNameCache[type].forEach(cache => {
+    this.cacheByType[type].forEach(cache => {
       if (foundCache || cache.inline !== inline) return;
       let allWasEqual = true;
       for (let key in cache.keyValues) {
@@ -88,11 +118,15 @@ export default class SwissController {
         foundCache = cache;
       }
     });
+
+    // Used for showing in the debug log
+    if (foundCache) this.cacheHit = true;
+
     return foundCache ? foundCache : this.createStyles(props, context);
   }
   createStyles(props, context) {
     const type = props.__swissOptions.type;
-    const index = this.classNameCache[type].length;
+    const index = this.cacheByType[type].length;
     const className = `.${props.__swissOptions.type}.sw${index}`;
 
     const touchedProps = {};
@@ -114,7 +148,10 @@ export default class SwissController {
     if (options.inline) {
       passedOnProps.style = inlineStyles;
     } else {
-      passedOnProps.className = className;
+      passedOnProps.className = className
+        .split('.')
+        .filter(v => !!v)
+        .join(' ');
       this.stylesToAppend.push(rawCss);
     }
 
@@ -124,7 +161,7 @@ export default class SwissController {
       keyValues: touchedProps
     };
 
-    this.classNameCache[type].push(record);
+    this.cacheByType[type].push(record);
 
     return record;
   }
@@ -137,10 +174,9 @@ export default class SwissController {
     return [toComponent(), this.domHandler.toComponent()].filter(v => !!v);
   };
   checkIfDomNeedsUpdate() {
-    console.log(this.classNameCache);
+    this.didFinishCycle = true;
     if (this.stylesToAppend.length) {
       // Update DOM!
-
       this.domHandler.append(this.stylesToAppend.join('\r\n'));
       this.stylesToAppend = [];
     }

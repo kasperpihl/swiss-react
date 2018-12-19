@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import SwissController from '../classes/SwissController';
-import SwissServerContext from '../context/SwissServerContext';
+import { ServerContext } from '../helpers/contexts';
 
 class SwissServerSide extends Component {
   render() {
@@ -15,9 +15,9 @@ class SwissServerSide extends Component {
       context.toComponents = this.controller.toComponents;
     }
     return (
-      <SwissServerContext.Provider value={this.controller}>
+      <ServerContext.Provider value={this.controller}>
         {children}
-      </SwissServerContext.Provider>
+      </ServerContext.Provider>
     );
   }
 }

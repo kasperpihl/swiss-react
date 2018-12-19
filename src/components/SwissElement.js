@@ -1,8 +1,8 @@
 import React from 'react';
-import SwissDefaultContext from '../context/SwissDefaultContext';
+import { DefaultContext } from '../helpers/contexts';
 
 class SwissElement extends React.PureComponent {
-  static contextType = SwissDefaultContext;
+  static contextType = DefaultContext;
   componentDidMount() {
     this.context.controller.checkIfDomNeedsUpdate();
   }

@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import SwissServerContext from '../context/SwissServerContext';
-import SwissDefaultContext from '../context/SwissDefaultContext';
+import { ServerContext, DefaultContext } from '../helpers/contexts';
 import SwissController from '../classes/SwissController';
 
 const isRN =
   typeof navigator != 'undefined' && navigator.product == 'ReactNative';
 
 export default class SwissProvider extends Component {
-  static contextType = SwissServerContext;
+  static contextType = ServerContext;
   render() {
     const { children, ...rest } = this.props;
     if (!this.context && !this.defaultController) {
@@ -15,7 +14,7 @@ export default class SwissProvider extends Component {
     }
 
     return (
-      <SwissDefaultContext.Provider
+      <DefaultContext.Provider
         value={{
           controller: this.context || this.defaultController,
           contextProps: {},
@@ -30,7 +29,7 @@ export default class SwissProvider extends Component {
         }}
       >
         {children}
-      </SwissDefaultContext.Provider>
+      </DefaultContext.Provider>
     );
   }
 }
