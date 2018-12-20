@@ -4,6 +4,7 @@ import SwissProvideContext from '../components/SwissProvideContext';
 import convertStylesToArray from './convertStylesToArray';
 
 const nullFunc = () => null;
+const styleSheets = {};
 
 export default (name, styles) => {
   if (typeof name !== 'string') {
@@ -11,6 +12,12 @@ export default (name, styles) => {
       'swiss styleSheet: first argument(name) must be a string'
     );
   }
+  if (styleSheets[name]) {
+    return console.warn(
+      `swiss styleSheet: a stylesheet already exists with the name "${name}"`
+    );
+  }
+  styleSheets[name] = true;
   if (typeof styles !== 'object') {
     return console.warn(
       'swiss styleSheet: first or second argument must be an object with styles'

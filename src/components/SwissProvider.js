@@ -10,7 +10,7 @@ export default class SwissProvider extends Component {
   render() {
     const { children, ...rest } = this.props;
     if (!this.context && !this.defaultController) {
-      this.defaultController = new SwissController();
+      this.defaultController = new SwissController(!!rest.disableHydration);
     }
 
     return (

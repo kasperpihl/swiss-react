@@ -1,15 +1,22 @@
 import StyleParser from './StyleParser';
 import DomHandler from './DomHandler';
 import debugLogger from '../helpers/debugLogger';
-import { toString, toComponent } from '../features/global-styles';
+import { getGlobalStyles } from '../features/global-styles';
 
+let totalTime = 0;
 export default class SwissController {
-  constructor() {
+  constructor(disableHydration) {
     this.shouldUpdateDOM = false;
     this.domHandler = new DomHandler('newglobal');
     this.domHandler.add();
-    this.stylesToAppend = [];
+    this.stylesToAppend = getGlobalStyles();
     this.cacheByType = {};
+    if (typeof window !== 'undefined' && window.__swissHydration) {
+      if (!disableHydration) {
+        this.cacheByType = window.__swissHydration;
+      }
+      delete window.__swissHydration;
+    }
   }
 
   prepareToRender(props, context) {
@@ -35,22 +42,15 @@ export default class SwissController {
       context
     );
 
+    totalTime += new Date().getTime() - startTime.getTime();
     if (contextOpt.debug || elementOpt.debug) {
       if (!this.isDebuggingRenderCycle) {
-        this.elementIndex = 0;
         this.renderCycles = this.renderCycles ? this.renderCycles + 1 : 1;
         this.isDebuggingRenderCycle = true;
-        console.groupCollapsed(
-          `%cswiss %cdebugging render cycle %c(${this.renderCycles})`,
-          'color: black; font-weight: bold;',
-          'color: black; font-weight: normal;',
-          'color: black; font-weight: bold;'
-        );
       }
-      this.elementIndex++;
       debugLogger({
         cacheHit: this.cacheHit,
-        elementIndex: this.elementIndex,
+        renderCycles: this.renderCycles,
         props,
         context,
         startTime,
@@ -80,7 +80,7 @@ export default class SwissController {
 
     Object.entries(props).forEach(([propName, propValue]) => {
       if (
-        !keyValues[propName] &&
+        typeof keyValues[propName] === 'undefined' &&
         !propName.startsWith('__swiss') &&
         typeof context.contextProps[propName] === 'undefined' &&
         exclude.indexOf(propName) === -1
@@ -91,6 +91,9 @@ export default class SwissController {
     return filteredProps;
   }
   parsePropToPrimitive(value) {
+    if (typeof value === 'undefined') {
+      return '__undefined__';
+    }
     if (typeof value === 'object' || typeof value === 'function') {
       return value.toString();
     }
@@ -105,6 +108,12 @@ export default class SwissController {
     if (!this.cacheByType[type]) {
       this.cacheByType[type] = [];
     }
+
+    // Support for disabling cache (always recalculate styles)
+    if (context.options.disableCache) {
+      return this.createStyles(props, context);
+    }
+
     let foundCache;
     this.cacheByType[type].forEach(cache => {
       if (foundCache || cache.inline !== inline) return;
@@ -122,7 +131,6 @@ export default class SwissController {
         foundCache = cache;
       }
     });
-
     return foundCache ? foundCache : this.createStyles(props, context);
   }
   createStyles(props, context) {
@@ -164,23 +172,28 @@ export default class SwissController {
     };
 
     this.cacheByType[type].push(record);
-
     return record;
   }
   toString = () => {
-    this.checkIfDomNeedsUpdate(true);
-    return toString() + '\r\n' + this.domHandler.toString();
-  };
-  toComponents = () => {
-    this.checkIfDomNeedsUpdate(true);
-    return [toComponent(), this.domHandler.toComponent()].filter(v => !!v);
+    // this.checkIfDomNeedsUpdate(true);
+    return `
+<style id="swiss-styles" type="text/css">
+  ${this.stylesToAppend.join('\r\n')}
+</style>
+<script id="swiss-hydration">
+window.__swissHydration = ${JSON.stringify(this.cacheByType)};
+</script>
+`;
   };
   checkIfDomNeedsUpdate() {
-    if (this.isDebuggingRenderCycle) {
-      this.isDebuggingRenderCycle = undefined;
-      console.groupEnd();
-    }
+    this.isDebuggingRenderCycle = undefined;
+
     if (this.stylesToAppend.length) {
+      console.log(
+        'total time looking up in cache and calculating styles',
+        totalTime
+      );
+      totalTime = 0;
       // Update DOM!
       this.domHandler.append(this.stylesToAppend.join('\r\n'));
       this.stylesToAppend = [];

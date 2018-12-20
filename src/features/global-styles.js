@@ -1,29 +1,11 @@
 import convertStylesToArray from '../helpers/convertStylesToArray';
-import DomHandler from '../classes/DomHandler';
 import StyleParser from '../classes/StyleParser';
 
-let gSubs = [];
-const _domHandler = new DomHandler('globals');
-let _timer;
+const globalStylesArray = [];
 
-function renderGlobals() {
-  _domHandler.update(
-    gSubs
-      .map(options => {
-        const [rawCss] = new StyleParser().run(options);
-        return rawCss;
-      })
-      .filter(o => !!o)
-      .join('')
-  );
+export function getGlobalStyles() {
+  return globalStylesArray;
 }
-export function toString() {
-  return _domHandler.toString();
-}
-export function toComponent() {
-  return _domHandler.toComponent();
-}
-
 function addSubscription(className, selectors, value) {
   const options = {
     className,
@@ -36,8 +18,8 @@ function addSubscription(className, selectors, value) {
   } else {
     options.styles = `${className} ${value};\r\n`;
   }
-
-  gSubs.push(options);
+  const [rawCss] = new StyleParser().run(options);
+  globalStylesArray.push(rawCss);
 }
 
 function iterateStyleObject(selectors, object) {
@@ -61,14 +43,10 @@ function iterateStyleObject(selectors, object) {
 }
 
 export function addGlobalStyles(...globalsObj) {
+  if (typeof window !== 'undefined' && window.__swissHydration) {
+    return;
+  }
   globalsObj.forEach(gO => {
     iterateStyleObject([], gO);
   });
-
-  if (typeof window !== 'undefined') {
-    window.cancelAnimationFrame(_timer);
-    _timer = window.requestAnimationFrame(renderGlobals);
-  } else {
-    renderGlobals();
-  }
 }

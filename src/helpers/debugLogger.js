@@ -1,6 +1,6 @@
 export default ({
   cacheHit,
-  elementIndex,
+  renderCycles,
   props,
   context,
   startTime,
@@ -18,7 +18,7 @@ export default ({
     const duration = endTime.getTime() - startTime.getTime();
 
     const title = [
-      `${elementIndex}`,
+      `${renderCycles}`,
       `%c${props.__swissOptions.type}`,
       `%c${cacheHit ? 'REUSED' : 'CREATED'}`,
       `%c${duration}ms`
