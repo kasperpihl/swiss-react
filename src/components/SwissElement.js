@@ -4,12 +4,18 @@ import { DefaultContext } from '../helpers/contexts';
 class SwissElement extends React.PureComponent {
   static contextType = DefaultContext;
   componentDidMount() {
-    this.context.controller.componentDidRender();
+    this.context && this.context.controller.componentDidRender();
   }
   componentDidUpdate() {
-    this.context.controller.componentDidRender();
+    this.context && this.context.controller.componentDidRender();
   }
   render() {
+    if (!this.context) {
+      console.warn(
+        '<SwissProvider> not found, add it to your App.js or index.js etc. for swiss to work'
+      );
+      return null;
+    }
     const [EL, filteredProps] = this.context.controller.prepareToRender(
       this.props,
       this.context
