@@ -4,10 +4,10 @@ import { DefaultContext } from '../helpers/contexts';
 class SwissElement extends React.PureComponent {
   static contextType = DefaultContext;
   componentDidMount() {
-    this.context.controller.checkIfDomNeedsUpdate();
+    this.context.controller.componentDidRender();
   }
   componentDidUpdate() {
-    this.context.controller.checkIfDomNeedsUpdate();
+    this.context.controller.componentDidRender();
   }
   render() {
     const [EL, filteredProps] = this.context.controller.prepareToRender(

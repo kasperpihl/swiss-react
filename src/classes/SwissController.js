@@ -3,14 +3,13 @@ import DomHandler from './DomHandler';
 import debugLogger from '../helpers/debugLogger';
 import { getGlobalStyles } from '../features/global-styles';
 
-let totalTime = 0;
 export default class SwissController {
   constructor(disableHydration) {
     this.shouldUpdateDOM = false;
     this.domHandler = new DomHandler('swiss-styles');
-    this.domHandler.add();
     this.stylesToAppend = getGlobalStyles();
     this.cacheByType = {};
+    // Hydration support (and support to disable it :D)
     if (typeof window !== 'undefined' && window.__swissHydration) {
       if (!disableHydration) {
         this.cacheByType = window.__swissHydration;
@@ -44,7 +43,6 @@ export default class SwissController {
       context
     );
 
-    totalTime += new Date().getTime() - startTime.getTime();
     if (contextOpt.debug || elementOpt.debug) {
       if (!this.isDebuggingRenderCycle) {
         this.renderCycles = this.renderCycles ? this.renderCycles + 1 : 1;
@@ -176,15 +174,10 @@ export default class SwissController {
     this.cacheByType[type].push(record);
     return record;
   }
-  checkIfDomNeedsUpdate() {
+  componentDidRender() {
     this.isDebuggingRenderCycle = undefined;
 
     if (this.stylesToAppend.length) {
-      console.log(
-        'total time looking up in cache and calculating styles',
-        totalTime
-      );
-      totalTime = 0;
       // Update DOM!
       this.domHandler.append(this.stylesToAppend.join('\r\n'));
       this.stylesToAppend = [];
