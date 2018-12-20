@@ -11,8 +11,26 @@ class SwissServerSide extends Component {
     const { context, children } = this.props;
 
     if (typeof context === 'object') {
-      context.toString = this.controller.toString;
-      context.toComponents = this.controller.toComponents;
+      context.toString = () => `
+<style id="swiss-styles" type="text/css">
+  ${this.controller.stylesToAppend.join('\r\n')}
+</style>
+<script id="swiss-hydration">
+window.__swissHydration = ${JSON.stringify(this.controller.cacheByType)};
+</script>
+`;
+      context.toComponents = () => (
+        <>
+          <style id="swiss-styles" type="text/css">
+            {`${this.controller.stylesToAppend.join('\r\n')}`}
+          </style>
+          <script id="swiss-hydration">
+            {`window.__swissHydration = ${JSON.stringify(
+              this.controller.cacheByType
+            )};`}
+          </script>
+        </>
+      );
     }
     return (
       <ServerContext.Provider value={this.controller}>

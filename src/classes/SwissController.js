@@ -7,7 +7,7 @@ let totalTime = 0;
 export default class SwissController {
   constructor(disableHydration) {
     this.shouldUpdateDOM = false;
-    this.domHandler = new DomHandler('newglobal');
+    this.domHandler = new DomHandler('swiss-styles');
     this.domHandler.add();
     this.stylesToAppend = getGlobalStyles();
     this.cacheByType = {};
@@ -15,6 +15,8 @@ export default class SwissController {
       if (!disableHydration) {
         this.cacheByType = window.__swissHydration;
       }
+      const element = document.getElementById('swiss-hydration');
+      element.parentNode.removeChild(element);
       delete window.__swissHydration;
     }
   }
@@ -174,17 +176,6 @@ export default class SwissController {
     this.cacheByType[type].push(record);
     return record;
   }
-  toString = () => {
-    // this.checkIfDomNeedsUpdate(true);
-    return `
-<style id="swiss-styles" type="text/css">
-  ${this.stylesToAppend.join('\r\n')}
-</style>
-<script id="swiss-hydration">
-window.__swissHydration = ${JSON.stringify(this.cacheByType)};
-</script>
-`;
-  };
   checkIfDomNeedsUpdate() {
     this.isDebuggingRenderCycle = undefined;
 
