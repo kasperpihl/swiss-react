@@ -1,7 +1,11 @@
 import { addDefaultMixin } from './mixins';
 
 addDefaultMixin('el', (setOption, el) => {
-  if (['string', 'function', 'object'].indexOf(typeof el) > -1) {
+  if (
+    typeof el === 'string' ||
+    typeof el === 'function' ||
+    (typeof el === 'object' && el.prototype.isReactComponent)
+  ) {
     setOption('element', el);
   } else {
     console.warn(

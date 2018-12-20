@@ -6,8 +6,7 @@ export default ({
   startTime,
   endTime,
   filteredProps,
-  keyValues,
-  passedOnProps,
+  cache,
   // If we added any css it will be the last element
   generatedCss
 }) => {
@@ -15,6 +14,7 @@ export default ({
     typeof console !== 'undefined' &&
     typeof console.groupCollapsed !== 'undefined'
   ) {
+    const { keyValues, passedOnProps } = cache;
     const duration = endTime.getTime() - startTime.getTime();
 
     const title = [

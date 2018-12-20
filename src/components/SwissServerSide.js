@@ -3,6 +3,29 @@ import SwissController from '../classes/SwissController';
 import { ServerContext } from '../helpers/contexts';
 
 class SwissServerSide extends Component {
+  toString = () =>
+    [
+      '<style id="swiss-styles" type="text/css">',
+      this.controller.stylesToAppend.join('\r\n'),
+      '</style>',
+      '<script id="swiss-hydration">',
+      `window.__swissHydration = ${JSON.stringify(
+        this.controller.cacheByType
+      )}`,
+      '</script>'
+    ].join('\r\n');
+  toComponents = () => (
+    <>
+      <style id="swiss-styles" type="text/css">
+        {`${this.controller.stylesToAppend.join('\r\n')}`}
+      </style>
+      <script id="swiss-hydration">
+        {`window.__swissHydration = ${JSON.stringify(
+          this.controller.cacheByType
+        )};`}
+      </script>
+    </>
+  );
   render() {
     if (!this.controller) {
       this.controller = new SwissController();
@@ -11,26 +34,8 @@ class SwissServerSide extends Component {
     const { context, children } = this.props;
 
     if (typeof context === 'object') {
-      context.toString = () => `
-<style id="swiss-styles" type="text/css">
-  ${this.controller.stylesToAppend.join('\r\n')}
-</style>
-<script id="swiss-hydration">
-window.__swissHydration = ${JSON.stringify(this.controller.cacheByType)};
-</script>
-`;
-      context.toComponents = () => (
-        <>
-          <style id="swiss-styles" type="text/css">
-            {`${this.controller.stylesToAppend.join('\r\n')}`}
-          </style>
-          <script id="swiss-hydration">
-            {`window.__swissHydration = ${JSON.stringify(
-              this.controller.cacheByType
-            )};`}
-          </script>
-        </>
-      );
+      context.toString = this.toString;
+      context.toComponents = this.toComponents;
     }
     return (
       <ServerContext.Provider value={this.controller}>

@@ -1,16 +1,24 @@
 import StyleParser from './StyleParser';
 import DomHandler from './DomHandler';
 import debugLogger from '../helpers/debugLogger';
+import parseToPrimitive from '../utils/parseToPrimitive';
 import { getGlobalStyles } from '../features/global-styles';
 
 export default class SwissController {
   constructor(disableHydration) {
-    this.shouldUpdateDOM = false;
+    // Setup the dom node with #swiss-styles
     this.domHandler = new DomHandler('swiss-styles');
+
+    // stylesToAppend keeps track of css we need to add to the DOM
+    // Load our global styles as initial value to ensure they're added
     this.stylesToAppend = getGlobalStyles();
+
+    // Caching mechanism
     this.cacheByType = {};
-    // Hydration support (and support to disable it :D)
+
+    // Hydrate the cache, if any
     if (typeof window !== 'undefined' && window.__swissHydration) {
+      // support to disable hydration
       if (!disableHydration) {
         this.cacheByType = window.__swissHydration;
       }
@@ -22,26 +30,20 @@ export default class SwissController {
 
   prepareToRender(props, context) {
     // Debugging start
-    // Used to know if we hit the cache.
-    this.cacheHit = true;
     const stylesLengthBef = this.stylesToAppend.length;
     const startTime = new Date();
     // Debugging end
-
-    const { keyValues, passedOnProps } = this.checkCacheForClassName(
-      props,
-      context
-    );
+    let cacheHit = true;
+    let cache = this.checkCacheForClassName(props, context);
+    if (!cache) {
+      cacheHit = false;
+      cache = this.createStyles(props, context);
+    }
 
     const contextOpt = context.options;
     const elementOpt = props.__swissOptions;
 
-    const filteredProps = this.filterProps(
-      keyValues,
-      passedOnProps,
-      props,
-      context
-    );
+    const filteredProps = this.filterProps(cache, props, context);
 
     if (contextOpt.debug || elementOpt.debug) {
       if (!this.isDebuggingRenderCycle) {
@@ -49,15 +51,14 @@ export default class SwissController {
         this.isDebuggingRenderCycle = true;
       }
       debugLogger({
-        cacheHit: this.cacheHit,
+        cacheHit,
         renderCycles: this.renderCycles,
         props,
         context,
         startTime,
         endTime: new Date(),
         filteredProps,
-        keyValues,
-        passedOnProps,
+        cache,
         // If we added any css it will be the last element
         generatedCss: this.stylesToAppend[stylesLengthBef]
       });
@@ -66,7 +67,8 @@ export default class SwissController {
     return [elementOpt.element || contextOpt.defaultEl, filteredProps];
   }
 
-  filterProps(keyValues, passedOnProps, props, context) {
+  filterProps(cache, props, context) {
+    const { passedOnProps, keyValues } = cache;
     const filteredProps = {};
     if (passedOnProps.className || props.className) {
       filteredProps.className = [passedOnProps.className, props.className]
@@ -89,18 +91,6 @@ export default class SwissController {
       }
     });
     return filteredProps;
-  }
-  parsePropToPrimitive(value) {
-    if (typeof value === 'undefined') {
-      return '__undefined__';
-    }
-    if (
-      value !== null &&
-      (typeof value === 'object' || typeof value === 'function')
-    ) {
-      return value.toString();
-    }
-    return value;
   }
   checkCacheForClassName(props, context) {
     const type = props.__swissOptions.type;
@@ -126,7 +116,7 @@ export default class SwissController {
         if (typeof value === 'undefined') {
           value = context.contextProps[key];
         }
-        if (cache.keyValues[key] !== this.parsePropToPrimitive(value)) {
+        if (cache.keyValues[key] !== parseToPrimitive(value)) {
           allWasEqual = false;
         }
       }
@@ -134,13 +124,12 @@ export default class SwissController {
         foundCache = cache;
       }
     });
-    return foundCache ? foundCache : this.createStyles(props, context);
+    return foundCache;
   }
   createStyles(props, context) {
-    this.cacheHit = false;
     const type = props.__swissOptions.type;
     const index = this.cacheByType[type].length;
-    const className = `.${props.__swissOptions.type}.sw${index}`;
+    const className = `.${type}.sw${index}`;
 
     const touchedProps = {};
     const getProp = (key, fallbackValue) => {
@@ -148,7 +137,7 @@ export default class SwissController {
       if (typeof value === 'undefined') {
         value = context.contextProps[key];
       }
-      touchedProps[key] = this.parsePropToPrimitive(value);
+      touchedProps[key] = parseToPrimitive(value);
       return typeof value === 'undefined' ? fallbackValue : value;
     };
 
