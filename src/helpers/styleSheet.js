@@ -1,7 +1,5 @@
-import React, { forwardRef } from 'react';
-import makeSwissComponent from '../components/SwissElement';
+import makeSwissComponent from './makeSwissElement';
 import SwissProvideContext from '../components/SwissProvideContext';
-import convertStylesToArray from './convertStylesToArray';
 
 const nullFunc = () => null;
 const styleSheets = {};
@@ -27,35 +25,10 @@ export default (name, styles) => {
   let StyleSheet = {};
   for (let key in styles) {
     if (typeof styles[key] === 'object') {
-      const options = {
+      StyleSheet[key] = makeSwissComponent({
         type: `${name}_${key}`,
         originalStyles: styles[key]
-      };
-      // Parsing styles to something iterateable
-      options.styles = [
-        {
-          selectors: ['&'],
-          type: 'nested',
-          condition: null,
-          key: '&',
-          value: convertStylesToArray(styles[key], ['&'], {}, (k, v) => {
-            options[k] = v;
-          })
-        }
-      ];
-
-      const displayName = `sw.${name}_${key}`;
-      // Make sure we have a nice debug name in devtools;
-      const SwissComponent = makeSwissComponent(displayName);
-      const render = (props, ref) => {
-        const refProps = ref ? { innerRef: ref } : null;
-        return (
-          <SwissComponent {...refProps} {...props} __swissOptions={options} />
-        );
-      };
-      render.displayName = displayName;
-
-      StyleSheet[key] = forwardRef(render);
+      });
     }
   }
   StyleSheet.ProvideContext = SwissProvideContext;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { DefaultContext } from '../helpers/contexts';
 
-export default displayName => {
+export default options => {
   class SwissComponent extends React.PureComponent {
     static contextType = DefaultContext;
     componentDidMount() {
@@ -19,6 +19,7 @@ export default displayName => {
       }
       const [EL, filteredProps] = this.context.controller.prepareToRender(
         this.props,
+        options,
         this.context
       );
 
@@ -34,6 +35,6 @@ export default displayName => {
       );
     }
   }
-  SwissComponent.displayName = displayName;
+  SwissComponent.displayName = options.type;
   return SwissComponent;
 };

@@ -3,6 +3,7 @@ export default ({
   renderCycles,
   props,
   context,
+  options,
   startTime,
   endTime,
   filteredProps,
@@ -24,7 +25,7 @@ export default ({
 
       const title = [
         `${renderCycles}`,
-        `%c${props.__swissOptions.type}`,
+        `%c${options.type}`,
         `%c${cacheHit ? 'REUSED' : 'CREATED'}`,
         `%c${duration}ms`
       ];
@@ -52,10 +53,10 @@ export default ({
       );
       groupDepth++;
       console.log('with these options');
-      const options = Object.assign({}, context.options, props.__swissOptions);
-      delete options.styles;
-      delete options.originalStyles;
-      console.log(options);
+      const mOptions = Object.assign({}, context.options, options);
+      delete mOptions.styles;
+      delete mOptions.originalStyles;
+      console.log(mOptions);
       console.groupEnd();
       groupDepth--;
 

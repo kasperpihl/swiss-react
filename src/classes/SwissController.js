@@ -2,6 +2,7 @@ import StyleParser from './StyleParser';
 import DomHandler from './DomHandler';
 import debugLogger from '../helpers/debugLogger';
 import parseToPrimitive from '../utils/parseToPrimitive';
+import convertStylesToArray from '../helpers/convertStylesToArray';
 import { getGlobalStyles } from '../features/global-styles';
 
 export default class SwissController {
@@ -28,24 +29,23 @@ export default class SwissController {
     }
   }
 
-  prepareToRender(props, context) {
+  prepareToRender(props, options, context) {
     // Debugging start
     const stylesLengthBef = this.stylesToAppend.length;
     const startTime = new Date();
     // Debugging end
     let cacheHit = true;
-    let cache = this.checkCacheForClassName(props, context);
+    let cache = this.checkCacheForClassName(props, options, context);
     if (!cache) {
       cacheHit = false;
-      cache = this.createStyles(props, context);
+      cache = this.createStyles(props, options, context);
     }
 
     const contextOpt = context.options;
-    const elementOpt = props.__swissOptions;
 
     const filteredProps = this.filterProps(cache, props, context);
 
-    if (contextOpt.debug || elementOpt.debug) {
+    if (contextOpt.debug || options.debug) {
       if (!this.isDebuggingRenderCycle) {
         this.renderCycles = this.renderCycles ? this.renderCycles + 1 : 1;
         this.isDebuggingRenderCycle = true;
@@ -55,6 +55,7 @@ export default class SwissController {
         renderCycles: this.renderCycles,
         props,
         context,
+        options,
         startTime,
         endTime: new Date(),
         filteredProps,
@@ -64,7 +65,7 @@ export default class SwissController {
       });
     }
 
-    return [elementOpt.element || contextOpt.defaultEl, filteredProps];
+    return [options.element || contextOpt.defaultEl, filteredProps];
   }
 
   filterProps(cache, props, context) {
@@ -83,7 +84,6 @@ export default class SwissController {
     Object.entries(props).forEach(([propName, propValue]) => {
       if (
         typeof keyValues[propName] === 'undefined' &&
-        !propName.startsWith('__swiss') &&
         typeof context.contextProps[propName] === 'undefined' &&
         exclude.indexOf(propName) === -1
       ) {
@@ -92,9 +92,9 @@ export default class SwissController {
     });
     return filteredProps;
   }
-  checkCacheForClassName(props, context) {
-    const type = props.__swissOptions.type;
-    let inline = props.__swissOptions.inline;
+  checkCacheForClassName(props, options, context) {
+    const type = options.type;
+    let inline = options.inline;
     if (typeof inline === 'undefined') inline = context.options.inline;
 
     // Lazy load cache.
@@ -126,8 +126,8 @@ export default class SwissController {
     });
     return foundCache;
   }
-  createStyles(props, context) {
-    const type = props.__swissOptions.type;
+  createStyles(props, options, context) {
+    const type = options.type;
     const index = this.cacheByType[type].length;
     const className = `.${type}.sw${index}`;
 
@@ -141,13 +141,35 @@ export default class SwissController {
       return typeof value === 'undefined' ? fallbackValue : value;
     };
 
-    const options = Object.assign({}, context.options, props.__swissOptions, {
+    if (!options.styles) {
+      options.styles = [
+        {
+          selectors: ['&'],
+          type: 'nested',
+          condition: null,
+          key: '&',
+          value: convertStylesToArray(
+            options.originalStyles,
+            ['&'],
+            {},
+            (k, v) => {
+              options[k] = v;
+            }
+          )
+        }
+      ];
+      delete options.originalStyles;
+    }
+    const mergedOptions = Object.assign({}, context.options, options, {
       className
     });
-    const [rawCss, inlineStyles] = new StyleParser().run(options, getProp);
+    const [rawCss, inlineStyles] = new StyleParser().run(
+      mergedOptions,
+      getProp
+    );
 
     const passedOnProps = {};
-    if (options.inline) {
+    if (mergedOptions.inline) {
       passedOnProps.style = inlineStyles;
     } else {
       passedOnProps.className = className
@@ -159,7 +181,7 @@ export default class SwissController {
 
     const record = {
       passedOnProps,
-      inline: options.inline,
+      inline: mergedOptions.inline,
       keyValues: touchedProps
     };
 
