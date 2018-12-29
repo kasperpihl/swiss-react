@@ -15,5 +15,3 @@ export { default as styleSheet } from './helpers/styleSheet';
 // react specific stuff
 
 export { default as SwissProvider } from './components/SwissProvider';
-
-export { default as SwissServerSide } from './components/SwissServerSide';
