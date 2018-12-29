@@ -30,6 +30,22 @@ export default class SwissController {
   }
 
   prepareToRender(props, options, context, lastCacheIndex) {
+    // Moving lazy load here for now
+    if (!options.convertedStyles) {
+      options.convertedStyles = [
+        {
+          selectors: ['&'],
+          type: 'nested',
+          condition: null,
+          key: '&',
+          value: convertStylesToArray(options.styles, ['&'], {}, (k, v) => {
+            options[k] = v;
+          })
+        }
+      ];
+      delete options.styles;
+    }
+
     // Debugging start
     const stylesLengthBef = this.stylesToAppend.length;
     const startTime = new Date();
@@ -149,20 +165,6 @@ export default class SwissController {
       return typeof value === 'undefined' ? fallbackValue : value;
     };
 
-    if (!options.convertedStyles) {
-      options.convertedStyles = [
-        {
-          selectors: ['&'],
-          type: 'nested',
-          condition: null,
-          key: '&',
-          value: convertStylesToArray(options.styles, ['&'], {}, (k, v) => {
-            options[k] = v;
-          })
-        }
-      ];
-      delete options.styles;
-    }
     const mergedOptions = Object.assign({}, context.options, options, {
       className
     });
