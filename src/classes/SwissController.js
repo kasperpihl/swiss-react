@@ -2,8 +2,10 @@ import StyleParser from './StyleParser';
 import DomHandler from './DomHandler';
 import debugLogger from '../helpers/debugLogger';
 import parseToPrimitive from '../utils/parseToPrimitive';
-import convertStylesToArray from '../helpers/convertStylesToArray';
+
 import { getGlobalStyles } from '../features/global-styles';
+import parseDefaultMixins from '../helpers/parseDefaultMixins';
+import lazyConvertStyles from '../helpers/lazyConvertStyles';
 
 export default class SwissController {
   constructor(disableHydration) {
@@ -31,20 +33,7 @@ export default class SwissController {
 
   prepareToRender(props, options, context, lastCacheIndex) {
     // Moving lazy load here for now
-    if (!options.convertedStyles) {
-      options.convertedStyles = [
-        {
-          selectors: ['&'],
-          type: 'nested',
-          condition: null,
-          key: '&',
-          value: convertStylesToArray(options.styles, ['&'], {}, (k, v) => {
-            options[k] = v;
-          })
-        }
-      ];
-      delete options.styles;
-    }
+    parseDefaultMixins(options);
 
     // Debugging start
     const stylesLengthBef = this.stylesToAppend.length;
@@ -164,6 +153,8 @@ export default class SwissController {
       touchedProps[key] = parseToPrimitive(value);
       return typeof value === 'undefined' ? fallbackValue : value;
     };
+
+    lazyConvertStyles(options);
 
     const mergedOptions = Object.assign({}, context.options, options, {
       className
