@@ -38,6 +38,9 @@ export function getMixin(name) {
   }
   return foundMixin;
 }
+export function isDefaultMixin(name) {
+  return !!defaultMixins[name];
+}
 export function runDefaultMixin(name, value, setOption) {
   const mixin = defaultMixins[name];
   if (mixin) {

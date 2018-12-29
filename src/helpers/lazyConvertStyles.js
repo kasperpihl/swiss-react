@@ -8,9 +8,7 @@ export default options => {
         type: 'nested',
         condition: null,
         key: '&',
-        value: convertStylesToArray(options.styles, ['&'], {}, (k, v) => {
-          options[k] = v;
-        })
+        value: convertStylesToArray(options.styles, ['&'])
       }
     ];
     delete options.styles;

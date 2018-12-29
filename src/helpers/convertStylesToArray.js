@@ -1,12 +1,11 @@
 import determineCondition from '../utils/determineCondition';
 import isSelector from '../utils/isSelector';
-import { runDefaultMixin } from '../features/mixins';
+import { isDefaultMixin } from '../features/mixins';
 
 const convertStylesToArray = (
   obj,
   previousSelectors,
-  recursiveOptions = {},
-  setOption
+  recursiveOptions = {}
 ) => {
   if (typeof obj !== 'object') return obj;
   const newObj = Object.entries(obj);
@@ -21,9 +20,7 @@ const convertStylesToArray = (
       let type = 'node';
       let condition = null;
       if (key.startsWith('_')) {
-        if (runDefaultMixin(key, value, setOption)) {
-          return null;
-        }
+        if (isDefaultMixin(key)) return null;
         type = 'mixin';
       } else if (Array.isArray(value)) {
         type = 'array';
