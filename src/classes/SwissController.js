@@ -29,16 +29,21 @@ export default class SwissController {
     }
   }
 
-  prepareToRender(props, options, context) {
+  prepareToRender(props, options, context, lastCacheIndex) {
     // Debugging start
     const stylesLengthBef = this.stylesToAppend.length;
     const startTime = new Date();
     // Debugging end
     let cacheHit = true;
-    let cache = this.checkCacheForClassName(props, options, context);
+    let [cacheIndex, cache] = this.checkCacheForClassName(
+      props,
+      options,
+      context,
+      lastCacheIndex
+    );
     if (!cache) {
       cacheHit = false;
-      cache = this.createStyles(props, options, context);
+      [cacheIndex, cache] = this.createStyles(props, options, context);
     }
 
     const contextOpt = context.options;
@@ -65,7 +70,7 @@ export default class SwissController {
       });
     }
 
-    return [options.element || contextOpt.defaultEl, filteredProps];
+    return [options.element || contextOpt.defaultEl, filteredProps, cacheIndex];
   }
 
   filterProps(cache, props, context) {
@@ -92,7 +97,7 @@ export default class SwissController {
     });
     return filteredProps;
   }
-  checkCacheForClassName(props, options, context) {
+  checkCacheForClassName(props, options, context, lastCacheIndex = 0) {
     const type = options.type;
     let inline = options.inline;
     if (typeof inline === 'undefined') inline = context.options.inline;
@@ -107,9 +112,12 @@ export default class SwissController {
       return this.createStyles(props, context);
     }
 
-    let foundCache;
-    this.cacheByType[type].forEach(cache => {
-      if (foundCache || cache.inline !== inline) return;
+    const cacheToSearch = this.cacheByType[type];
+
+    for (let i = 0; i < cacheToSearch.length; i++) {
+      // Doing some magic starting on the index it was last, if any :)
+      const cache = cacheToSearch[(i + lastCacheIndex) % cacheToSearch.length];
+      if (cache.inline !== inline) continue;
       let allWasEqual = true;
       for (let key in cache.keyValues) {
         let value = props[key];
@@ -121,10 +129,10 @@ export default class SwissController {
         }
       }
       if (allWasEqual) {
-        foundCache = cache;
+        return [i, cache];
       }
-    });
-    return foundCache;
+    }
+    return [-1, null];
   }
   createStyles(props, options, context) {
     const type = options.type;
@@ -181,7 +189,7 @@ export default class SwissController {
     };
 
     this.cacheByType[type].push(record);
-    return record;
+    return [index, record];
   }
   componentDidRender() {
     this.isDebuggingRenderCycle = undefined;

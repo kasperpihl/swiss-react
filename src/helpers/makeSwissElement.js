@@ -17,11 +17,17 @@ export default options => {
         );
         return null;
       }
-      const [EL, filteredProps] = this.context.controller.prepareToRender(
+      const [
+        EL,
+        filteredProps,
+        cacheIndex
+      ] = this.context.controller.prepareToRender(
         this.props,
         options,
-        this.context
+        this.context,
+        this.lastCacheIndex
       );
+      this.lastCacheIndex = cacheIndex;
 
       if (!EL) {
         console.warn('swiss error: no element found. got props:', props);
