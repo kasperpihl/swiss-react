@@ -11,12 +11,13 @@ export default ({
   generatedCss
 }) => {
   if (
-    typeof window !== 'undefined' &&
+    typeof process !== 'undefined' &&
+    process.env.NODE_ENV !== 'production' &&
+    typeof document !== 'undefined' &&
     typeof console !== 'undefined' &&
     typeof console.groupCollapsed !== 'undefined'
   ) {
     let groupDepth = 0;
-    console.log('im here');
     try {
       const { keyValues, passedOnProps } = cache;
       const duration = endTime.getTime() - startTime.getTime();
