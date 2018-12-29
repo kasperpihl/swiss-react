@@ -27,7 +27,7 @@ export default (name, styles) => {
     if (typeof styles[key] === 'object') {
       StyleSheet[key] = makeSwissComponent({
         type: `${name}_${key}`,
-        originalStyles: styles[key]
+        styles: styles[key]
       });
     }
   }

@@ -141,24 +141,19 @@ export default class SwissController {
       return typeof value === 'undefined' ? fallbackValue : value;
     };
 
-    if (!options.styles) {
-      options.styles = [
+    if (!options.convertedStyles) {
+      options.convertedStyles = [
         {
           selectors: ['&'],
           type: 'nested',
           condition: null,
           key: '&',
-          value: convertStylesToArray(
-            options.originalStyles,
-            ['&'],
-            {},
-            (k, v) => {
-              options[k] = v;
-            }
-          )
+          value: convertStylesToArray(options.styles, ['&'], {}, (k, v) => {
+            options[k] = v;
+          })
         }
       ];
-      delete options.originalStyles;
+      delete options.styles;
     }
     const mergedOptions = Object.assign({}, context.options, options, {
       className

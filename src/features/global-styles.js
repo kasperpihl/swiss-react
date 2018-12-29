@@ -12,11 +12,11 @@ function addSubscription(className, selectors, value) {
     globals: true
   };
   if (typeof value === 'object') {
-    options.styles = convertStylesToArray(value, selectors, {
+    options.convertedStyles = convertStylesToArray(value, selectors, {
       disableProps: true
     });
   } else {
-    options.styles = `${className} ${value};\r\n`;
+    options.convertedStyles = `${className} ${value};\r\n`;
   }
   const [rawCss] = new StyleParser().run(options);
   globalStylesArray.push(rawCss);

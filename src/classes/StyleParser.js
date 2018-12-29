@@ -18,11 +18,13 @@ export default class StyleParser {
     this.options = options;
     this.inlineStyles = options.inline ? {} : undefined;
     let rawCss =
-      typeof options.styles === 'string' ? options.styles : undefined;
+      typeof options.convertedStyles === 'string'
+        ? options.convertedStyles
+        : undefined;
 
-    if (Array.isArray(options.styles)) {
+    if (Array.isArray(options.convertedStyles)) {
       this.printStyleArray = [];
-      this.runningQueue = [...options.styles];
+      this.runningQueue = [...options.convertedStyles];
 
       this.runQueue();
       if (this.printStyleArray.length) {
