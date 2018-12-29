@@ -1,22 +1,49 @@
 import React, { Component } from 'react';
-import { ServerContext, DefaultContext } from '../helpers/contexts';
+import { DefaultContext } from '../helpers/contexts';
 import SwissController from '../classes/SwissController';
 
 const isRN =
   typeof navigator != 'undefined' && navigator.product == 'ReactNative';
 
 export default class SwissProvider extends Component {
-  static contextType = ServerContext;
+  toString = () =>
+    [
+      '<style id="swiss-styles" type="text/css">',
+      this.controller.stylesToAppend.join('\r\n'),
+      '</style>',
+      '<script id="swiss-hydration">',
+      `window.__swissHydration = ${JSON.stringify(
+        this.controller.cacheByType
+      )}`,
+      '</script>'
+    ].join('\r\n');
+  toComponents = () => (
+    <>
+      <style id="swiss-styles" type="text/css">
+        {`${this.controller.stylesToAppend.join('\r\n')}`}
+      </style>
+      <script id="swiss-hydration">
+        {`window.__swissHydration = ${JSON.stringify(
+          this.controller.cacheByType
+        )};`}
+      </script>
+    </>
+  );
   render() {
-    const { children, ...rest } = this.props;
-    if (!this.context && !this.defaultController) {
-      this.defaultController = new SwissController(!!rest.disableHydration);
+    const { children, context, ...rest } = this.props;
+    if (!this.controller) {
+      this.controller = new SwissController(!!rest.disableHydration);
+    }
+
+    if (typeof context === 'object') {
+      context.toString = this.toString;
+      context.toComponents = this.toComponents;
     }
 
     return (
       <DefaultContext.Provider
         value={{
-          controller: this.context || this.defaultController,
+          controller: this.controller,
           contextProps: {},
           options: Object.assign(
             {
