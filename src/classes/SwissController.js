@@ -21,7 +21,7 @@ export default class SwissController {
     if (typeof window !== 'undefined' && window.__swissHydration) {
       // support to disable hydration
       if (!disableHydration) {
-        this.cacheByType = window.__swissHydration;
+        this.cacheByType = window.__swissHydration.cacheByType;
       }
       const element = document.getElementById('swiss-hydration');
       element.parentNode.removeChild(element);

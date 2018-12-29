@@ -23,9 +23,9 @@ export default class SwissProvider extends Component {
         {`${this.controller.stylesToAppend.join('\r\n')}`}
       </style>
       <script id="swiss-hydration">
-        {`window.__swissHydration = ${JSON.stringify(
-          this.controller.cacheByType
-        )};`}
+        {`window.__swissHydration = ${JSON.stringify({
+          cacheByType: this.controller.cacheByType
+        })};`}
       </script>
     </>
   );
