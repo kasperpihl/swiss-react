@@ -14,7 +14,7 @@ export default class SwissController {
 
     // stylesToAppend keeps track of css we need to add to the DOM
     // Load our global styles as initial value to ensure they're added
-    this.stylesToAppend = getGlobalStyles();
+    this.stylesToAppend = [].concat(getGlobalStyles());
 
     // Caching mechanism
     this.cacheByType = {};
