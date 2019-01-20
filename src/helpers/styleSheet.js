@@ -36,7 +36,8 @@ export default (name, styles) => {
   if (typeof Proxy !== 'undefined') {
     StyleSheet = new Proxy(StyleSheet, {
       get: (obj, prop) => {
-        if (prop === '__esModule' || prop === 'default') return obj;
+        if (prop === '__esModule' || prop === 'default' || prop === '$$typeof')
+          return obj;
         if (obj[prop]) return obj[prop];
         console.warn(`swiss error: "${prop}" not found in "${name}"`);
         return nullFunc;
