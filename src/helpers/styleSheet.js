@@ -11,7 +11,7 @@ export default (name, styles) => {
     );
   }
   if (styleSheets[name]) {
-    return console.warn(
+    console.warn(
       `swiss styleSheet: a stylesheet already exists with the name "${name}"`
     );
   }
