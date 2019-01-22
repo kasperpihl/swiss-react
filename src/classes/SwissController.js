@@ -18,12 +18,14 @@ export default class SwissController {
 
     // Caching mechanism
     this.cacheByType = {};
+    this.uniqueNumber = 0;
 
     // Hydrate the cache, if any
     if (typeof window !== 'undefined' && window.__swissHydration) {
       // support to disable hydration
       if (!disableHydration) {
         this.cacheByType = window.__swissHydration.cacheByType;
+        this.uniqueNumber = window.__swissHydration.uniqueNumber || 0;
       }
       const element = document.getElementById('swiss-hydration');
       element.parentNode.removeChild(element);
@@ -142,7 +144,7 @@ export default class SwissController {
   createStyles(props, options, context) {
     const type = options.type;
     const index = this.cacheByType[type].length;
-    const className = `.${type}.sw${index}`;
+    const className = `.${type}.sw${++this.uniqueNumber}`;
 
     const touchedProps = {};
     const getProp = (key, fallbackValue) => {

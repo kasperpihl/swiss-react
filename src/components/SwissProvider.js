@@ -13,7 +13,8 @@ export default class SwissProvider extends Component {
       '</style>',
       '<script id="swiss-hydration">',
       `window.__swissHydration = ${JSON.stringify({
-        cacheByType: this.controller.cacheByType
+        cacheByType: this.controller.cacheByType,
+        uniqueNumber: this.controller.uniqueNumber
       })}`,
       '</script>'
     ].join('\r\n');
