@@ -4,7 +4,7 @@ addDefaultMixin('el', (setOption, el) => {
   if (
     typeof el === 'string' ||
     typeof el === 'function' ||
-    (typeof el === 'object' && el.prototype.isReactComponent)
+    typeof el === 'object'
   ) {
     setOption('element', el);
   } else {
