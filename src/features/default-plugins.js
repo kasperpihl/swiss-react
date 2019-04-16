@@ -1,6 +1,7 @@
 import { addPlugin } from './plugins';
 
-if (navigator.product != 'ReactNative') {
+// I'm on web or nodejs
+if (typeof document != 'undefined' || typeof navigator == 'undefined') {
   // CSS:after content fix. Turns 'value' into ''value'';
   addPlugin(
     'parseKeyValue',
