@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "jsx": "react",
+    "lib": ["dom", "es2017", "es2019"],
+    "baseUrl": "./",
+    "outDir": "./dist/",
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "paths": {
+      "src/*": ["./src2/*"],
+      "swiss-react": ["./src2/index.ts"]
+    }
+  }
+}
