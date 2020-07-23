@@ -1,12 +1,12 @@
-import { StyleObjectArray, StyleObjectSelector } from 'src/types';
+import { StyleObjectArray, StyleObjectSelector } from '../types';
 const indent = (depth: number) => new Array(depth + 1).map(() => '').join('  ');
 const uncamel = (property: string) =>
-  property.replace(/([A-Z])/g, g => '-' + g[0].toLowerCase());
+  property.replace(/([A-Z])/g, (g) => '-' + g[0].toLowerCase());
 
 const setClassname = (property: string, className: string) =>
   className
     .split(/,\ ?/g)
-    .map(s => property.replace(/&/gi, s))
+    .map((s) => property.replace(/&/gi, s))
     .join(', ');
 
 export function parseCss(styleArray: StyleObjectArray, className: string) {
@@ -48,7 +48,7 @@ export function parseCss(styleArray: StyleObjectArray, className: string) {
       }
     }
 
-    selectorObj.value.forEach(node => {
+    selectorObj.value.forEach((node) => {
       if (node.type === 'node') {
         lazyOpen();
         selectors[selectorIndex].push(
@@ -79,5 +79,5 @@ export function parseCss(styleArray: StyleObjectArray, className: string) {
 
   loop(initialSelector, 0);
 
-  return selectors.map(s => s.join('\r\n')).join('\r\n');
+  return selectors.map((s) => s.join('\r\n')).join('\r\n');
 }

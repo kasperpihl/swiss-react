@@ -15,26 +15,6 @@ export const createStyleContext = (): StyleContextObject => {
   let appendingCss: string[] = [];
 
   return {
-    getInstance: (symbol: symbol) => {
-      if (!symbolStore[symbol]) {
-        // Ensure names are unique including lowercase
-        const lName = name.toLowerCase();
-        if (!nameCounter[lName]) {
-          nameCounter[lName] = 0;
-        }
-
-        nameCounter[lName]++;
-
-        const counter = nameCounter[lName];
-        const uniqueName = `${name}${counter === 1 ? '' : counter}`;
-
-        symbolStore[symbol] = {
-          uniqueName,
-          cacheRead,
-          cacheWrite
-        };
-      }
-    },
     getUniqueClassName: (symbol: symbol, name: string) => {
       if (!symbolStore[symbol]) {
         // Ensure names are unique including lowercase

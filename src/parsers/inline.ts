@@ -1,8 +1,8 @@
-import { StyleObjectArray } from 'src/types';
+import { StyleObjectArray } from '../types';
 
 export function parseInline(styleArray: StyleObjectArray) {
   const inlineStyles: any = {};
-  styleArray.forEach(s => {
+  styleArray.forEach((s) => {
     if (s.type === 'selector') {
       throw Error('selectors are not support for inline');
     }

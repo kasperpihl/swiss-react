@@ -1,14 +1,15 @@
 {
   "name": "swiss-react",
-  "version": "0.4.15",
-  "description": "CSS-in-js with the best of the react and sass world together.",
-  "source": "src2/index.ts",
-  "main": "dist/index.js",
+  "version": "0.5.0",
+  "description": "CSS-in-js without the tight coupling to component",
+  "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "prepack": "npm run build",
-    "build": "rimraf dist && microbundle --jsx React.createElement --format cjs --no-source-map",
-    "watch": "npm run build -- --watch",
+    "build": "rimraf dist && tsc",
     "start": "rimraf dist && parcel demo/index.html"
   },
   "repository": {
@@ -16,7 +17,7 @@
     "url": "https://github.com/swipesapp/swiss-react.git"
   },
   "alias": {
-    "swiss-react": "./src2/index.ts"
+    "swiss-react": "./src/index.ts"
   },
   "author": "Kasper Pihl Tornoe",
   "license": "MIT",
@@ -30,20 +31,19 @@
     "less"
   ],
   "devDependencies": {
-    "@babel/core": "^7.7.2",
-    "@types/react": "^16.8.19",
-    "@types/react-dom": "^16.9.4",
-    "microbundle": "^0.12.0-next.8",
-    "parcel-bundler": "^1.12.3",
+    "@babel/core": "^7.10.5",
+    "@types/react": "^16.9.43",
+    "@types/react-dom": "^16.9.8",
+    "microbundle": "^0.12.3",
+    "parcel-bundler": "^1.12.4",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "rimraf": "^2.6.3",
-    "tools": "0.0.0"
+    "react-dom": "^16.13.1",
+    "rimraf": "^3.0.2"
   },
   "peerDependencies": {
-    "react": ">=16.8"
+    "react": ">=16.13"
   },
   "dependencies": {
-    "csstype": "^2.6.7"
+    "csstype": "^2.6.11"
   }
 }

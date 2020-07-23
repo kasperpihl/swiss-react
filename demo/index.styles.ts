@@ -1,13 +1,16 @@
-import { css, condition } from 'swiss-react';
+import { createStyles, condition } from 'swiss-react';
 
-export default css('MyButton', (opt: boolean) => ({
+export default createStyles('MyButton', () => ({
   wrapper: (isActive: boolean) => ({
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignContent: 'center',
     background: isActive ? 'red' : 'blue',
     [condition(isActive)]: {
-      color: 'red'
+      color: 'red',
+      justifyContent: 'center',
+      alignContent: 'center'
     },
     '&:hover': {
       '@media (min-width: 1024px)': {
@@ -16,13 +19,12 @@ export default css('MyButton', (opt: boolean) => ({
           '@media (max-width: 1024)': {
             background: 'blue'
           }
-        },
-        color: 'red'
-      },
-      display: 'none'
+        }
+      }
+      // display: 'none'
     }
   }),
-  outline: {
-    display: 'flex'
-  }
+  outline: () => ({
+    display: 'block'
+  })
 }));

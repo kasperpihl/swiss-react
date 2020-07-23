@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import styles from './index.styles';
-import { useStylesheet, StyleProvider } from 'swiss-react';
-import {} from 'src/StyleProvider';
+import { StyleProvider, useClassNames } from 'swiss-react';
 
 function SecondApp() {
-  const s = useStylesheet(styles, false);
+  const c = useClassNames(styles);
 
-  return <div className={s.wrapper(true)}>Hi there2</div>;
+  return <div className={c.wrapper(false)}>Hi there2</div>;
 }
 
 function App() {
   const [isActive, setIsActive] = useState(false);
 
-  const s = useStylesheet(styles, true);
+  const c = useClassNames(styles);
 
   return (
-    <div className={s.wrapper(false)}>
+    <div className={c.wrapper(true)}>
       <SecondApp />
       <SecondApp />
       <SecondApp />

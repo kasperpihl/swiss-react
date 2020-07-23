@@ -1,5 +1,5 @@
 import { PropertiesFallback } from 'csstype';
-import { ALLOW_KEY } from './condition';
+import { ALLOW_KEY } from '../condition';
 import {
   StyleObjectArray,
   StyleObjectNode,
@@ -23,7 +23,7 @@ export function convertStylesToArray(
       if (typeof value === 'object') {
         if (Array.isArray(value)) {
           targetArray.push(
-            ...(value.map(v => ({
+            ...(value.map((v) => ({
               type: 'node',
               property,
               value: v
