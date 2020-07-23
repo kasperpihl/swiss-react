@@ -1,7 +1,7 @@
 import { createStyles, condition } from 'swiss-react';
 
-export default createStyles('App', (isActive: boolean) => ({
-  wrapper: () => ({
+export default createStyles('App', () => ({
+  wrapper: (isActive: boolean) => ({
     display: 'flex',
     flexDirection: 'column',
     [condition(isActive)]: {
