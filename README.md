@@ -1,38 +1,46 @@
 # swiss-react
 
+A simple CSS-in-js solution made for a Typescript world 💙
+
+Separating components from styles again 🎂
+
 ## Installation
 
-Using [npm](https://www.npmjs.com/):
-
-    $ npm install --save swiss-react
-
-Then with a module bundler like [webpack](https://webpack.github.io/), use as you would anything else:
-
-```js
-// using ES6 modules
-import { element, addGlobalStyles, addConstants, addPlugin } from 'swiss-react';
-
-// using CommonJS modules
-var element = require('swiss-react').element;
-var addGlobalStyles = require('swiss-react').addGlobalStyles;
-var addConstants = require('swiss-react').addConstants;
-var addPlugin = require('swiss-react').addPlugin;
+```shell
+npm i swiss-react
 ```
 
-The UMD build is also available on [unpkg](https://unpkg.com):
+## Demo
 
-```html
-<script src="https://unpkg.com/swiss-react/dist/umd/swiss.min.js"></script>
+I've made a Codesandbox to play around with
+
+- [Codesandbox](https://codesandbox.io/s/friendly-swartz-5hyyt)
+
+## Usage
+
+First create a stylesheet
+
+```typescript
+// App.styles.ts
+import { createStyles } from 'swiss-react';
+
+export default createStyles('App', () => ({
+  Wrapper: () => ({
+    display: 'flex'
+  })
+}));
 ```
 
-You can find the library on `window.Swiss`.
+Then use it in your component
 
-## Documentation
+```typescript
+import React from 'react';
+import AppStyles from './App.styles.ts';
+import { useClassNames } from 'swiss-react';
 
-http://swiss-react.com/docs/getting-started
+function App() {
+  const c = useClassNames(styles);
 
-## CodePen Examples
-
-Original: [Simple Test](https://codepen.io/kasperpihl/pen/JLwaeb?editors=0011)
-
-Props: [Props Test](https://codepen.io/atav32/pen/qYYKXo?editors=0010)
+  return <div className={c.wrapper()}>Hi</div>;
+}
+```

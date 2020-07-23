@@ -1,12 +1,9 @@
 import { createStyles, condition } from 'swiss-react';
 
-export default createStyles('MyButton', () => ({
-  wrapper: (isActive: boolean) => ({
+export default createStyles('App', (isActive: boolean) => ({
+  wrapper: () => ({
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignContent: 'center',
-    background: isActive ? 'red' : 'blue',
     [condition(isActive)]: {
       color: 'red',
       justifyContent: 'center',
