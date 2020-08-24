@@ -1,28 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import styles from './index.styles';
+import DemoAppStyles from './index.styles';
 import { StyleProvider, useClassNames } from 'swiss-react';
 
-function SecondApp() {
-  const c = useClassNames(styles);
-
-  return <div className={c.wrapper(false)}>Hi there2</div>;
-}
-
 function App() {
-  const [isActive, setIsActive] = useState(false);
+  const [size, setSize] = useState<'big' | 'small'>('small');
+  useEffect(() => {
+    setTimeout(() => {
+      setSize('big');
+    }, 3000);
+    setTimeout(() => {
+      setSize('small');
+    }, 6000);
+  }, []);
+  const c = useClassNames(DemoAppStyles, 'red');
 
-  const c = useClassNames(styles);
-
-  return (
-    <div className={c.wrapper(true)}>
-      <SecondApp />
-      <SecondApp />
-      <SecondApp />
-      <SecondApp />
-      <SecondApp />
-    </div>
-  );
+  return <div className={c.Wrapper({ size })}></div>;
 }
 
 const rootElement = document.getElementById('root');

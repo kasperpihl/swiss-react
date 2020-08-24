@@ -12,7 +12,7 @@ export interface CSSObject extends PropertiesFallback {
 }
 
 export type TopLevelStylesObject = {
-  [key: string]: (...args: any[]) => CSSObject;
+  [key: string]: CSSObject | ((...args: any[]) => CSSObject);
 };
 
 export type TopLevelStyleFunction<
@@ -37,7 +37,11 @@ export type AsClassNameObject<
   Return
 > = {
   [P in keyof ReturnType<T['topLevelStyleFunction']>]: (
-    ...lowLevelArgs: Parameters<ReturnType<T['topLevelStyleFunction']>[P]>
+    ...lowLevelArgs: ReturnType<T['topLevelStyleFunction']>[P] extends (
+      ...args: any[]
+    ) => CSSObject
+      ? Parameters<ReturnType<T['topLevelStyleFunction']>[P]>
+      : never[]
   ) => Return;
 };
 
@@ -45,7 +49,9 @@ export type AsClassNameObject<
  * Internal parsing types
  */
 
-export type CacheType = [any[], [any[], string][]][];
+export type CacheType = {
+  [key: string]: [any[], [any[], string][]][];
+};
 
 export type StyleObjectNode = {
   type: 'node';

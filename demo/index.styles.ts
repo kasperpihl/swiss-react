@@ -1,27 +1,24 @@
 import { createStyles, condition } from 'swiss-react';
 
-export default createStyles('App', () => ({
-  wrapper: (isActive: boolean) => ({
+export default createStyles('DemoApp', (theme: 'red' | 'blue') => ({
+  Wrapper: ({ size }: { size: 'small' | 'big' }) => ({
     display: 'flex',
-    flexDirection: 'column',
-    [condition(isActive)]: {
-      color: 'red',
-      justifyContent: 'center',
-      alignContent: 'center'
-    },
-    '&:hover': {
-      '@media (min-width: 1024px)': {
-        background: 'green',
-        '&:active': {
-          '@media (max-width: 1024)': {
-            background: 'blue'
-          }
+    height: '60px',
+    width: '60%',
+    background: theme,
+    '@media (min-width: 501px)': {
+      '&:hover': {
+        [condition(size === 'small')]: {
+          background: 'blue'
         }
       }
-      // display: 'none'
+    },
+    [condition(size === 'big')]: {
+      height: '80px',
+      width: '100%'
     }
   }),
-  outline: () => ({
-    display: 'block'
+  Item: () => ({
+    display: 'flex'
   })
 }));

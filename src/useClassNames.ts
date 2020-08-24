@@ -26,19 +26,23 @@ export function useClassNames<T extends ReturnType<typeof createStyles>>(
     ) as any;
 
     Object.entries(styleObject).forEach(
-      ([key, localStyleFunc]: [string, Function]) => {
+      ([key, localStyles]: [string, Function]) => {
         const displayName = `${name}_${key}`;
 
         styleObject[key] = (...localArgs: any[]) => {
           let [globalIndex, , record] = cacheRead(
             styleSheet.cache,
+            key,
             topLevelArgs,
             localArgs
           );
 
           if (record) return record as T;
 
-          const styleObject = localStyleFunc(...localArgs);
+          const styleObject =
+            typeof localStyles === 'function'
+              ? localStyles(...localArgs)
+              : localStyles;
 
           // Delete any conditions that were not met
           delete styleObject[BLOCK_KEY];
@@ -54,6 +58,7 @@ export function useClassNames<T extends ReturnType<typeof createStyles>>(
 
           cacheWrite(
             styleSheet.cache,
+            key,
             globalIndex,
             topLevelArgs,
             localArgs,

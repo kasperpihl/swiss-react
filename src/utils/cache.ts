@@ -2,11 +2,17 @@ import { CacheType } from '../types';
 import { compareArrays } from './compareArrays';
 
 export function cacheRead(
-  cache: CacheType,
+  fullCache: CacheType,
+  key: string,
   topLevelArgs: any[],
   localArgs: any[]
 ): [number, number, any] {
   let record = null;
+  if (!fullCache[key]) {
+    fullCache[key] = [];
+  }
+
+  const cache = fullCache[key];
 
   const globalIndex = cache.findIndex(([args]) =>
     compareArrays(args, topLevelArgs)
@@ -27,12 +33,15 @@ export function cacheRead(
 }
 
 export function cacheWrite(
-  cache: CacheType,
+  fullCache: CacheType,
+  key: string,
   globalIndex: number,
   topLevelArgs: any[],
   localArgs: any[],
   record: any
 ) {
+  const cache = fullCache[key];
+
   // Save to cache...
   if (globalIndex === -1) {
     globalIndex = cache.push([topLevelArgs, []]) - 1;

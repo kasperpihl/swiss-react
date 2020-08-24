@@ -16,7 +16,7 @@ export function createStyles<
     symbol: Symbol(name),
     name,
     uniqueCounter: 0,
-    cache: [],
+    cache: {},
     topLevelStyleFunction
   };
 }
