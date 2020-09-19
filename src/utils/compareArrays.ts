@@ -19,12 +19,19 @@ export function compareArrays(arg1: any[], arg2: any[]) {
     return false;
   }
   for (let i = 0; i < arg1.length; i++) {
-    // Support option objects
+    let isDifferent = arg1[i] !== arg2[i];
+
+    // Support option objects and arrays
     if (typeof arg1[i] === 'object' && typeof arg2[i] === 'object') {
-      return areEqualShallow(arg1[i], arg2[i]);
+      if (Array.isArray(arg1[i]) && Array.isArray(arg2[i])) {
+        isDifferent = !compareArrays(arg1[i], arg2[i]);
+      } else {
+        isDifferent = !areEqualShallow(arg1[i], arg2[i]);
+      }
     }
 
-    if (arg1[i] !== arg2[i]) return false;
+    if (isDifferent) return false;
   }
+
   return true;
 }
