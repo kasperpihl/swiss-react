@@ -11,5 +11,6 @@
     "paths": {
       "swiss-react": ["./src/index.ts"]
     }
-  }
+  },
+  "include": ["./src"]
 }

@@ -25,9 +25,9 @@ First create a stylesheet
 import { createStyles } from 'swiss-react';
 
 export default createStyles('App', () => ({
-  Wrapper: () => ({
+  Wrapper: {
     display: 'flex'
-  })
+  }
 }));
 ```
 
@@ -41,7 +41,7 @@ import { useClassNames } from 'swiss-react';
 function App() {
   const c = useClassNames(styles);
 
-  return <div className={c.wrapper()}>Hi</div>;
+  return <div className={c.Wrapper()}>Hi</div>;
 }
 ```
 
@@ -52,9 +52,9 @@ function App() {
 import { createStyles, condition } from 'swiss-react';
 
 export default createStyles('App', () => ({
-  Wrapper: () => ({
+  Wrapper: {
     display: 'flex'
-  })
+  }
 }));
 ```
 
@@ -68,6 +68,6 @@ import { useClassNames } from 'swiss-react';
 function App() {
   const c = useClassNames(styles);
 
-  return <div className={c.wrapper()}>Hi</div>;
+  return <div className={c.Wrapper()}>Hi</div>;
 }
 ```

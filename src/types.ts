@@ -1,7 +1,7 @@
 import { PropertiesFallback } from 'csstype';
 import type { createStyles } from './createStyles';
 
-export interface CSSObject extends PropertiesFallback {
+export interface CSSObject {
   [key: string]:
     | string
     | number

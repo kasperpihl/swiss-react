@@ -67,6 +67,6 @@ export function convertStylesToArray(
     });
   }
   loop(styleObject, rootArray);
-  console.log(rootArray);
+
   return rootArray;
 }
